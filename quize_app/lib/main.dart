@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quize_app/features/home/index.dart';
 
 void main() {
   runApp(const MyApp());
@@ -9,12 +10,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text("testttwd as ds a d"),
-        ),
+    return MaterialApp(
+      theme: ThemeData(
+        scaffoldBackgroundColor: Colors.deepPurple,
       ),
+      home: const Home(),
     );
   }
 }
