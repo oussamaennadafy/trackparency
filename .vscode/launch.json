@@ -1,0 +1,51 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "quize_app",
+      "cwd": "quize_app",
+      "request": "launch",
+      "type": "dart"
+    },
+    {
+      "name": "quize_app (profile mode)",
+      "cwd": "quize_app",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "profile"
+    },
+    {
+      "name": "quize_app (release mode)",
+      "cwd": "quize_app",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "release"
+    },
+    {
+      "name": "Android",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "emulator-5554",
+      "program": "quize_app/lib/main.dart",
+    },
+    {
+      "name": "IOS",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "8CA8C239-CE80-4D95-A3AA-72EDC00B126F",
+      "program": "quize_app/lib/main.dart",
+    },
+  ],
+  "compounds": [
+    {
+      "name": "Android & IOS",
+      "configurations": [
+        "Android",
+        "IOS"
+      ]
+    }
+  ]
+}
