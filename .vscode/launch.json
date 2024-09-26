@@ -25,11 +25,26 @@
       "flutterMode": "release"
     },
     {
-      "name": "Android",
+      "name": "Android emulator",
       "request": "launch",
       "type": "dart",
       "deviceId": "emulator-5554",
       "program": "quize_app/lib/main.dart",
+    },
+    {
+      "name": "Android realme (debug)",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "0H73B01I22100471",
+      "program": "quize_app/lib/main.dart",
+    },
+    {
+      "name": "Android realme (release)",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "0H73B01I22100471",
+      "program": "quize_app/lib/main.dart",
+      "flutterMode": "release"
     },
     {
       "name": "IOS",
@@ -43,7 +58,7 @@
     {
       "name": "Android & IOS",
       "configurations": [
-        "Android",
+        "Android emulator",
         "IOS"
       ]
     }

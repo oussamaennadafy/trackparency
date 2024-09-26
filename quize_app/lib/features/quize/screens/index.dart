@@ -18,6 +18,7 @@ class QuizeHome extends StatelessWidget {
             Image.asset(
               "assets/images/quiz-logo.png",
               height: 220,
+              color: const Color.fromARGB(134, 255, 255, 255),
             ),
             const SizedBox(height: 70),
             const Text(
@@ -28,20 +29,11 @@ class QuizeHome extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            OutlinedButton(
-              child: const Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.arrow_forward,
-                    color: Colors.white,
-                  ),
-                  SizedBox(width: 10),
-                  Text(
-                    "take quize",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ],
+            OutlinedButton.icon(
+              label: const Text("take quize"),
+              icon: const Icon(Icons.arrow_forward),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: Colors.white,
               ),
               onPressed: () {
                 Navigator.of(context).push(MaterialPageRoute(builder: (context) => const QuizeQuestion()));

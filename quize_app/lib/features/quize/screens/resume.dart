@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:quize_app/features/quize/models/result.dart';
 import 'package:quize_app/features/quize/screens/index.dart';
 
 class QuizeResume extends StatelessWidget {
   const QuizeResume({super.key, required this.numberOfAnsweredQuestions, required this.results});
 
   final int numberOfAnsweredQuestions;
-  final List results;
+  final List<Result> results;
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +44,7 @@ class QuizeResume extends StatelessWidget {
                                 height: 30,
                                 alignment: Alignment.center,
                                 decoration: BoxDecoration(
-                                  color: (answer.value["is_right"] ?? false) ? Colors.green : Colors.red,
+                                  color: answer.value.isRight ? Colors.green : Colors.red,
                                   borderRadius: const BorderRadius.all(
                                     Radius.circular(9999),
                                   ),
@@ -61,7 +62,7 @@ class QuizeResume extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      answer.value["question"],
+                                      answer.value.question,
                                       softWrap: true, // Allow wrapping to new lines
                                       style: const TextStyle(
                                         color: Colors.white,
@@ -69,15 +70,15 @@ class QuizeResume extends StatelessWidget {
                                       ),
                                     ),
                                     Text(
-                                      "you answer is : ${answer.value["users_answer"]}",
+                                      "you answer is : ${answer.value.usersAnswer}",
                                       softWrap: true, // Allow wrapping to new lines
                                       style: TextStyle(
-                                        color: (answer.value["is_right"] ?? false) ? Colors.green : Colors.red,
+                                        color: answer.value.isRight ? Colors.green : Colors.red,
                                         fontWeight: FontWeight.w600,
                                       ),
                                     ),
                                     Text(
-                                      "the right answer is : ${answer.value["right_answer"]}",
+                                      "the right answer is : ${answer.value.rightAnswer}",
                                       softWrap: true, // Allow wrapping to new lines
                                       style: const TextStyle(
                                         color: Colors.green,
@@ -95,21 +96,18 @@ class QuizeResume extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 10),
-              OutlinedButton(
+              OutlinedButton.icon(
                 style: OutlinedButton.styleFrom(
                   foregroundColor: Colors.white,
                   side: const BorderSide(color: Colors.deepPurpleAccent),
                 ),
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.replay_outlined),
-                    SizedBox(width: 15),
-                    Text("Restart quiz!")
-                  ],
-                ),
+                label: const Text("Restart quizzz!"),
+                icon: const Icon(Icons.replay_outlined),
                 onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => const QuizeHome()));
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => const QuizeHome()),
+                    (Route<dynamic> route) => false,
+                  );
                 },
               ),
               const SizedBox(height: 20),

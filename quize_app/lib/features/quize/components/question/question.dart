@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quize_app/shared/components/buttons/main_button.dart';
 
 class Question extends StatelessWidget {
   const Question({required this.question, required this.choices, required this.onAnswerPress, super.key});
@@ -29,18 +30,11 @@ class Question extends StatelessWidget {
                   ),
                   const SizedBox(height: 30),
                   ...choices.asMap().entries.map(
-                        (answer) => Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: OutlinedButton(
-                            style: OutlinedButton.styleFrom(
-                              foregroundColor: Colors.white,
-                              side: const BorderSide(color: Colors.white),
-                            ),
-                            child: Text(answer.value),
-                            onPressed: () {
-                              onAnswerPress(answer.key);
-                            },
-                          ),
+                        (answer) => MainButton(
+                          label: answer.value,
+                          onPressed: () {
+                            onAnswerPress(answer.key);
+                          },
                         ),
                       ),
                 ],
