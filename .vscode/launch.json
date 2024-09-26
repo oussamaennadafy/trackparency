@@ -5,21 +5,21 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "quize_app",
-      "cwd": "quize_app",
+      "name": "expense_tracker",
+      "cwd": "expense_tracker",
       "request": "launch",
       "type": "dart"
     },
     {
-      "name": "quize_app (profile mode)",
-      "cwd": "quize_app",
+      "name": "expense_tracker (profile mode)",
+      "cwd": "expense_tracker",
       "request": "launch",
       "type": "dart",
       "flutterMode": "profile"
     },
     {
-      "name": "quize_app (release mode)",
-      "cwd": "quize_app",
+      "name": "expense_tracker (release mode)",
+      "cwd": "expense_tracker",
       "request": "launch",
       "type": "dart",
       "flutterMode": "release"
@@ -29,21 +29,21 @@
       "request": "launch",
       "type": "dart",
       "deviceId": "emulator-5554",
-      "program": "quize_app/lib/main.dart",
+      "program": "expense_tracker/lib/main.dart",
     },
     {
       "name": "Android realme (debug)",
       "request": "launch",
       "type": "dart",
       "deviceId": "0H73B01I22100471",
-      "program": "quize_app/lib/main.dart",
+      "program": "expense_tracker/lib/main.dart",
     },
     {
       "name": "Android realme (release)",
       "request": "launch",
       "type": "dart",
       "deviceId": "0H73B01I22100471",
-      "program": "quize_app/lib/main.dart",
+      "program": "expense_tracker/lib/main.dart",
       "flutterMode": "release"
     },
     {
@@ -51,7 +51,7 @@
       "request": "launch",
       "type": "dart",
       "deviceId": "8CA8C239-CE80-4D95-A3AA-72EDC00B126F",
-      "program": "quize_app/lib/main.dart",
+      "program": "expense_tracker/lib/main.dart",
     },
   ],
   "compounds": [
