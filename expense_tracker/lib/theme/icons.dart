@@ -7,4 +7,14 @@ class AppIcons {
   static const String analyticsFill = "assets/icons/analytics-fill.svg";
   static const String user = "assets/icons/user.svg";
   static const String userFill = "assets/icons/user-fill.svg";
+  static const String bell = "assets/icons/bell.svg";
+  static const String calendar = "assets/icons/calendar.svg";
+  static const String cash = "assets/icons/cash.svg";
+  static const String checkMark = "assets/icons/check-mark.svg";
+  static const String clear = "assets/icons/clear.svg";
+  static const String dollar = "assets/icons/dollar.svg";
+  static const String gift = "assets/icons/gift.svg";
+  static const String menu = "assets/icons/menu.svg";
+  static const String pizza = "assets/icons/pizza.svg";
+  static const String tShirt = "assets/icons/tshirt.svg";
 }
