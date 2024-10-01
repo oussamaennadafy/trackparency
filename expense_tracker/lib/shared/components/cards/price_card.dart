@@ -14,53 +14,50 @@ class PriceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: Material(
-        color: Colors.transparent,
-        child: Ink(
-          decoration: const BoxDecoration(
-            color: AppColors.onSurface,
-            borderRadius: BorderRadius.all(
-              Radius.circular(32),
-            ),
+      child: Ink(
+        decoration: const BoxDecoration(
+          color: AppColors.onSurface,
+          borderRadius: BorderRadius.all(
+            Radius.circular(32),
           ),
-          child: InkWell(
-            borderRadius: BorderRadius.circular(32),
-            onTap: () {
-              print(label);
-            },
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 14.0),
-              child: Column(
-                children: [
-                  Text(
-                    label,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.gray,
-                    ),
+        ),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(32),
+          onTap: () {
+            print(label);
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 14.0),
+            child: Column(
+              children: [
+                Text(
+                  label,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.gray,
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(
-                        "\$",
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: AppColors.gray,
-                          fontWeight: FontWeight.w700,
-                        ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      "\$",
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppColors.gray,
+                        fontWeight: FontWeight.w700,
                       ),
-                      Text(
-                        price,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
+                    ),
+                    Text(
+                      price,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
-                    ],
-                  )
-                ],
-              ),
+                    ),
+                  ],
+                )
+              ],
             ),
           ),
         ),

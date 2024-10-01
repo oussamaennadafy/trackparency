@@ -47,10 +47,17 @@
       "flutterMode": "release"
     },
     {
-      "name": "IOS",
+      "name": "iPhone 15 Pro",
       "request": "launch",
       "type": "dart",
       "deviceId": "8CA8C239-CE80-4D95-A3AA-72EDC00B126F",
+      "program": "expense_tracker/lib/main.dart",
+    },
+    {
+      "name": "iPad Pro (12.9-inch) (6th generation)",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "9666516B-2566-4B47-96C3-A8D3CB63DE3D",
       "program": "expense_tracker/lib/main.dart",
     },
   ],

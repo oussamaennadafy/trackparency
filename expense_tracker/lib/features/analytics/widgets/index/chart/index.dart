@@ -30,7 +30,7 @@ class Chart extends StatelessWidget {
               ),
               ChartBar(
                 color: AppColors.green,
-                heightFactor: 0.9,
+                heightFactor: 0.7,
                 label: "4",
               ),
               ChartBar(
@@ -61,7 +61,7 @@ class Chart extends StatelessWidget {
             ],
           ),
           Container(
-            margin: const EdgeInsets.only(left: 14.0, right: 14.0, bottom: 23.0),
+            margin: const EdgeInsets.only(left: 12.0, right: 12.0, bottom: 23.0),
             color: AppColors.extraLightGray,
             height: 1,
           ),

@@ -19,7 +19,9 @@ class ChartBar extends StatelessWidget {
       child: Column(
         children: [
           Expanded(
-            child: FractionallySizedBox(
+            child: AnimatedFractionallySizedBox(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.ease,
               alignment: Alignment.bottomCenter,
               heightFactor: heightFactor,
               child: Column(
@@ -46,12 +48,17 @@ class ChartBar extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 4.0),
-          Text(
-            label,
-            style: const TextStyle(
-              color: AppColors.gray,
+          InkWell(
+            onTap: () {
+              print("d");
+            },
+            child: Text(
+              label,
+              style: const TextStyle(
+                color: AppColors.gray,
+              ),
             ),
-          ),
+          )
         ],
       ),
     );
