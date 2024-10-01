@@ -34,6 +34,7 @@ class _NavigationMenuState extends State<NavigationMenu> {
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: NavigationBar(
+        animationDuration: Duration.zero,
         selectedIndex: selectedIndex,
         backgroundColor: AppColors.surface,
         onDestinationSelected: (value) {
@@ -42,33 +43,37 @@ class _NavigationMenuState extends State<NavigationMenu> {
           });
         },
         destinations: [
-          InkWell(
-            onTap: () => handlePress(0),
-            child: Center(
+          IconButton(
+            highlightColor: AppColors.surface,
+            onPressed: () => handlePress(0),
+            icon: Center(
               child: SvgPicture.asset(
                 selectedIndex == 0 ? AppIcons.homeFill : AppIcons.home,
               ),
             ),
           ),
-          InkWell(
-            onTap: () => handlePress(1),
-            child: Center(
+          IconButton(
+            highlightColor: AppColors.surface,
+            onPressed: () => handlePress(1),
+            icon: Center(
               child: SvgPicture.asset(
                 selectedIndex == 1 ? AppIcons.gridFill : AppIcons.grid,
               ),
             ),
           ),
-          InkWell(
-            onTap: () => handlePress(2),
-            child: Center(
+          IconButton(
+            highlightColor: AppColors.surface,
+            onPressed: () => handlePress(2),
+            icon: Center(
               child: SvgPicture.asset(
                 selectedIndex == 2 ? AppIcons.analyticsFill : AppIcons.analytics,
               ),
             ),
           ),
-          InkWell(
-            onTap: () => handlePress(3),
-            child: Center(
+          IconButton(
+            highlightColor: AppColors.surface,
+            onPressed: () => handlePress(3),
+            icon: Center(
               child: SvgPicture.asset(
                 selectedIndex == 3 ? AppIcons.userFill : AppIcons.user,
               ),

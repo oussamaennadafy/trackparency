@@ -1,8 +1,8 @@
 import 'package:expense_tracker/shared/components/tabs/navigation_menu.dart';
-import 'package:expense_tracker/theme/app_theme.dart';
 import 'package:expense_tracker/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 void main() {
   runApp(const MyApp());
@@ -36,7 +36,23 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Expenses App',
-      theme: appTheme(),
+      // theme: appTheme(context),
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: AppColors.primary,
+          primary: AppColors.primary,
+          onPrimary: AppColors.surface,
+          secondary: AppColors.gray,
+          onSecondary: AppColors.surface,
+          error: AppColors.red,
+          onError: AppColors.surface,
+          surface: AppColors.surface,
+          onSurface: AppColors.onSurface,
+        ),
+        textTheme: GoogleFonts.interTextTheme(
+          Theme.of(context).textTheme,
+        ),
+      ),
       home: const SafeArea(
         child: MyHomePage(),
       ),

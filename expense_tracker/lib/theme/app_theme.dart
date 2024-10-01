@@ -1,7 +1,7 @@
 import 'package:expense_tracker/theme/colors.dart';
 import 'package:flutter/material.dart';
 
-ThemeData appTheme() {
+ThemeData appTheme(BuildContext context) {
   return ThemeData(
     colorScheme: ColorScheme.fromSeed(
       seedColor: AppColors.primary,
@@ -15,10 +15,10 @@ ThemeData appTheme() {
       onSurface: AppColors.onSurface,
     ),
     scaffoldBackgroundColor: AppColors.surface,
-    textTheme: const TextTheme(
-      bodyLarge: TextStyle(color: AppColors.primary),
-      bodyMedium: TextStyle(color: AppColors.primary),
-    ),
+    // textTheme: const TextTheme(
+    //   bodyLarge: TextStyle(color: AppColors.primary),
+    //   bodyMedium: TextStyle(color: AppColors.primary),
+    // ),
     appBarTheme: const AppBarTheme(
       backgroundColor: AppColors.primary,
       foregroundColor: AppColors.surface,

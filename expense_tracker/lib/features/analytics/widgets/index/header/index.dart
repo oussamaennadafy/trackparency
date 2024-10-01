@@ -23,7 +23,6 @@ class Header extends StatelessWidget {
               Text(
                 "32,500 DH",
                 style: TextStyle(
-                  fontFamily: "Inter",
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                 ),

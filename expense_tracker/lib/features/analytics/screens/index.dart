@@ -68,22 +68,20 @@ class _AnalyticsState extends State<Analytics> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            const Header(),
-            Filter(
-              tabs: tabs,
-              selectedTab: selectedTab,
-              months: months,
-              selectedMonth: selectedMonth,
-              onMonthSelect: onMonthSelect,
-            ),
-            // Chart(),
-            // Cards(),
-            // CategoryTiles(),
-          ],
-        ),
+      body: Column(
+        children: [
+          const Header(),
+          Filter(
+            tabs: tabs,
+            selectedTab: selectedTab,
+            months: months,
+            selectedMonth: selectedMonth,
+            onMonthSelect: onMonthSelect,
+          ),
+          const Chart(),
+          const Cards(),
+          const CategoryTiles(),
+        ],
       ),
     );
   }
