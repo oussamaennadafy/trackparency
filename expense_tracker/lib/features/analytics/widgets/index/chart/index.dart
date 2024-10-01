@@ -13,18 +13,55 @@ class Chart extends StatelessWidget {
         children: [
           const Row(
             children: [
-              ChartBar(),
-              ChartBar(),
-              ChartBar(),
-              ChartBar(),
-              ChartBar(),
-              ChartBar(),
-              ChartBar(),
-              ChartBar(),
+              ChartBar(
+                color: AppColors.red,
+                heightFactor: 0.60,
+                label: "1",
+              ),
+              ChartBar(
+                color: AppColors.blue,
+                heightFactor: 0.25,
+                label: "2",
+              ),
+              ChartBar(
+                color: AppColors.yellow,
+                heightFactor: 0.40,
+                label: "3",
+              ),
+              ChartBar(
+                color: AppColors.green,
+                heightFactor: 0.9,
+                label: "4",
+              ),
+              ChartBar(
+                color: AppColors.violet,
+                heightFactor: 0.74,
+                label: "5",
+              ),
+              ChartBar(
+                color: AppColors.lightBlue,
+                heightFactor: 0.60,
+                label: "6",
+              ),
+              ChartBar(
+                color: AppColors.pink,
+                heightFactor: 0.77,
+                label: "7",
+              ),
+              ChartBar(
+                color: AppColors.orange,
+                heightFactor: 0.35,
+                label: "8",
+              ),
+              ChartBar(
+                color: AppColors.lavenderGray,
+                heightFactor: 0.25,
+                label: "9",
+              ),
             ],
           ),
           Container(
-            margin: const EdgeInsets.symmetric(horizontal: 12.0),
+            margin: const EdgeInsets.only(left: 14.0, right: 14.0, bottom: 23.0),
             color: AppColors.extraLightGray,
             height: 1,
           ),

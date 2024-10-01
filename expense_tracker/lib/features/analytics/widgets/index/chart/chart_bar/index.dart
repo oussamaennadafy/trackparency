@@ -2,31 +2,56 @@ import 'package:expense_tracker/theme/colors.dart';
 import 'package:flutter/material.dart';
 
 class ChartBar extends StatelessWidget {
-  const ChartBar({super.key});
+  const ChartBar({
+    super.key,
+    required this.color,
+    required this.heightFactor,
+    required this.label,
+  });
+
+  final Color color;
+  final double heightFactor;
+  final String label;
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: Column(
         children: [
-          const Text(
-            "12%",
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 4),
           Expanded(
-            child: Container(
-              width: 20,
-              decoration: const BoxDecoration(
-                color: AppColors.red,
-                borderRadius: BorderRadius.all(
-                  Radius.circular(9999),
-                ),
+            child: FractionallySizedBox(
+              alignment: Alignment.bottomCenter,
+              heightFactor: heightFactor,
+              child: Column(
+                children: [
+                  Text(
+                    "${(heightFactor * 100).toInt()}%",
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(
+                      width: 20,
+                      decoration: BoxDecoration(
+                        color: color,
+                        borderRadius: const BorderRadius.all(
+                          Radius.circular(9999),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-          )
+          ),
+          const SizedBox(height: 4.0),
+          Text(
+            label,
+            style: const TextStyle(
+              color: AppColors.gray,
+            ),
+          ),
         ],
       ),
     );
