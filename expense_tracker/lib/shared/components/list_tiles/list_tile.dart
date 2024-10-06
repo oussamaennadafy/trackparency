@@ -79,7 +79,7 @@ class AppListTile extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       const Text(
-                        "\$",
+                        "DH",
                         style: TextStyle(
                           fontSize: 12,
                           color: AppColors.gray,

@@ -41,7 +41,7 @@ class PriceCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Text(
-                      "\$",
+                      "DH",
                       style: TextStyle(
                         fontSize: 12,
                         color: AppColors.gray,

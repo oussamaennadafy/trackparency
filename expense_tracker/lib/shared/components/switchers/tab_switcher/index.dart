@@ -1,4 +1,4 @@
-import 'package:expense_tracker/shared/components/switchers/tab_button.dart';
+import 'package:expense_tracker/shared/components/switchers/tab_switcher/classes/tab_button.dart';
 import 'package:expense_tracker/theme/colors.dart';
 import 'package:flutter/material.dart';
 
@@ -46,7 +46,7 @@ class _TabSwitcherState extends State<TabSwitcher> {
                           ),
                         ),
                         child: Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.all(10.0),
                           child: Center(
                             child: Text(
                               tab.label,

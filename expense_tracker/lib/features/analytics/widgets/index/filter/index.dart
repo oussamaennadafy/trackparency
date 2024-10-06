@@ -1,8 +1,7 @@
+import 'package:expense_tracker/shared/components/drop_downs/classes/drop_down_item.dart';
 import 'package:expense_tracker/shared/components/drop_downs/drop_down_menu.dart';
-import 'package:expense_tracker/shared/components/switchers/tab_button.dart';
-import 'package:expense_tracker/shared/components/switchers/tab_switcher.dart';
-// import 'package:expense_tracker/theme/colors.dart';
-// import 'package:expense_tracker/theme/colors.dart';
+import 'package:expense_tracker/shared/components/switchers/tab_switcher/classes/tab_button.dart';
+import 'package:expense_tracker/shared/components/switchers/tab_switcher/index.dart';
 import 'package:flutter/material.dart';
 
 class Filter extends StatefulWidget {
@@ -18,7 +17,7 @@ class Filter extends StatefulWidget {
   final String selectedMonth;
   final String selectedTab;
   final List<TabButton> tabs;
-  final List<String> months;
+  final List<DropDownItem> months;
   final void Function(String month) onMonthSelect;
 
   @override

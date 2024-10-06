@@ -1,3 +1,4 @@
+import 'package:expense_tracker/shared/bottomSheets/add_expense_bottomSheet/index.dart';
 import 'package:expense_tracker/theme/colors.dart';
 import 'package:expense_tracker/theme/icons.dart';
 import 'package:flutter/material.dart';
@@ -42,8 +43,20 @@ class Header extends StatelessWidget {
             ],
           ),
           IconButton(
-            icon: SvgPicture.asset(AppIcons.bell),
-            onPressed: () {},
+            color: AppColors.primary,
+            icon: const Icon(Icons.add),
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                backgroundColor: Colors.transparent,
+                useSafeArea: true,
+                // scrollControlDisabledMaxHeightRatio: 1,
+                isScrollControlled: true,
+                builder: (context) {
+                  return const AddExpenseBottomSheet();
+                },
+              );
+            },
           ),
         ],
       ),
