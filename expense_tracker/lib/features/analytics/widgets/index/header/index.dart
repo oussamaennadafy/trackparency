@@ -50,8 +50,8 @@ class Header extends StatelessWidget {
                 context: context,
                 backgroundColor: Colors.transparent,
                 useSafeArea: true,
-                // scrollControlDisabledMaxHeightRatio: 1,
-                isScrollControlled: true,
+                scrollControlDisabledMaxHeightRatio: 0.9,
+                // isScrollControlled: true,
                 builder: (context) {
                   return const AddExpenseBottomSheet();
                 },

@@ -365,6 +365,10 @@ class AppKeyboard extends StatelessWidget {
                           child: SvgPicture.asset(
                             AppIcons.checkMark,
                           ),
+                          // child: CircularProgressIndicator(
+                          //   color: AppColors.surface,
+                          //   strokeWidth: 2.0,
+                          // ),
                         ),
                       ),
                     ),

@@ -33,6 +33,7 @@ class _NavigationMenuState extends State<NavigationMenu> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       bottomNavigationBar: NavigationBar(
         animationDuration: Duration.zero,
         selectedIndex: selectedIndex,

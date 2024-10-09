@@ -1,12 +1,11 @@
-import 'dart:developer';
+import 'dart:math';
+import 'dart:developer' as developer;
 
-import 'package:animated_digit/animated_digit.dart';
 import 'package:expense_tracker/shared/bottomSheets/add_expense_bottomSheet/keyboard/index.dart';
 import 'package:expense_tracker/shared/components/drop_downs/classes/drop_down_item.dart';
 import 'package:expense_tracker/shared/components/drop_downs/drop_down_menu.dart';
 import 'package:expense_tracker/theme/colors.dart';
 import 'package:expense_tracker/theme/icons.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class AddExpenseBottomSheet extends StatefulWidget {
@@ -106,11 +105,9 @@ class _AddExpenseBottomSheetState extends State<AddExpenseBottomSheet> {
     if (character == "AC") return "0";
 
     if (price[price.length - 1] == "+" && character == "0") return price;
-
     if (price[price.length - 1] == "+" && character == "+") return price;
 
     if (price == "0" && character == "0") return price;
-
     if (price == "0" && character == "+") return price;
 
     if (price == "0") return character;
@@ -143,6 +140,8 @@ class _AddExpenseBottomSheetState extends State<AddExpenseBottomSheet> {
       comment,
       date,
     }.toString());
+    // close bottomSheet
+    Navigator.pop(context);
   }
 
   final titleInputController = TextEditingController();
