@@ -8,32 +8,47 @@ class CategoryTiles extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Expanded(
+    return Expanded(
       child: Column(
         children: [
-          AppListTile(
-            icon: AppIcons.tShirt,
-            iconBackgroundColor: AppColors.green,
-            title: "Shopping",
-            subTitle: "Cash",
-            trailingTitle: "498.50",
-            trailingSubTitle: "32%",
+          Expanded(
+            child: AppListTile(
+              icon: AppIcons.tShirt,
+              iconBackgroundColor: AppColors.green,
+              title: "Shopping",
+              subTitle: "Cash",
+              trailingTitle: "498.50",
+              trailingSubTitle: "32%",
+              onTap: () {
+                print("Shopping");
+              },
+            ),
           ),
-          AppListTile(
-            icon: AppIcons.gift,
-            iconBackgroundColor: AppColors.violet,
-            title: "Gifts",
-            subTitle: "Cash . Card",
-            trailingTitle: "344.45",
-            trailingSubTitle: "21%",
+          Expanded(
+            child: AppListTile(
+              icon: AppIcons.gift,
+              iconBackgroundColor: AppColors.violet,
+              title: "Gifts",
+              subTitle: "Cash . Card",
+              trailingTitle: "344.45",
+              trailingSubTitle: "21%",
+              onTap: () {
+                print("Gifts");
+              },
+            ),
           ),
-          AppListTile(
-            icon: AppIcons.pizza,
-            iconBackgroundColor: AppColors.red,
-            title: "Food",
-            subTitle: "Cash",
-            trailingTitle: "230.50",
-            trailingSubTitle: "12%",
+          Expanded(
+            child: AppListTile(
+              icon: AppIcons.pizza,
+              iconBackgroundColor: AppColors.red,
+              title: "Food",
+              subTitle: "Cash",
+              trailingTitle: "230.50",
+              trailingSubTitle: "12%",
+              onTap: () {
+                print("Food");
+              },
+            ),
           ),
         ],
       ),

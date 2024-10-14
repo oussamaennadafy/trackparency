@@ -1,12 +1,17 @@
 import 'dart:math';
 import 'dart:developer' as developer;
 
+import 'package:expense_tracker/app_state.dart';
+import 'package:expense_tracker/models/expense.dart';
 import 'package:expense_tracker/shared/bottomSheets/add_expense_bottomSheet/keyboard/index.dart';
 import 'package:expense_tracker/shared/components/drop_downs/classes/drop_down_item.dart';
 import 'package:expense_tracker/shared/components/drop_downs/drop_down_menu.dart';
+import 'package:expense_tracker/shared/components/texts/shake_text.dart';
 import 'package:expense_tracker/theme/colors.dart';
 import 'package:expense_tracker/theme/icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:provider/provider.dart';
 
 class AddExpenseBottomSheet extends StatefulWidget {
   const AddExpenseBottomSheet({super.key});
@@ -17,8 +22,10 @@ class AddExpenseBottomSheet extends StatefulWidget {
 
 class _AddExpenseBottomSheetState extends State<AddExpenseBottomSheet> {
   String selectedPaymentMethod = "Cash";
-  String selectedCategory = "Shopping";
+  String selectedCategory = "Food";
   String price = "0";
+  bool isLoading = false;
+  bool isPriceInvalid = false;
 
   void onPaymentMethodSelect(String newSelectedPaymentMethod) {
     setState(() {
@@ -34,6 +41,13 @@ class _AddExpenseBottomSheetState extends State<AddExpenseBottomSheet> {
 
   String validatePrice(character) {
     var newValue = price;
+
+    if ((price + character) != "0") {
+      setState(() {
+        isPriceInvalid = false;
+      });
+    }
+
     // check for clear
     if (character == "clear") {
       if (price.length == 1) return "0";
@@ -51,6 +65,12 @@ class _AddExpenseBottomSheetState extends State<AddExpenseBottomSheet> {
         }
         newValue = sum.toStringAsFixed(0);
       } else {
+        if (price == "0") {
+          setState(() {
+            isPriceInvalid = true;
+          });
+          return newValue;
+        }
         // handle submittion
         handleSubmit(
           paymentMethod: selectedPaymentMethod,
@@ -124,24 +144,58 @@ class _AddExpenseBottomSheetState extends State<AddExpenseBottomSheet> {
     });
   }
 
-  void handleSubmit({
+  Future<void> handleSubmit({
     required String paymentMethod,
     required String category,
     required String title,
     required String price,
     required String comment,
     DateTime? date,
-  }) {
-    debugPrint({
-      paymentMethod,
-      category,
-      title,
-      price,
-      comment,
-      date,
-    }.toString());
-    // close bottomSheet
-    Navigator.pop(context);
+  }) async {
+    // start loading
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      // Get the ApplicationState instance
+      final applicationState = Provider.of<ApplicationState>(context, listen: false);
+
+      final newExpanse = Expense(
+        paymentMethod: paymentMethod,
+        category: category,
+        title: title != "" ? title : "Expense",
+        price: int.parse(price), // Convert price to int
+        comment: comment,
+        timestamp: date ?? DateTime.now(), // Use current date if date is null
+      );
+
+      // Call and await addExpense
+      await applicationState.addExpense(newExpanse);
+
+      // If successful, show a success message
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Expense added successfully')),
+        );
+      }
+    } catch (e) {
+      // If there's an error, show an error message
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error adding expense: $e')),
+        );
+      }
+      print('Error adding expense: $e');
+    } finally {
+      // stop loading
+      setState(() {
+        isLoading = false;
+      });
+      // Close bottomSheet, whether successful or not
+      if (mounted) {
+        Navigator.pop(context);
+      }
+    }
   }
 
   final titleInputController = TextEditingController();
@@ -219,12 +273,12 @@ class _AddExpenseBottomSheetState extends State<AddExpenseBottomSheet> {
                           icon: AppIcons.tShirt,
                         ),
                         DropDownItem(
-                          label: "gifts",
+                          label: "Gifts",
                           backgroundColor: AppColors.violet,
                           icon: AppIcons.gift,
                         ),
                         DropDownItem(
-                          label: "food",
+                          label: "Food",
                           backgroundColor: AppColors.red,
                           icon: AppIcons.pizza,
                         ),
@@ -264,23 +318,44 @@ class _AddExpenseBottomSheetState extends State<AddExpenseBottomSheet> {
               children: [
                 Container(
                   margin: const EdgeInsets.only(top: 15),
-                  child: const Text(
-                    "DH",
-                    style: TextStyle(
-                      fontSize: 28,
-                      color: AppColors.gray,
-                    ),
-                  ),
+                  child: isPriceInvalid
+                      ? ShakeWidget(
+                          child: Text(
+                            "DH",
+                            style: TextStyle(
+                              fontSize: 28,
+                              color: isPriceInvalid ? Colors.red.shade400 : AppColors.gray,
+                            ),
+                          ),
+                        )
+                      : Text(
+                          "DH",
+                          style: TextStyle(
+                            fontSize: 28,
+                            color: isPriceInvalid ? Colors.red.shade400 : AppColors.gray,
+                          ),
+                        ),
                 ),
                 const SizedBox(width: 4),
-                Text(
-                  price,
-                  style: const TextStyle(
-                    fontSize: 54,
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                isPriceInvalid
+                    ? ShakeWidget(
+                        child: Text(
+                          price,
+                          style: TextStyle(
+                            fontSize: 54,
+                            color: isPriceInvalid ? Colors.red : AppColors.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      )
+                    : Text(
+                        price,
+                        style: TextStyle(
+                          fontSize: 54,
+                          color: isPriceInvalid ? Colors.red : AppColors.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
               ],
             ),
           ),
@@ -300,6 +375,7 @@ class _AddExpenseBottomSheetState extends State<AddExpenseBottomSheet> {
           ),
           AppKeyboard(
             handleItemPress: onkeyboardPress,
+            isLoading: isLoading,
           ),
         ],
       ),

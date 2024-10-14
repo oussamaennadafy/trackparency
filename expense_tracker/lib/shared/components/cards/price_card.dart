@@ -6,18 +6,29 @@ class PriceCard extends StatelessWidget {
     super.key,
     required this.label,
     required this.price,
+    this.border,
   });
 
   final String label;
   final String price;
+  final bool? border;
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: Ink(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
+          border: border == true
+              ? Border.all(
+                  color: AppColors.lightGray,
+                  width: 1,
+                )
+              : Border.all(
+                  color: Colors.transparent,
+                  width: 1,
+                ),
           color: AppColors.onSurface,
-          borderRadius: BorderRadius.all(
+          borderRadius: const BorderRadius.all(
             Radius.circular(32),
           ),
         ),

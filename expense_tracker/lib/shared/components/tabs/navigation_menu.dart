@@ -2,6 +2,7 @@ import 'package:expense_tracker/features/analytics/screens/index.dart';
 import 'package:expense_tracker/features/home/index.dart';
 import 'package:expense_tracker/features/profile/profile.dart';
 import 'package:expense_tracker/features/transactions/transactions.dart';
+import 'package:expense_tracker/shared/components/headers/header/index.dart';
 import 'package:expense_tracker/theme/colors.dart';
 import 'package:expense_tracker/theme/icons.dart';
 import 'package:flutter/material.dart';
@@ -34,8 +35,12 @@ class _NavigationMenuState extends State<NavigationMenu> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
+      appBar: const PreferredSize(
+        preferredSize: Size.fromHeight(63),
+        child: Header(),
+      ),
       bottomNavigationBar: NavigationBar(
-        animationDuration: Duration.zero,
+        animationDuration: const Duration(milliseconds: 300),
         selectedIndex: selectedIndex,
         backgroundColor: AppColors.surface,
         onDestinationSelected: (value) {
@@ -83,6 +88,10 @@ class _NavigationMenuState extends State<NavigationMenu> {
         ],
       ),
       body: screens[selectedIndex],
+      // body: IndexedStack(
+      //   index: selectedIndex,
+      //   children: screens,
+      // ),
     );
   }
 }

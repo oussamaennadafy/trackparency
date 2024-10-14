@@ -7,9 +7,11 @@ class AppKeyboard extends StatelessWidget {
   const AppKeyboard({
     super.key,
     required this.handleItemPress,
+    required this.isLoading,
   });
 
   final void Function(String caracter) handleItemPress;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -362,13 +364,14 @@ class AppKeyboard extends StatelessWidget {
                           ),
                         ),
                         child: Center(
-                          child: SvgPicture.asset(
-                            AppIcons.checkMark,
-                          ),
-                          // child: CircularProgressIndicator(
-                          //   color: AppColors.surface,
-                          //   strokeWidth: 2.0,
-                          // ),
+                          child: !isLoading
+                              ? SvgPicture.asset(
+                                  AppIcons.checkMark,
+                                )
+                              : const CircularProgressIndicator(
+                                  color: AppColors.surface,
+                                  strokeWidth: 2.0,
+                                ),
                         ),
                       ),
                     ),

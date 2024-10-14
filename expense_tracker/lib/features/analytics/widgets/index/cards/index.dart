@@ -13,6 +13,7 @@ class Cards extends StatelessWidget {
           PriceCard(
             label: "Day",
             price: "52",
+            border: true,
           ),
           SizedBox(width: 8.0),
           PriceCard(

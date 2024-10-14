@@ -50,7 +50,7 @@
       "name": "iPhone 15 Pro",
       "request": "launch",
       "type": "dart",
-      "deviceId": "8CA8C239-CE80-4D95-A3AA-72EDC00B126F",
+      "deviceId": "2589969C-8A11-4B1D-B237-C2DE0714AD27",
       "program": "expense_tracker/lib/main.dart",
     },
     {
