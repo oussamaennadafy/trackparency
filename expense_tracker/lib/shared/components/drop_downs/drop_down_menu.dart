@@ -1,5 +1,5 @@
 import 'package:expense_tracker/shared/components/drop_downs/classes/drop_down_item.dart';
-import 'package:expense_tracker/shared/utils/formaters/capitalize_first_letter.dart';
+import 'package:expense_tracker/utils/formaters/capitalize_first_letter.dart';
 import 'package:expense_tracker/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';

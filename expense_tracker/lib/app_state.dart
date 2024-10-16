@@ -5,7 +5,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
-
 import 'firebase_options.dart';
 
 class ApplicationState extends ChangeNotifier {
@@ -68,11 +67,27 @@ class ApplicationState extends ChangeNotifier {
   }
 
   Future<DocumentReference> addExpense(Expense expense) {
+    // if (!_loggedIn) {
+    //   throw Exception('Must be logged in');
+    // }
+
+    return FirebaseFirestore.instance.collection('expenses').add(<String, dynamic>{
+      'userId': FirebaseAuth.instance.currentUser!.uid,
+      'paymentMethod': expense.paymentMethod,
+      'category': expense.category,
+      'comment': expense.comment,
+      'title': expense.title,
+      'price': expense.price,
+      'timestamp': expense.timestamp,
+    });
+  }
+
+  Future<void> updateExpense(Expense expense) {
     if (!_loggedIn) {
       throw Exception('Must be logged in');
     }
 
-    return FirebaseFirestore.instance.collection('expenses').add(<String, dynamic>{
+    return FirebaseFirestore.instance.collection('expenses').doc(expense.id).update(<String, dynamic>{
       'userId': FirebaseAuth.instance.currentUser!.uid,
       'paymentMethod': expense.paymentMethod,
       'category': expense.category,

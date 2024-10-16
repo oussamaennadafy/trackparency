@@ -1,5 +1,4 @@
-import 'dart:math';
-import 'dart:developer' as developer;
+import 'dart:developer';
 
 import 'package:expense_tracker/app_state.dart';
 import 'package:expense_tracker/models/expense.dart';
@@ -10,22 +9,75 @@ import 'package:expense_tracker/shared/components/texts/shake_text.dart';
 import 'package:expense_tracker/theme/colors.dart';
 import 'package:expense_tracker/theme/icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
 
-class AddExpenseBottomSheet extends StatefulWidget {
-  const AddExpenseBottomSheet({super.key});
+class ExpenseBottomSheet extends StatefulWidget {
+  const ExpenseBottomSheet({
+    super.key,
+    this.expense,
+  });
+
+  final Expense? expense;
 
   @override
-  State<AddExpenseBottomSheet> createState() => _AddExpenseBottomSheetState();
+  State<ExpenseBottomSheet> createState() => _ExpenseBottomSheetState();
+
+  // Add this static method
+  static void add(
+    BuildContext context, {
+    double maxHeightRatio = 0.9,
+    bool useSafeArea = true,
+  }) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      useSafeArea: useSafeArea,
+      scrollControlDisabledMaxHeightRatio: maxHeightRatio,
+      builder: (context) => const ExpenseBottomSheet(),
+    );
+  }
+
+  static void edit(
+    BuildContext context,
+    Expense expense, {
+    double maxHeightRatio = 0.9,
+    bool useSafeArea = true,
+  }) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      useSafeArea: useSafeArea,
+      scrollControlDisabledMaxHeightRatio: maxHeightRatio,
+      builder: (context) => ExpenseBottomSheet(expense: expense),
+    );
+  }
 }
 
-class _AddExpenseBottomSheetState extends State<AddExpenseBottomSheet> {
-  String selectedPaymentMethod = "Cash";
-  String selectedCategory = "Food";
-  String price = "0";
+class _ExpenseBottomSheetState extends State<ExpenseBottomSheet> {
+  late String selectedPaymentMethod;
+  late String selectedCategory;
+  late String price;
+  late DateTime selectedDate;
   bool isLoading = false;
   bool isPriceInvalid = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.expense != null) {
+      selectedPaymentMethod = widget.expense!.paymentMethod;
+      selectedCategory = widget.expense!.category;
+      price = widget.expense!.price.toString();
+      titleInputController.text = widget.expense!.title;
+      commentInputController.text = widget.expense!.comment;
+      selectedDate = widget.expense!.timestamp;
+    } else {
+      selectedPaymentMethod = "Cash";
+      selectedCategory = "Food";
+      price = "0";
+      selectedDate = DateTime.now();
+    }
+  }
 
   void onPaymentMethodSelect(String newSelectedPaymentMethod) {
     setState(() {
@@ -78,28 +130,28 @@ class _AddExpenseBottomSheetState extends State<AddExpenseBottomSheet> {
           title: titleInputController.text,
           price: price,
           comment: commentInputController.text,
-          date: DateTime.now(),
+          date: selectedDate,
         );
       }
       return newValue;
     }
 
     if (character == "calendar") {
-      final date = DateTime.now();
       // open calendar
       showDatePicker(
         context: context,
         firstDate: DateTime(
-          date.year,
-          date.month - 1,
-          date.day,
+          selectedDate.year,
+          selectedDate.month - 1,
+          selectedDate.day,
         ),
         lastDate: DateTime(
-          date.year,
-          date.month + 1,
-          date.day,
+          selectedDate.year,
+          selectedDate.month + 1,
+          selectedDate.day,
         ),
-        initialDate: DateTime.now(),
+        initialDate: selectedDate,
+        // currentDate: selectedDate,
         builder: (BuildContext context, Widget? child) {
           return Theme(
             data: Theme.of(context).copyWith(
@@ -118,7 +170,11 @@ class _AddExpenseBottomSheetState extends State<AddExpenseBottomSheet> {
             child: child!,
           );
         },
-      );
+      ).then((pickedDate) {
+        if (pickedDate != null && pickedDate != selectedDate) {
+          selectedDate = pickedDate;
+        }
+      });
       return price;
     }
 
@@ -150,8 +206,9 @@ class _AddExpenseBottomSheetState extends State<AddExpenseBottomSheet> {
     required String title,
     required String price,
     required String comment,
-    DateTime? date,
+    required DateTime date,
   }) async {
+    // if (widget.expense != null)
     // start loading
     setState(() {
       isLoading = true;
@@ -161,31 +218,38 @@ class _AddExpenseBottomSheetState extends State<AddExpenseBottomSheet> {
       final applicationState = Provider.of<ApplicationState>(context, listen: false);
 
       final newExpanse = Expense(
+        id: widget.expense?.id,
         paymentMethod: paymentMethod,
         category: category,
         title: title != "" ? title : "Expense",
         price: int.parse(price), // Convert price to int
         comment: comment,
-        timestamp: date ?? DateTime.now(), // Use current date if date is null
+        timestamp: date,
       );
 
-      // Call and await addExpense
-      await applicationState.addExpense(newExpanse);
+      if (widget.expense != null) {
+        // Call and await updateExpense
+        await applicationState.updateExpense(newExpanse);
+      } else {
+        // Call and await addExpense
+        await applicationState.addExpense(newExpanse);
+      }
 
       // If successful, show a success message
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Expense added successfully')),
+          SnackBar(
+            content: widget.expense != null ? const Text('Expense updated successfully') : const Text('Expense added successfully'),
+          ),
         );
       }
     } catch (e) {
       // If there's an error, show an error message
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error adding expense: $e')),
+          SnackBar(content: widget.expense != null ? Text('Error updating expense $e') : Text('Expense adding expense $e')),
         );
       }
-      print('Error adding expense: $e');
     } finally {
       // stop loading
       setState(() {

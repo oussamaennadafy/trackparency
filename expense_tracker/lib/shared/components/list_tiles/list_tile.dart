@@ -7,20 +7,22 @@ class AppListTile extends StatelessWidget {
     super.key,
     required this.icon,
     required this.iconBackgroundColor,
-    this.subTitle,
     required this.title,
-    this.trailingSubTitle,
     required this.trailingTitle,
+    this.subTitle,
+    this.trailingSubTitle,
     this.onTap,
+    this.titleStyle,
   });
 
-  final String icon;
+  final dynamic icon;
   final Color iconBackgroundColor;
   final String title;
   final String? subTitle;
   final String trailingTitle;
   final String? trailingSubTitle;
   final GestureTapCallback? onTap;
+  final TextStyle? titleStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +44,7 @@ class AppListTile extends StatelessWidget {
                   Radius.circular(9999),
                 ),
               ),
-              child: SvgPicture.asset(icon),
+              child: icon is String ? SvgPicture.asset(icon) : Icon(icon),
             ),
             const SizedBox(width: 16),
             // Title and subtitle
@@ -57,7 +59,7 @@ class AppListTile extends StatelessWidget {
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: AppColors.primary,
-                    ),
+                    ).merge(titleStyle),
                   ),
                   if (subTitle != null)
                     Text(
