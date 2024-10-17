@@ -2,7 +2,6 @@ import 'package:expense_tracker/features/analytics/widgets/index/cards/index.dar
 import 'package:expense_tracker/features/analytics/widgets/index/categorie_tiles/index.dart';
 import 'package:expense_tracker/features/analytics/widgets/index/chart/index.dart';
 import 'package:expense_tracker/features/analytics/widgets/index/filter/index.dart';
-import 'package:expense_tracker/shared/components/headers/header/index.dart';
 import 'package:expense_tracker/shared/components/drop_downs/classes/drop_down_item.dart';
 import 'package:expense_tracker/shared/components/switchers/tab_switcher/classes/tab_button.dart';
 import 'package:flutter/material.dart';
