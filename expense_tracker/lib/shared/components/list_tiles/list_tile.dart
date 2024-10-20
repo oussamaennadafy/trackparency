@@ -79,21 +79,21 @@ class AppListTile extends StatelessWidget {
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Text(
-                      "DH",
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: AppColors.gray,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(width: 2),
                     Text(
                       trailingTitle,
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: AppColors.primary,
+                      ),
+                    ),
+                    const SizedBox(width: 2),
+                    const Text(
+                      "DH",
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppColors.gray,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ],
