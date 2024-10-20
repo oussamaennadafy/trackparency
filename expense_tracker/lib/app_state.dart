@@ -67,9 +67,9 @@ class ApplicationState extends ChangeNotifier {
   }
 
   Future<DocumentReference> addExpense(Expense expense) {
-    // if (!_loggedIn) {
-    //   throw Exception('Must be logged in');
-    // }
+    if (!_loggedIn) {
+      throw Exception('Must be logged in');
+    }
 
     return FirebaseFirestore.instance.collection('expenses').add(<String, dynamic>{
       'userId': FirebaseAuth.instance.currentUser!.uid,
