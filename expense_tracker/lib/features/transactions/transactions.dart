@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:expense_tracker/app_state.dart';
+import 'package:expense_tracker/models/expense.dart';
 import 'package:expense_tracker/shared/bottomSheets/add_expense_bottomSheet/index.dart';
 import 'package:expense_tracker/shared/components/list_tiles/list_tile.dart';
 import 'package:expense_tracker/theme/colors.dart';
@@ -28,13 +29,11 @@ class _TransactionsState extends State<Transactions> {
     super.dispose();
   }
 
-  Future<void> handleDelete(String? expenseID) async {
+  Future<void> handleDelete(Expense expense) async {
     // Get the ApplicationState instance
     final applicationState = Provider.of<ApplicationState>(context, listen: false);
     // Call and await addExpense
-    if (expenseID != null) {
-      await applicationState.deleteExpense(expenseID);
-    }
+    await applicationState.deleteExpense(expense);
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -74,7 +73,7 @@ class _TransactionsState extends State<Transactions> {
                     icon: Icons.delete,
                     label: "delete",
                     onPressed: (context) {
-                      handleDelete(appState.expenses[index].id);
+                      handleDelete(appState.expenses[index]);
                     },
                     padding: const EdgeInsets.all(4.0),
                   ),

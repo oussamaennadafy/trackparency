@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:expense_tracker/app_state.dart';
 import 'package:expense_tracker/models/expense.dart';
 import 'package:expense_tracker/shared/bottomSheets/add_expense_bottomSheet/keyboard/index.dart';
@@ -229,7 +227,10 @@ class _ExpenseBottomSheetState extends State<ExpenseBottomSheet> {
 
       if (widget.expense != null) {
         // Call and await updateExpense
-        await applicationState.updateExpense(newExpanse);
+        await applicationState.updateExpense(
+          widget.expense as Expense,
+          newExpanse,
+        );
       } else {
         // Call and await addExpense
         await applicationState.addExpense(newExpanse);

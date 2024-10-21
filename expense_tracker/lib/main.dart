@@ -1,3 +1,4 @@
+import 'package:expense_tracker/features/authentication/screens/balance_input_screen.dart';
 import 'package:expense_tracker/firebase_options.dart';
 import 'package:expense_tracker/shared/components/tabs/navigation_menu.dart';
 import 'package:expense_tracker/theme/colors.dart';
@@ -5,11 +6,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-// firebase auth
-import 'package:firebase_ui_auth/firebase_ui_auth.dart'; // new
-import 'package:go_router/go_router.dart'; // new
-import 'package:provider/provider.dart'; // new
-import 'app_state.dart'; // new
+import 'package:firebase_ui_auth/firebase_ui_auth.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'app_state.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,7 +25,6 @@ void main() async {
   ));
 }
 
-// Add GoRouter configuration outside the App class
 final _router = GoRouter(
   routes: [
     GoRoute(
@@ -33,7 +32,6 @@ final _router = GoRouter(
       builder: (context, state) => Consumer<ApplicationState>(
         builder: (context, appState, _) {
           if (!appState.loggedIn) {
-            // Redirect to sign-in page if not logged in
             return SignInScreen(
               actions: [
                 ForgotPasswordAction(((context, email) {
@@ -56,24 +54,29 @@ final _router = GoRouter(
                   }
                   if (state is UserCreated) {
                     user.updateDisplayName(user.email!.split('@')[0]);
+                    context.go('/balance-input');
+                  } else {
+                    if (!user.emailVerified) {
+                      user.sendEmailVerification();
+                      const snackBar = SnackBar(content: Text('Please check your email to verify your email address'));
+                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    }
+                    context.go('/');
                   }
-                  if (!user.emailVerified) {
-                    user.sendEmailVerification();
-                    const snackBar = SnackBar(content: Text('Please check your email to verify your email address'));
-                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                  }
-                  context.go('/');
                 })),
               ],
             );
           }
-          // If logged in, show the NavigationMenu
           return const SafeArea(
             child: NavigationMenu(),
           );
         },
       ),
       routes: [
+        GoRoute(
+          path: 'balance-input',
+          builder: (context, state) => const BalanceInputScreen(),
+        ),
         GoRoute(
           path: 'sign-in/forgot-password',
           builder: (context, state) {
@@ -101,7 +104,6 @@ final _router = GoRouter(
     ),
   ],
 );
-// end of GoRouter configuration
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -121,8 +123,8 @@ class _MyAppState extends State<MyApp> {
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
         statusBarColor: AppColors.surface,
-        statusBarIconBrightness: Brightness.dark, // Dark icons on a light background
-        statusBarBrightness: Brightness.light, // For iOS, this makes the status bar icons dark
+        statusBarIconBrightness: Brightness.dark,
+        statusBarBrightness: Brightness.light,
       ),
     );
   }
@@ -131,7 +133,6 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp.router(
       title: 'Expenses App',
-      // theme: appTheme(context),
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: AppColors.primary,
@@ -148,9 +149,6 @@ class _MyAppState extends State<MyApp> {
           Theme.of(context).textTheme,
         ),
       ),
-      // home: const SafeArea(
-      //   child: MyHomePage(),
-      // ),
       routerConfig: _router,
     );
   }

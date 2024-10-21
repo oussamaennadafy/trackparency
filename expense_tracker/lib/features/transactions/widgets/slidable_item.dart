@@ -23,13 +23,11 @@ class SlidableItem extends StatefulWidget {
 }
 
 class _SlidableItemState extends State<SlidableItem> {
-  Future<void> handleDelete(String? expenseID) async {
+  Future<void> handleDelete(Expense expense) async {
     // Get the ApplicationState instance
     final applicationState = Provider.of<ApplicationState>(context, listen: false);
     // Call and await addExpense
-    if (expenseID != null) {
-      await applicationState.deleteExpense(expenseID);
-    }
+    await applicationState.deleteExpense(expense);
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -58,7 +56,7 @@ class _SlidableItemState extends State<SlidableItem> {
             icon: Icons.delete,
             label: "delete",
             onPressed: (context) {
-              handleDelete(widget.item.id);
+              handleDelete(widget.item);
             },
             padding: const EdgeInsets.all(4.0),
           ),
