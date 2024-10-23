@@ -18,4 +18,5 @@ class AppIcons {
   static const String pizza = "assets/icons/pizza.svg";
   static const String tShirt = "assets/icons/tshirt.svg";
   static const String creditCard = "assets/icons/credit-card.svg";
+  static const String handUnderCash = "assets/icons/hand-under-cash.svg";
 }

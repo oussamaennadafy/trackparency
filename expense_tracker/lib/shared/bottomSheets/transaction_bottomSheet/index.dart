@@ -1,6 +1,6 @@
 import 'package:expense_tracker/app_state.dart';
-import 'package:expense_tracker/models/expense.dart';
-import 'package:expense_tracker/shared/bottomSheets/add_expense_bottomSheet/keyboard/index.dart';
+import 'package:expense_tracker/models/transaction.dart';
+import 'package:expense_tracker/shared/bottomSheets/transaction_bottomSheet/keyboard/index.dart';
 import 'package:expense_tracker/shared/components/drop_downs/classes/drop_down_item.dart';
 import 'package:expense_tracker/shared/components/drop_downs/drop_down_menu.dart';
 import 'package:expense_tracker/shared/components/texts/shake_text.dart';
@@ -9,20 +9,22 @@ import 'package:expense_tracker/theme/icons.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class ExpenseBottomSheet extends StatefulWidget {
-  const ExpenseBottomSheet({
+class TransactionBottomSheet extends StatefulWidget {
+  const TransactionBottomSheet({
     super.key,
-    this.expense,
+    required this.type,
+    this.transaction,
   });
 
-  final Expense? expense;
+  final Transaction? transaction;
+  final String type;
 
   @override
-  State<ExpenseBottomSheet> createState() => _ExpenseBottomSheetState();
+  State<TransactionBottomSheet> createState() => TransactioneBottomSheetState();
 
-  // Add this static method
   static void add(
-    BuildContext context, {
+    BuildContext context,
+    String type, {
     double maxHeightRatio = 0.9,
     bool useSafeArea = true,
   }) {
@@ -31,13 +33,13 @@ class ExpenseBottomSheet extends StatefulWidget {
       backgroundColor: Colors.transparent,
       useSafeArea: useSafeArea,
       scrollControlDisabledMaxHeightRatio: maxHeightRatio,
-      builder: (context) => const ExpenseBottomSheet(),
+      builder: (context) => TransactionBottomSheet(type: type),
     );
   }
 
   static void edit(
     BuildContext context,
-    Expense expense, {
+    Transaction transaction, {
     double maxHeightRatio = 0.9,
     bool useSafeArea = true,
   }) {
@@ -46,32 +48,74 @@ class ExpenseBottomSheet extends StatefulWidget {
       backgroundColor: Colors.transparent,
       useSafeArea: useSafeArea,
       scrollControlDisabledMaxHeightRatio: maxHeightRatio,
-      builder: (context) => ExpenseBottomSheet(expense: expense),
+      builder: (context) => TransactionBottomSheet(
+        transaction: transaction,
+        type: transaction.type,
+      ),
     );
   }
 }
 
-class _ExpenseBottomSheetState extends State<ExpenseBottomSheet> {
+class TransactioneBottomSheetState extends State<TransactionBottomSheet> {
   late String selectedPaymentMethod;
   late String selectedCategory;
   late String price;
   late DateTime selectedDate;
+  late List<DropDownItem> categories = [];
   bool isLoading = false;
   bool isPriceInvalid = false;
+
+  final expenseCategories = const [
+    DropDownItem(
+      label: "Shopping",
+      backgroundColor: AppColors.green,
+      icon: AppIcons.tShirt,
+    ),
+    DropDownItem(
+      label: "Gifts",
+      backgroundColor: AppColors.violet,
+      icon: AppIcons.gift,
+    ),
+    DropDownItem(
+      label: "Food",
+      backgroundColor: AppColors.red,
+      icon: AppIcons.pizza,
+    ),
+  ];
+
+  final incomeCategories = const [
+    DropDownItem(
+      label: "Salary",
+      backgroundColor: AppColors.green,
+      icon: AppIcons.pizza,
+    ),
+    DropDownItem(
+      label: "side hustling",
+      backgroundColor: AppColors.green,
+      icon: AppIcons.dollar,
+    ),
+  ];
 
   @override
   void initState() {
     super.initState();
-    if (widget.expense != null) {
-      selectedPaymentMethod = widget.expense!.paymentMethod;
-      selectedCategory = widget.expense!.category;
-      price = widget.expense!.price.toString();
-      titleInputController.text = widget.expense!.title;
-      commentInputController.text = widget.expense!.comment;
-      selectedDate = widget.expense!.timestamp;
+    // define vriables based on transaction type
+    if (widget.type == TransactionType.expense) {
+      categories = expenseCategories;
+    } else if (widget.type == TransactionType.income) {
+      categories = incomeCategories;
+    }
+    // define vriables based on action type : edit or creation
+    if (widget.transaction != null) {
+      selectedPaymentMethod = widget.transaction!.paymentMethod;
+      selectedCategory = widget.transaction!.category;
+      price = widget.transaction!.price.toString();
+      titleInputController.text = widget.transaction!.title;
+      commentInputController.text = widget.transaction!.comment;
+      selectedDate = widget.transaction!.timestamp;
     } else {
-      selectedPaymentMethod = "Cash";
-      selectedCategory = "Food";
+      selectedPaymentMethod = widget.type == TransactionType.expense ? "Cash" : "Card";
+      selectedCategory = widget.type == TransactionType.expense ? "Food" : "Salary";
       price = "0";
       selectedDate = DateTime.now();
     }
@@ -215,32 +259,34 @@ class _ExpenseBottomSheetState extends State<ExpenseBottomSheet> {
       // Get the ApplicationState instance
       final applicationState = Provider.of<ApplicationState>(context, listen: false);
 
-      final newExpanse = Expense(
-        id: widget.expense?.id,
+      final newTransaction = Transaction(
+        id: widget.transaction?.id,
         paymentMethod: paymentMethod,
         category: category,
-        title: title != "" ? title : "Expense",
+        title: title != "" ? title : (widget.type == TransactionType.expense ? "Expense" : "Income"),
         price: int.parse(price), // Convert price to int
         comment: comment,
         timestamp: date,
+        type: widget.type,
       );
 
-      if (widget.expense != null) {
-        // Call and await updateExpense
-        await applicationState.updateExpense(
-          widget.expense as Expense,
-          newExpanse,
+      if (widget.transaction != null) {
+        // Call and await updateTransaction
+        await applicationState.updateTransaction(
+          widget.transaction as Transaction,
+          newTransaction,
         );
       } else {
-        // Call and await addExpense
-        await applicationState.addExpense(newExpanse);
+        // print(newTransaction.type);
+        // Call and await addTransaction
+        await applicationState.addTransaction(newTransaction);
       }
 
       // If successful, show a success message
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: widget.expense != null ? const Text('Expense updated successfully') : const Text('Expense added successfully'),
+            content: widget.transaction != null ? const Text('Expense updated successfully') : const Text('Expense added successfully'),
           ),
         );
       }
@@ -248,7 +294,7 @@ class _ExpenseBottomSheetState extends State<ExpenseBottomSheet> {
       // If there's an error, show an error message
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: widget.expense != null ? Text('Error updating expense $e') : Text('Expense adding expense $e')),
+          SnackBar(content: widget.transaction != null ? Text('Error updating expense $e') : Text('Expense adding expense $e')),
         );
       }
     } finally {
@@ -328,26 +374,10 @@ class _ExpenseBottomSheetState extends State<ExpenseBottomSheet> {
                       selectedOption: selectedPaymentMethod,
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 4),
                   Expanded(
                     child: DropDownMenu(
-                      options: const [
-                        DropDownItem(
-                          label: "Shopping",
-                          backgroundColor: AppColors.green,
-                          icon: AppIcons.tShirt,
-                        ),
-                        DropDownItem(
-                          label: "Gifts",
-                          backgroundColor: AppColors.violet,
-                          icon: AppIcons.gift,
-                        ),
-                        DropDownItem(
-                          label: "Food",
-                          backgroundColor: AppColors.red,
-                          icon: AppIcons.pizza,
-                        ),
-                      ],
+                      options: categories,
                       onSelect: (selectedOption) {
                         onCategorySelect(selectedOption);
                       },
@@ -363,13 +393,14 @@ class _ExpenseBottomSheetState extends State<ExpenseBottomSheet> {
               child: TextField(
                 controller: titleInputController,
                 textAlign: TextAlign.center,
-                decoration: const InputDecoration(
-                    border: InputBorder.none,
-                    hintText: 'Expense',
-                    hintStyle: TextStyle(
-                      fontSize: 14,
-                      color: AppColors.primary,
-                    )),
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  hintText: widget.type == TransactionType.expense ? 'Expense' : "Income",
+                  hintStyle: const TextStyle(
+                    fontSize: 14,
+                    color: AppColors.primary,
+                  ),
+                ),
               ),
             ),
           ),

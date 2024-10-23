@@ -29,17 +29,17 @@ class _TransactionsState extends State<Transactions> {
     return Consumer<ApplicationState>(
       builder: (context, appState, _) => Scaffold(
         body: ListView.builder(
-          itemCount: appState.expenses.length,
+          itemCount: appState.transactions.length,
           prototypeItem: const AppListTile(
             title: "Expense",
             icon: AppIcons.analytics,
-            iconBackgroundColor: AppColors.blue,
+            iconBackgroundColor: AppColors.green,
             trailingTitle: "30",
           ),
           itemBuilder: (context, index) {
             return SlidableItem(
               context: context,
-              item: appState.expenses[index],
+              item: appState.transactions[index],
             );
           },
         ),

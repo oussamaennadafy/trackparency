@@ -45,14 +45,12 @@ class DropDownMenu extends StatelessWidget {
                   children: [
                     if (selectedObject.icon != null) ...[
                       SvgPicture.asset(selectedObject.icon!),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: 4),
                     ],
-                    Flexible(
-                      child: Text(
-                        textAlign: TextAlign.center,
-                        capitalizeFirstLetter(item.label),
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                    Text(
+                      textAlign: TextAlign.center,
+                      capitalizeFirstLetter(item.label),
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),

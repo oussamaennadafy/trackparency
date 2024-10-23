@@ -1,11 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:expense_tracker/models/expense.dart';
+import 'package:expense_tracker/models/transaction.dart' as transaction_model;
 import 'package:firebase_auth/firebase_auth.dart' hide EmailAuthProvider, PhoneAuthProvider;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'firebase_options.dart';
+
+class TransactionActions {
+  static const add = "ADD";
+  static const update = "UPDATE";
+  static const delete = "DELETE";
+}
 
 class ApplicationState extends ChangeNotifier {
   ApplicationState() {
@@ -21,9 +27,9 @@ class ApplicationState extends ChangeNotifier {
   bool _isBalanceLoading = true;
   bool get isBalanceLoading => _isBalanceLoading;
 
-  StreamSubscription<QuerySnapshot>? _expenseSubscription;
-  List<Expense> _expenses = [];
-  List<Expense> get expenses => _expenses;
+  StreamSubscription<QuerySnapshot>? _transactionSubscription;
+  List<transaction_model.Transaction> _transactions = [];
+  List<transaction_model.Transaction> get transactions => _transactions;
 
   Future<void> init() async {
     await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -32,18 +38,19 @@ class ApplicationState extends ChangeNotifier {
       if (user != null) {
         _loggedIn = true;
         _fetchUserBalance();
-        _expenseSubscription = FirebaseFirestore.instance.collection('expenses').where('userId', isEqualTo: user.uid).orderBy("timestamp", descending: true).snapshots().listen(
+        _transactionSubscription = FirebaseFirestore.instance.collection('transactions').where('userId', isEqualTo: user.uid).orderBy("timestamp", descending: true).snapshots().listen(
           (snapshot) {
-            _expenses = [];
+            _transactions = [];
             for (final document in snapshot.docs) {
-              _expenses.add(
-                Expense(
+              _transactions.add(
+                transaction_model.Transaction(
                   id: document.id,
                   paymentMethod: document.data()['paymentMethod'] as String,
                   category: document.data()['category'] as String,
                   title: document.data()['title'] as String,
                   price: (document.data()['price'] as num).toInt(),
                   comment: document.data()['comment'] as String,
+                  type: document.data()['type'] as String,
                   timestamp: (document.data()['timestamp'] as Timestamp).toDate(),
                 ),
               );
@@ -54,9 +61,9 @@ class ApplicationState extends ChangeNotifier {
       } else {
         _loggedIn = false;
         _balance = 0;
-        _expenses = [];
+        _transactions = [];
         _isBalanceLoading = false;
-        _expenseSubscription?.cancel();
+        _transactionSubscription?.cancel();
       }
       notifyListeners();
     });
@@ -91,18 +98,6 @@ class ApplicationState extends ChangeNotifier {
     }
   }
 
-  Future<void> updateBalance(int amount) async {
-    if (!_loggedIn) {
-      throw Exception('Must be logged in');
-    }
-
-    _balance += amount;
-    await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).update({
-      'balance': _balance
-    });
-    notifyListeners();
-  }
-
   Future<void> setBalance(int newBalance) async {
     if (!_loggedIn) {
       throw Exception('Must be logged in');
@@ -115,65 +110,116 @@ class ApplicationState extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<DocumentReference<Map<String, dynamic>>> addExpense(Expense expense) async {
+  Future<void> updateBalance({
+    String actionType = TransactionActions.add,
+    String transactionType = transaction_model.TransactionType.expense,
+    int amount = 0,
+  }) async {
     if (!_loggedIn) {
       throw Exception('Must be logged in');
     }
 
-    await updateBalance(-expense.price);
+    switch (actionType) {
+      case TransactionActions.add:
+        {
+          // handle balance logic
+          if (transactionType == transaction_model.TransactionType.expense) {
+            _balance -= amount;
+          }
 
-    return FirebaseFirestore.instance.collection('expenses').add(<String, dynamic>{
+          if (transactionType == transaction_model.TransactionType.income) {
+            _balance += amount;
+          }
+        }
+        break;
+      case TransactionActions.delete:
+        {
+          // handle balance logic
+          if (transactionType == transaction_model.TransactionType.expense) {
+            _balance += amount;
+          }
+
+          if (transactionType == transaction_model.TransactionType.income) {
+            _balance -= amount;
+          }
+        }
+        break;
+      case TransactionActions.update:
+        {
+          // handle balance logic
+          if (transactionType == transaction_model.TransactionType.expense) {
+            _balance += amount;
+          }
+
+          if (transactionType == transaction_model.TransactionType.income) {
+            _balance -= amount;
+          }
+        }
+        break;
+    }
+
+    await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).update({
+      'balance': _balance
+    });
+    notifyListeners();
+  }
+
+  Future<DocumentReference<Map<String, dynamic>>> addTransaction(transaction_model.Transaction transaction) async {
+    if (!_loggedIn) {
+      throw Exception('Must be logged in');
+    }
+
+    await updateBalance(
+      actionType: TransactionActions.add,
+      transactionType: transaction.type,
+      amount: transaction.price,
+    );
+
+    return FirebaseFirestore.instance.collection('transactions').add(<String, dynamic>{
       'userId': FirebaseAuth.instance.currentUser!.uid,
-      'paymentMethod': expense.paymentMethod,
-      'category': expense.category,
-      'comment': expense.comment,
-      'title': expense.title,
-      'price': expense.price,
-      'timestamp': expense.timestamp,
+      'paymentMethod': transaction.paymentMethod,
+      'category': transaction.category,
+      'comment': transaction.comment,
+      'title': transaction.title,
+      'price': transaction.price,
+      'timestamp': transaction.timestamp,
+      'type': transaction.type,
     });
   }
 
-  Future<void> updateExpense(Expense oldExpense, Expense newExpense) async {
+  Future<void> updateTransaction(transaction_model.Transaction oldTransaction, transaction_model.Transaction newTransaction) async {
+    if (!_loggedIn) {
+      throw Exception('Must be logged in');
+    }
+    // Update balance: add back the old transaction amount and subtract the new one
+    await updateBalance(
+      actionType: TransactionActions.update,
+      transactionType: oldTransaction.type,
+      amount: oldTransaction.price - newTransaction.price,
+    );
+
+    await FirebaseFirestore.instance.collection('transactions').doc(oldTransaction.id).update(<String, dynamic>{
+      'paymentMethod': newTransaction.paymentMethod,
+      'category': newTransaction.category,
+      'comment': newTransaction.comment,
+      'title': newTransaction.title,
+      'price': newTransaction.price,
+      'timestamp': newTransaction.timestamp,
+    });
+  }
+
+  Future<void> deleteTransaction(transaction_model.Transaction transaction) async {
     if (!_loggedIn) {
       throw Exception('Must be logged in');
     }
 
-    // Update balance: add back the old expense amount and subtract the new one
-    await updateBalance(oldExpense.price - newExpense.price);
+    // Update balance: add back the deleted transaction amount
+    await updateBalance(
+      actionType: TransactionActions.delete,
+      transactionType: transaction.type,
+      amount: transaction.price,
+    );
 
-    await FirebaseFirestore.instance.collection('expenses').doc(oldExpense.id).update(<String, dynamic>{
-      'paymentMethod': newExpense.paymentMethod,
-      'category': newExpense.category,
-      'comment': newExpense.comment,
-      'title': newExpense.title,
-      'price': newExpense.price,
-      'timestamp': newExpense.timestamp,
-    });
-  }
-
-  Future<void> deleteExpense(Expense expense) async {
-    if (!_loggedIn) {
-      throw Exception('Must be logged in');
-    }
-
-    // Update balance: add back the deleted expense amount
-    await updateBalance(expense.price);
-
-    await FirebaseFirestore.instance.collection('expenses').doc(expense.id).delete();
-  }
-
-  Future<void> addIncome(int amount, String description) async {
-    if (!_loggedIn) {
-      throw Exception('Must be logged in');
-    }
-
-    await updateBalance(amount);
-
-    await FirebaseFirestore.instance.collection('income').add(<String, dynamic>{
-      'userId': FirebaseAuth.instance.currentUser!.uid,
-      'amount': amount,
-      'description': description,
-      'timestamp': DateTime.now(),
-    });
+    await FirebaseFirestore.instance.collection('transactions').doc(transaction.id).delete();
   }
 }

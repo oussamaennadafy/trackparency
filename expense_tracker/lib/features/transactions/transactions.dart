@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:expense_tracker/app_state.dart';
-import 'package:expense_tracker/models/expense.dart';
-import 'package:expense_tracker/shared/bottomSheets/add_expense_bottomSheet/index.dart';
+import 'package:expense_tracker/models/transaction.dart';
+import 'package:expense_tracker/shared/bottomSheets/transaction_bottomSheet/index.dart';
 import 'package:expense_tracker/shared/components/list_tiles/list_tile.dart';
 import 'package:expense_tracker/theme/colors.dart';
 import 'package:expense_tracker/theme/icons.dart';
@@ -29,11 +29,11 @@ class _TransactionsState extends State<Transactions> {
     super.dispose();
   }
 
-  Future<void> handleDelete(Expense expense) async {
+  Future<void> handleDelete(Transaction transaction) async {
     // Get the ApplicationState instance
     final applicationState = Provider.of<ApplicationState>(context, listen: false);
     // Call and await addExpense
-    await applicationState.deleteExpense(expense);
+    await applicationState.deleteTransaction(transaction);
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -47,7 +47,7 @@ class _TransactionsState extends State<Transactions> {
     return Consumer<ApplicationState>(
       builder: (context, appState, _) => Scaffold(
         body: ListView.builder(
-          itemCount: appState.expenses.length,
+          itemCount: appState.transactions.length,
           prototypeItem: const AppListTile(
             title: "Expense",
             icon: AppIcons.analytics,
@@ -64,7 +64,7 @@ class _TransactionsState extends State<Transactions> {
                     icon: Icons.edit,
                     label: "edit",
                     onPressed: (context) {
-                      ExpenseBottomSheet.edit(context, appState.expenses[index]);
+                      TransactionBottomSheet.edit(context, appState.transactions[index]);
                     },
                     padding: const EdgeInsets.all(4.0),
                   ),
@@ -73,18 +73,18 @@ class _TransactionsState extends State<Transactions> {
                     icon: Icons.delete,
                     label: "delete",
                     onPressed: (context) {
-                      handleDelete(appState.expenses[index]);
+                      handleDelete(appState.transactions[index]);
                     },
                     padding: const EdgeInsets.all(4.0),
                   ),
                 ],
               ),
               child: AppListTile(
-                title: appState.expenses[index].title.toString(),
-                icon: Icons.arrow_downward,
-                iconBackgroundColor: AppColors.red,
-                trailingTitle: appState.expenses[index].price.toString(),
-                trailingSubTitle: formateDate(appState.expenses[index].timestamp),
+                title: appState.transactions[index].title.toString(),
+                icon: appState.transactions[index].type == TransactionType.expense ? Icons.arrow_downward : Icons.arrow_upward,
+                iconBackgroundColor: appState.transactions[index].type == TransactionType.expense ? AppColors.red : AppColors.green,
+                trailingTitle: appState.transactions[index].price.toString(),
+                trailingSubTitle: formateDate(appState.transactions[index].timestamp),
                 titleStyle: const TextStyle(
                   fontWeight: FontWeight.w300,
                 ),

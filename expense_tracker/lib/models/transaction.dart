@@ -1,5 +1,10 @@
-class Expense {
-  const Expense({
+class TransactionType {
+  static const expense = "EXPENSE";
+  static const income = "INCOME";
+}
+
+class Transaction {
+  const Transaction({
     this.id,
     required this.paymentMethod,
     required this.category,
@@ -7,6 +12,7 @@ class Expense {
     required this.price,
     required this.comment,
     required this.timestamp,
+    required this.type,
   });
 
   final String? id;
@@ -16,4 +22,5 @@ class Expense {
   final int price;
   final String comment;
   final DateTime timestamp;
+  final String type;
 }
