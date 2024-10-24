@@ -1,7 +1,6 @@
-import 'package:expense_tracker/features/analytics/screens/index.dart';
-import 'package:expense_tracker/features/home/index.dart';
-import 'package:expense_tracker/features/profile/profile.dart';
-import 'package:expense_tracker/features/transactions/transactions.dart';
+import 'package:expense_tracker/features/tabs/home/screens/index.dart';
+import 'package:expense_tracker/features/tabs/profile/profile.dart';
+import 'package:expense_tracker/features/tabs/transactions/screens/transactions.dart';
 import 'package:expense_tracker/shared/components/headers/header/index.dart';
 import 'package:expense_tracker/theme/colors.dart';
 import 'package:expense_tracker/theme/icons.dart';
@@ -16,12 +15,11 @@ class NavigationMenu extends StatefulWidget {
 }
 
 class _NavigationMenuState extends State<NavigationMenu> {
-  int selectedIndex = 0;
+  int selectedIndex = 1;
 
   final screens = const [
-    Home(),
     Transactions(),
-    Analytics(),
+    Home(),
     Profile(),
   ];
 
@@ -40,7 +38,6 @@ class _NavigationMenuState extends State<NavigationMenu> {
         child: Header(),
       ),
       bottomNavigationBar: NavigationBar(
-        animationDuration: const Duration(milliseconds: 300),
         selectedIndex: selectedIndex,
         backgroundColor: AppColors.surface,
         onDestinationSelected: (value) {
@@ -54,7 +51,7 @@ class _NavigationMenuState extends State<NavigationMenu> {
             onPressed: () => handlePress(0),
             icon: Center(
               child: SvgPicture.asset(
-                selectedIndex == 0 ? AppIcons.homeFill : AppIcons.home,
+                selectedIndex == 0 ? AppIcons.menuListFill : AppIcons.menuList,
               ),
             ),
           ),
@@ -63,7 +60,7 @@ class _NavigationMenuState extends State<NavigationMenu> {
             onPressed: () => handlePress(1),
             icon: Center(
               child: SvgPicture.asset(
-                selectedIndex == 1 ? AppIcons.gridFill : AppIcons.grid,
+                selectedIndex == 1 ? AppIcons.homeFill : AppIcons.home,
               ),
             ),
           ),
@@ -72,26 +69,13 @@ class _NavigationMenuState extends State<NavigationMenu> {
             onPressed: () => handlePress(2),
             icon: Center(
               child: SvgPicture.asset(
-                selectedIndex == 2 ? AppIcons.analyticsFill : AppIcons.analytics,
-              ),
-            ),
-          ),
-          IconButton(
-            highlightColor: AppColors.surface,
-            onPressed: () => handlePress(3),
-            icon: Center(
-              child: SvgPicture.asset(
-                selectedIndex == 3 ? AppIcons.userFill : AppIcons.user,
+                selectedIndex == 2 ? AppIcons.userFill : AppIcons.user,
               ),
             ),
           ),
         ],
       ),
       body: screens[selectedIndex],
-      // body: IndexedStack(
-      //   index: selectedIndex,
-      //   children: screens,
-      // ),
     );
   }
 }

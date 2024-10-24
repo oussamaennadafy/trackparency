@@ -1,6 +1,6 @@
 import 'package:expense_tracker/features/authentication/screens/balance_input_screen.dart';
 import 'package:expense_tracker/firebase_options.dart';
-import 'package:expense_tracker/shared/components/tabs/navigation_menu.dart';
+import 'package:expense_tracker/features/tabs/navigation_menu.dart';
 import 'package:expense_tracker/theme/colors.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';

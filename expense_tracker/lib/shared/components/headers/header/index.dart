@@ -1,5 +1,5 @@
 import 'package:expense_tracker/app_state.dart';
-import 'package:expense_tracker/models/transaction.dart';
+import 'package:expense_tracker/features/tabs/transactions/models/transaction.dart';
 import 'package:expense_tracker/shared/bottomSheets/transaction_bottomSheet/index.dart';
 import 'package:expense_tracker/theme/colors.dart';
 import 'package:expense_tracker/utils/formaters/formate_price.dart';
@@ -37,7 +37,7 @@ class Header extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      formatBalance(appState.balance),
+                      "${formatePrice(appState.balance)} DH",
                       style: const TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,

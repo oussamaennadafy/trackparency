@@ -1,19 +1,19 @@
-import 'package:expense_tracker/features/analytics/widgets/index/cards/index.dart';
-import 'package:expense_tracker/features/analytics/widgets/index/categorie_tiles/index.dart';
-import 'package:expense_tracker/features/analytics/widgets/index/chart/index.dart';
-import 'package:expense_tracker/features/analytics/widgets/index/filter/index.dart';
+import 'package:expense_tracker/features/tabs/home/widgets/index/cards/index.dart';
+import 'package:expense_tracker/features/tabs/home/widgets/index/categorie_tiles/index.dart';
+import 'package:expense_tracker/features/tabs/home/widgets/index/chart/index.dart';
+import 'package:expense_tracker/features/tabs/home/widgets/index/filter/index.dart';
 import 'package:expense_tracker/shared/components/drop_downs/classes/drop_down_item.dart';
 import 'package:expense_tracker/shared/components/switchers/tab_switcher/classes/tab_button.dart';
 import 'package:flutter/material.dart';
 
-class Analytics extends StatefulWidget {
-  const Analytics({super.key});
+class Home extends StatefulWidget {
+  const Home({super.key});
 
   @override
-  State<Analytics> createState() => _AnalyticsState();
+  State<Home> createState() => _HomeState();
 }
 
-class _AnalyticsState extends State<Analytics> {
+class _HomeState extends State<Home> {
   String selectedTab = "EXPENSES";
   String selectedMonth = "SEPTEMBER";
 

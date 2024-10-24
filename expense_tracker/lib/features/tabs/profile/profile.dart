@@ -1,10 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-// firebase auth
-// new
-import 'package:go_router/go_router.dart'; // new
-import 'package:provider/provider.dart'; // new
-import 'package:expense_tracker/app_state.dart'; // new
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:expense_tracker/app_state.dart';
 
 class Profile extends StatelessWidget {
   const Profile({super.key});

@@ -1,11 +1,12 @@
 import 'package:expense_tracker/app_state.dart';
-import 'package:expense_tracker/models/transaction.dart';
+import 'package:expense_tracker/features/tabs/transactions/models/transaction.dart';
+import 'package:expense_tracker/shared/bottomSheets/transaction_bottomSheet/data/drop_down_items.dart';
 import 'package:expense_tracker/shared/bottomSheets/transaction_bottomSheet/keyboard/index.dart';
 import 'package:expense_tracker/shared/components/drop_downs/classes/drop_down_item.dart';
 import 'package:expense_tracker/shared/components/drop_downs/drop_down_menu.dart';
 import 'package:expense_tracker/shared/components/texts/shake_text.dart';
 import 'package:expense_tracker/theme/colors.dart';
-import 'package:expense_tracker/theme/icons.dart';
+import 'package:expense_tracker/utils/formaters/formate_price.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -64,37 +65,6 @@ class TransactioneBottomSheetState extends State<TransactionBottomSheet> {
   late List<DropDownItem> categories = [];
   bool isLoading = false;
   bool isPriceInvalid = false;
-
-  final expenseCategories = const [
-    DropDownItem(
-      label: "Shopping",
-      backgroundColor: AppColors.green,
-      icon: AppIcons.tShirt,
-    ),
-    DropDownItem(
-      label: "Gifts",
-      backgroundColor: AppColors.violet,
-      icon: AppIcons.gift,
-    ),
-    DropDownItem(
-      label: "Food",
-      backgroundColor: AppColors.red,
-      icon: AppIcons.pizza,
-    ),
-  ];
-
-  final incomeCategories = const [
-    DropDownItem(
-      label: "Salary",
-      backgroundColor: AppColors.green,
-      icon: AppIcons.pizza,
-    ),
-    DropDownItem(
-      label: "side hustling",
-      backgroundColor: AppColors.green,
-      icon: AppIcons.dollar,
-    ),
-  ];
 
   @override
   void initState() {
@@ -250,7 +220,6 @@ class TransactioneBottomSheetState extends State<TransactionBottomSheet> {
     required String comment,
     required DateTime date,
   }) async {
-    // if (widget.expense != null)
     // start loading
     setState(() {
       isLoading = true;
@@ -277,7 +246,6 @@ class TransactioneBottomSheetState extends State<TransactionBottomSheet> {
           newTransaction,
         );
       } else {
-        // print(newTransaction.type);
         // Call and await addTransaction
         await applicationState.addTransaction(newTransaction);
       }
@@ -356,25 +324,14 @@ class TransactioneBottomSheetState extends State<TransactionBottomSheet> {
                 children: [
                   Expanded(
                     child: DropDownMenu(
-                      options: const [
-                        DropDownItem(
-                          label: "Cash",
-                          backgroundColor: AppColors.blue,
-                          icon: AppIcons.cash,
-                        ),
-                        DropDownItem(
-                          label: "Card",
-                          backgroundColor: AppColors.lavenderGray,
-                          icon: AppIcons.creditCard,
-                        ),
-                      ],
+                      options: paymentMethods,
                       onSelect: (selectedOption) {
                         onPaymentMethodSelect(selectedOption);
                       },
                       selectedOption: selectedPaymentMethod,
                     ),
                   ),
-                  const SizedBox(width: 4),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: DropDownMenu(
                       options: categories,
@@ -445,7 +402,8 @@ class TransactioneBottomSheetState extends State<TransactionBottomSheet> {
                         ),
                       )
                     : Text(
-                        price,
+                        // TODO: add formater of addition expression
+                        price.contains("+") ? price : formatePrice(int.parse(price)),
                         style: TextStyle(
                           fontSize: 54,
                           color: isPriceInvalid ? Colors.red : AppColors.primary,
