@@ -24,7 +24,7 @@ class _BalanceInputScreenState extends State<BalanceInputScreen> {
   Future<void> _handleSubmit() async {
     if (_formKey.currentState!.validate()) {
       final appState = Provider.of<ApplicationState>(context, listen: false);
-      final balance = int.parse(_balanceController.text.replaceAll(" ", ""));
+      final balance = int.parse(_balanceController.text);
 
       // Set initial balance
       await appState.setBalance(balance);
@@ -54,59 +54,18 @@ class _BalanceInputScreenState extends State<BalanceInputScreen> {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  child: const Text(
-                    "enter how much money your saving right now, to start tracking your financial",
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: AppColors.gray,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 32),
                 TextFormField(
                   controller: _balanceController,
                   keyboardType: TextInputType.number,
-                  textAlign: TextAlign.center,
                   inputFormatters: [
-                    TextInputFormatter.withFunction((oldValue, newValue) {
-                      // Remove any existing spaces
-                      final text = newValue.text.replaceAll(' ', '');
-                      // Add a space every 3 digits from the right
-                      final buffer = StringBuffer();
-                      for (int i = 0; i < text.length; i++) {
-                        if (i > 0 && (text.length - i) % 3 == 0) {
-                          buffer.write(' ');
-                        }
-                        buffer.write(text[i]);
-                      }
-                      return TextEditingValue(
-                        text: buffer.toString(),
-                        selection: TextSelection.collapsed(offset: buffer.length),
-                      );
-                    }),
+                    FilteringTextInputFormatter.digitsOnly,
                   ],
                   decoration: const InputDecoration(
-                    label: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Center(
-                          child: Text(
-                            "Balance",
-                            style: TextStyle(
-                              color: AppColors.primary,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    suffixText: "DH",
+                    labelText: 'Balance',
                     hintText: 'Enter your current balance',
+                    prefixText: '\$ ',
                     border: OutlineInputBorder(),
-                    floatingLabelAlignment: FloatingLabelAlignment.center,
-                    alignLabelWithHint: true,
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {

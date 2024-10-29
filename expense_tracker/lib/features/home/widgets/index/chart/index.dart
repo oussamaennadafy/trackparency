@@ -1,4 +1,4 @@
-import 'package:expense_tracker/features/tabs/home/widgets/index/chart/chart_bar/index.dart';
+import 'package:expense_tracker/features/home/widgets/index/chart/chart_bar/index.dart';
 import 'package:expense_tracker/theme/colors.dart';
 import 'package:flutter/material.dart';
 

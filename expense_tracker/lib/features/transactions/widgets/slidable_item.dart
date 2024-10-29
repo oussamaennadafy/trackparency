@@ -1,4 +1,4 @@
-import 'package:expense_tracker/features/tabs/transactions/models/transaction.dart';
+import 'package:expense_tracker/features/transactions/models/transaction.dart';
 import 'package:expense_tracker/shared/components/list_tiles/list_tile.dart';
 import 'package:expense_tracker/theme/colors.dart';
 import 'package:expense_tracker/utils/formaters/formate_date.dart';

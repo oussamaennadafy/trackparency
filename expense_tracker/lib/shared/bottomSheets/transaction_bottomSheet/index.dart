@@ -1,5 +1,5 @@
 import 'package:expense_tracker/app_state.dart';
-import 'package:expense_tracker/features/tabs/transactions/models/transaction.dart';
+import 'package:expense_tracker/features/transactions/models/transaction.dart';
 import 'package:expense_tracker/shared/bottomSheets/transaction_bottomSheet/data/drop_down_items.dart';
 import 'package:expense_tracker/shared/bottomSheets/transaction_bottomSheet/keyboard/index.dart';
 import 'package:expense_tracker/shared/components/drop_downs/classes/drop_down_item.dart';
@@ -71,7 +71,16 @@ class TransactioneBottomSheetState extends State<TransactionBottomSheet> {
     super.initState();
     // define vriables based on transaction type
     if (widget.type == TransactionType.expense) {
-      categories = expenseCategories;
+      // categories = expenseCategories;
+      final applicationState = Provider.of<ApplicationState>(context, listen: false);
+      categories = applicationState.categories
+          .map(
+            (el) => DropDownItem(
+              label: el.name,
+              icon: el.icon,
+            ),
+          )
+          .toList();
     } else if (widget.type == TransactionType.income) {
       categories = incomeCategories;
     }

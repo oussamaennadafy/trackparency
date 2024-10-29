@@ -1,4 +1,5 @@
 import 'package:expense_tracker/features/authentication/screens/balance_input_screen.dart';
+import 'package:expense_tracker/features/categories/screens/categories_screen.dart';
 import 'package:expense_tracker/firebase_options.dart';
 import 'package:expense_tracker/features/tabs/navigation_menu.dart';
 import 'package:expense_tracker/theme/colors.dart';
@@ -14,7 +15,6 @@ import 'app_state.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Firebase
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -25,57 +25,87 @@ void main() async {
   ));
 }
 
+Widget _handleNavigation(BuildContext context, ApplicationState appState) {
+  if (appState.isCheckingOnboarding) {
+    return const Scaffold(
+      body: Center(child: CircularProgressIndicator()),
+    );
+  }
+
+  if (!appState.loggedIn) {
+    return SignInScreen(
+      actions: [
+        ForgotPasswordAction(((context, email) {
+          final uri = Uri(
+            path: '/sign-in/forgot-password',
+            queryParameters: <String, String?>{
+              'email': email,
+            },
+          );
+          context.push(uri.toString());
+        })),
+        AuthStateChangeAction(((context, state) {
+          final user = switch (state) {
+            SignedIn state => state.user,
+            UserCreated state => state.credential.user,
+            _ => null
+          };
+          if (user == null) {
+            return;
+          }
+          if (state is UserCreated) {
+            user.updateDisplayName(user.email!.split('@')[0]);
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (context.mounted) context.go('/onboarding/balance');
+            });
+          } else {
+            if (!user.emailVerified) {
+              user.sendEmailVerification();
+              const snackBar = SnackBar(content: Text('Please check your email to verify your email address'));
+              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+            }
+          }
+        })),
+      ],
+    );
+  }
+
+  switch (appState.onboardingStatus) {
+    case OnboardingStatus.notStarted:
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (context.mounted) context.go('/onboarding/balance');
+      });
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    case OnboardingStatus.balanceSet:
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (context.mounted) context.go('/onboarding/categories');
+      });
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    case OnboardingStatus.categoriesSet:
+    case OnboardingStatus.completed:
+      return const SafeArea(child: NavigationMenu());
+  }
+}
+
 final _router = GoRouter(
   routes: [
     GoRoute(
       path: '/',
       builder: (context, state) => Consumer<ApplicationState>(
-        builder: (context, appState, _) {
-          if (!appState.loggedIn) {
-            return SignInScreen(
-              actions: [
-                ForgotPasswordAction(((context, email) {
-                  final uri = Uri(
-                    path: '/sign-in/forgot-password',
-                    queryParameters: <String, String?>{
-                      'email': email,
-                    },
-                  );
-                  context.push(uri.toString());
-                })),
-                AuthStateChangeAction(((context, state) {
-                  final user = switch (state) {
-                    SignedIn state => state.user,
-                    UserCreated state => state.credential.user,
-                    _ => null
-                  };
-                  if (user == null) {
-                    return;
-                  }
-                  if (state is UserCreated) {
-                    user.updateDisplayName(user.email!.split('@')[0]);
-                    context.go('/balance-input');
-                  } else {
-                    if (!user.emailVerified) {
-                      user.sendEmailVerification();
-                      const snackBar = SnackBar(content: Text('Please check your email to verify your email address'));
-                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                    }
-                    context.go('/');
-                  }
-                })),
-              ],
-            );
-          }
-          return const SafeArea(
-            child: NavigationMenu(),
-          );
-        },
+        builder: (context, appState, _) => _handleNavigation(context, appState),
       ),
       routes: [
         GoRoute(
-          path: 'balance-input',
+          path: 'onboarding/balance',
           builder: (context, state) => const BalanceInputScreen(),
+        ),
+        GoRoute(
+          path: 'onboarding/categories',
+          builder: (context, state) => const CategoriesScreen(),
         ),
         GoRoute(
           path: 'sign-in/forgot-password',
@@ -151,19 +181,5 @@ class _MyAppState extends State<MyApp> {
       ),
       routerConfig: _router,
     );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  @override
-  Widget build(BuildContext context) {
-    return const NavigationMenu();
   }
 }

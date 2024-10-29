@@ -22,3 +22,7 @@ class AppIcons {
   static const String menuList = "assets/icons/menu-list.svg";
   static const String menuListFill = "assets/icons/menu-list-fill.svg";
 }
+
+class AppIllustrations {
+  static const String emptyList = "assets/images/empty-list.svg";
+}
