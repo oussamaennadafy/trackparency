@@ -1,7 +1,9 @@
 import 'package:expense_tracker/app_state.dart';
+import 'package:expense_tracker/features/categories/models/selected_category.dart';
 import 'package:expense_tracker/helpers/get_icon.dart';
 import 'package:expense_tracker/theme/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:expense_tracker/features/categories/widgets/add_category_modal.dart';
 import 'package:go_router/go_router.dart';
@@ -14,7 +16,7 @@ class CategoriesScreen extends StatefulWidget {
 }
 
 class _CategoriesScreenState extends State<CategoriesScreen> {
-  List<String> selectedCategories = [];
+  List<SelectedCategory> selectedCategories = [];
   bool _isSaving = false;
 
   @override
@@ -34,8 +36,9 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       (name, icon) async {
         final appState = Provider.of<ApplicationState>(context, listen: false);
         final newCategory = await appState.addCustomCategory(name, icon);
+        final selectedCategory = SelectedCategory.fromCategory(newCategory);
         setState(() {
-          selectedCategories.add(newCategory.name);
+          selectedCategories.add(selectedCategory);
         });
       },
     );
@@ -118,7 +121,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                             Container(
                               padding: const EdgeInsets.all(16),
                               decoration: BoxDecoration(
-                                color: AppColors.extraLightGray,
+                                color: AppColors.onSurface,
                                 borderRadius: BorderRadius.circular(16),
                               ),
                               child: const Column(
@@ -170,7 +173,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                                 onTap: () => _handleAddCustomCategory(context),
                                 child: Container(
                                   decoration: BoxDecoration(
-                                    color: AppColors.green,
+                                    color: AppColors.onSurface,
                                     borderRadius: BorderRadius.circular(12),
                                     boxShadow: [
                                       BoxShadow(
@@ -186,7 +189,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                                       Icon(
                                         Icons.add,
                                         size: 32,
-                                        color: AppColors.extraDarkGray,
+                                        color: AppColors.primary,
                                       ),
                                       SizedBox(height: 8),
                                       Text(
@@ -204,16 +207,16 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                             }
 
                             final category = appState.categories[index];
-                            final isSelected = selectedCategories.contains(category.name);
+                            final isSelected = selectedCategories.any((selectedCat) => selectedCat.id == category.id);
 
                             return InkWell(
                               overlayColor: MaterialStateProperty.all(Colors.transparent),
                               onTap: () {
                                 setState(() {
                                   if (isSelected) {
-                                    selectedCategories.remove(category.name);
+                                    selectedCategories.removeWhere((selectedCat) => selectedCat.id == category.id);
                                   } else {
-                                    selectedCategories.add(category.name);
+                                    selectedCategories.add(SelectedCategory.fromCategory(category));
                                   }
                                 });
                               },
@@ -221,36 +224,65 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                                 padding: const EdgeInsets.symmetric(horizontal: 4.0),
                                 duration: const Duration(milliseconds: 200),
                                 decoration: BoxDecoration(
-                                  color: isSelected ? AppColors.primary : AppColors.onSurface,
+                                  color: AppColors().get(category.color ?? '') ?? AppColors.onSurface,
                                   borderRadius: BorderRadius.circular(12),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: isSelected ? AppColors.primary.withOpacity(0.3) : Colors.black.withOpacity(0.1),
+                                      color: Colors.black.withOpacity(0.1),
                                       blurRadius: 8,
                                       offset: const Offset(0, 4),
                                     ),
                                   ],
                                 ),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
+                                child: Stack(
                                   children: [
-                                    Icon(
-                                      getIconData(category.icon),
-                                      size: 32,
-                                      color: isSelected ? AppColors.surface : AppColors.gray,
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      category.name,
-                                      textAlign: TextAlign.center,
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        color: isSelected ? AppColors.surface : Colors.black,
-                                        fontSize: 16,
-                                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                    Center(
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          if (category.icon.startsWith("assets/icons/")) ...[
+                                            SvgPicture.asset(category.icon),
+                                            const SizedBox(width: 4),
+                                          ] else ...[
+                                            Icon(
+                                              getIconData(category.icon),
+                                              size: 32,
+                                              color: AppColors.extraDarkGray,
+                                            ),
+                                            const SizedBox(width: 4),
+                                          ],
+                                          const SizedBox(height: 8),
+                                          Text(
+                                            category.name,
+                                            textAlign: TextAlign.center,
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: const TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.normal,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
+                                    if (isSelected)
+                                      Positioned(
+                                        right: 6,
+                                        top: 10,
+                                        child: Container(
+                                          padding: const EdgeInsets.all(4.0),
+                                          decoration: const BoxDecoration(
+                                            borderRadius: BorderRadius.all(
+                                              Radius.circular(12.0),
+                                            ),
+                                          ),
+                                          child: const Icon(
+                                            Icons.check,
+                                            size: 18.0,
+                                          ),
+                                        ),
+                                      ),
                                   ],
                                 ),
                               ),

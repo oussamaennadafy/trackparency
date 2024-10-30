@@ -18,4 +18,33 @@ class AppColors {
   static const Color extraLightGray = Color(0xFFE1E1E1);
   static const Color extraDarkGray = Color(0xFF272727);
   static const Color lavenderGray = Color(0xFFCEBCCB);
+
+  Map<String, dynamic> _toMap() {
+    return {
+      'surface': surface,
+      'onSurface': onSurface,
+      'primary': primary,
+      'gray': gray,
+      'green': green,
+      'blue': blue,
+      'violet': violet,
+      'red': red,
+      'yellow': yellow,
+      'lightBlue': lightBlue,
+      'pink': pink,
+      'orange': orange,
+      'lightGray': lightGray,
+      'darkGray': darkGray,
+      'extraLightGray': extraLightGray,
+      'extraDarkGray': extraDarkGray,
+      'lavenderGray': lavenderGray,
+    };
+  }
+
+  dynamic get(String? propertyName) {
+    var mapRep = _toMap();
+    if (mapRep.containsKey(propertyName)) {
+      return mapRep[propertyName];
+    }
+  }
 }

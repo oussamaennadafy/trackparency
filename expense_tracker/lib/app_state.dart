@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:expense_tracker/features/categories/models/category.dart';
+import 'package:expense_tracker/features/categories/models/selected_category.dart';
 import 'package:expense_tracker/features/transactions/models/transaction.dart' as transaction_model;
 import 'package:firebase_auth/firebase_auth.dart' hide EmailAuthProvider, PhoneAuthProvider;
 import 'package:firebase_core/firebase_core.dart';
@@ -6,30 +8,6 @@ import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'firebase_options.dart';
-
-class Category {
-  final String id;
-  final String name;
-  final String icon;
-  final String userId;
-
-  Category({
-    required this.id,
-    required this.name,
-    required this.icon,
-    required this.userId,
-  });
-
-  factory Category.fromFirestore(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>;
-    return Category(
-      id: doc.id,
-      name: data['name'] as String,
-      icon: data['icon'] as String,
-      userId: data['userId'] as String,
-    );
-  }
-}
 
 enum OnboardingStatus {
   notStarted,
@@ -71,8 +49,8 @@ class ApplicationState extends ChangeNotifier {
   bool get isCategoriesLoading => _isCategoriesLoading;
 
   // Added: User's selected categories
-  List<String> _userSelectedCategories = [];
-  List<String> get userSelectedCategories => _userSelectedCategories;
+  List<SelectedCategory> _userSelectedCategories = [];
+  List<SelectedCategory> get userSelectedCategories => _userSelectedCategories;
 
   StreamSubscription<QuerySnapshot>? _transactionSubscription;
   List<transaction_model.Transaction> _transactions = [];
@@ -144,7 +122,7 @@ class ApplicationState extends ChangeNotifier {
       final userDoc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
 
       if (userDoc.exists && userDoc.data()?['selectedCategories'] != null) {
-        _userSelectedCategories = List<String>.from(userDoc.data()?['selectedCategories'] as List<dynamic>);
+        _userSelectedCategories = List<dynamic>.from(userDoc.data()?['selectedCategories'] as List).map((data) => SelectedCategory.fromMap(data as Map<String, dynamic>)).toList();
       } else {
         _userSelectedCategories = [];
       }
@@ -159,13 +137,13 @@ class ApplicationState extends ChangeNotifier {
   }
 
   // Added: Save user's selected categories
-  Future<void> saveUserCategories(List<String> selectedCategories) async {
+  Future<void> saveUserCategories(List<SelectedCategory> selectedCategories) async {
     if (!_loggedIn) {
       throw Exception('Must be logged in');
     }
 
     await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).set({
-      'selectedCategories': selectedCategories,
+      'selectedCategories': selectedCategories.map((cat) => cat.toMap()).toList(),
     }, SetOptions(merge: true));
 
     _userSelectedCategories = selectedCategories;

@@ -34,7 +34,7 @@ const incomeCategories = [
   DropDownItem(
     label: "Salary",
     backgroundColor: AppColors.green,
-    icon: AppIcons.pizza,
+    icon: AppIcons.handUnderCash,
   ),
   DropDownItem(
     label: "side hustle",

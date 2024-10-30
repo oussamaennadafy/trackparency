@@ -73,11 +73,12 @@ class TransactioneBottomSheetState extends State<TransactionBottomSheet> {
     if (widget.type == TransactionType.expense) {
       // categories = expenseCategories;
       final applicationState = Provider.of<ApplicationState>(context, listen: false);
-      categories = applicationState.categories
+      categories = applicationState.userSelectedCategories
           .map(
             (el) => DropDownItem(
               label: el.name,
               icon: el.icon,
+              backgroundColor: AppColors().get(el.color),
             ),
           )
           .toList();
@@ -94,7 +95,7 @@ class TransactioneBottomSheetState extends State<TransactionBottomSheet> {
       selectedDate = widget.transaction!.timestamp;
     } else {
       selectedPaymentMethod = widget.type == TransactionType.expense ? "Cash" : "Card";
-      selectedCategory = widget.type == TransactionType.expense ? "Food" : "Salary";
+      selectedCategory = widget.type == TransactionType.expense ? categories.first.label : "Salary";
       price = "0";
       selectedDate = DateTime.now();
     }

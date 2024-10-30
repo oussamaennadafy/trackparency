@@ -3,6 +3,7 @@ import 'package:expense_tracker/shared/components/drop_downs/classes/drop_down_i
 import 'package:expense_tracker/utils/formaters/capitalize_first_letter.dart';
 import 'package:expense_tracker/theme/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class DropDownMenu extends StatelessWidget {
   const DropDownMenu({
@@ -47,8 +48,11 @@ class DropDownMenu extends StatelessWidget {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      if (selectedObject.icon != null) ...[
-                        Icon(getIconData(selectedObject.icon as String)),
+                      if (selectedObject.icon?.startsWith("assets/icons/") == true) ...[
+                        SvgPicture.asset(selectedObject.icon!),
+                        const SizedBox(width: 4),
+                      ] else ...[
+                        if (selectedObject.icon != null) Icon(getIconData(selectedObject.icon!)),
                         const SizedBox(width: 4),
                       ],
                       Flexible(

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-IconData getIconData(String iconName) {
+IconData? getIconData(String iconName) {
   switch (iconName) {
     case 'shopping_bag':
       return Icons.shopping_bag;
@@ -26,7 +26,15 @@ IconData getIconData(String iconName) {
       return Icons.movie;
     case 'pets':
       return Icons.pets;
+    case 'train_rounded':
+      return Icons.train_rounded;
+    case 'chair':
+      return Icons.chair;
+    case 'fitness_center':
+      return Icons.fitness_center;
+    case 'shopping_cart':
+      return Icons.shopping_cart;
     default:
-      return Icons.category;
+      return null;
   }
 }
