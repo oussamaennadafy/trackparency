@@ -164,13 +164,13 @@ class TransactioneBottomSheetState extends State<TransactionBottomSheet> {
         context: context,
         firstDate: DateTime(
           selectedDate.year,
-          selectedDate.month - 1,
-          selectedDate.day,
+          selectedDate.month,
+          selectedDate.day - 7,
         ),
         lastDate: DateTime(
           selectedDate.year,
-          selectedDate.month + 1,
-          selectedDate.day,
+          selectedDate.month,
+          selectedDate.day + 7,
         ),
         initialDate: selectedDate,
         // currentDate: selectedDate,

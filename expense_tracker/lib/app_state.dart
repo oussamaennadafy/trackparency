@@ -52,6 +52,14 @@ class ApplicationState extends ChangeNotifier {
   List<SelectedCategory> _userSelectedCategories = [];
   List<SelectedCategory> get userSelectedCategories => _userSelectedCategories;
 
+  // accumulations
+  int _dayAccumulation = 0;
+  int get dayAccumulation => _dayAccumulation;
+  int _weekAccumulation = 0;
+  int get weekAccumulation => _weekAccumulation;
+  int _monthAccumulation = 0;
+  int get monthAccumulation => _monthAccumulation;
+
   StreamSubscription<QuerySnapshot>? _transactionSubscription;
   List<transaction_model.Transaction> _transactions = [];
   List<transaction_model.Transaction> get transactions => _transactions;
@@ -65,6 +73,7 @@ class ApplicationState extends ChangeNotifier {
         _checkOnboardingStatus();
         _fetchUserBalance();
         _fetchCategories(user.uid);
+        _fetchDayAccumulation();
         _transactionSubscription = FirebaseFirestore.instance.collection('transactions').where('userId', isEqualTo: user.uid).orderBy("timestamp", descending: true).snapshots().listen(
           (snapshot) {
             _transactions = [];
@@ -94,6 +103,7 @@ class ApplicationState extends ChangeNotifier {
         _categories = [];
         _userSelectedCategories = [];
         _isCategoriesLoading = false;
+        _dayAccumulation = 0;
         _onboardingStatus = OnboardingStatus.notStarted;
         _transactionSubscription?.cancel();
       }
@@ -103,6 +113,200 @@ class ApplicationState extends ChangeNotifier {
     FirebaseUIAuth.configureProviders([
       EmailAuthProvider(),
     ]);
+  }
+
+  Future<void> _fetchDayAccumulation() async {
+    try {
+      final now = DateTime.now();
+
+      // Day range (current day)
+      final startOfDay = DateTime(now.year, now.month, now.day);
+      final endOfDay = DateTime(now.year, now.month, now.day, 23, 59, 59);
+
+      // Get correct week boundaries
+      final currentDay = now.day;
+      int weekStart;
+      int weekEnd;
+
+      if (currentDay <= 7) {
+        weekStart = 1;
+        weekEnd = 7;
+      } else if (currentDay <= 14) {
+        weekStart = 8;
+        weekEnd = 14;
+      } else if (currentDay <= 21) {
+        weekStart = 15;
+        weekEnd = 21;
+      } else if (currentDay <= 28) {
+        weekStart = 22;
+        weekEnd = 28;
+      } else {
+        // For days 29-31, they form their own "week"
+        weekStart = 29;
+        weekEnd = DateTime(now.year, now.month + 1, 0).day; // Last day of current month
+      }
+
+      // Week range
+      final startOfWeek = DateTime(now.year, now.month, weekStart);
+      final endOfWeek = DateTime(now.year, now.month, weekEnd, 23, 59, 59);
+
+      // Month range
+      final startOfMonth = DateTime(now.year, now.month, 1);
+      final endOfMonth = DateTime(now.year, now.month + 1, 0, 23, 59, 59);
+
+      final transactions = FirebaseFirestore.instance
+          .collection('transactions')
+          .where(
+            "userId",
+            isEqualTo: FirebaseAuth.instance.currentUser!.uid,
+          )
+          .where(
+            "type",
+            isEqualTo: transaction_model.TransactionType.expense,
+          );
+
+      final dayTransactions = await transactions
+          .where(
+            "timestamp",
+            isGreaterThanOrEqualTo: startOfDay,
+            isLessThanOrEqualTo: endOfDay,
+          )
+          .get();
+
+      final weekTransactions = await transactions
+          .where(
+            "timestamp",
+            isGreaterThanOrEqualTo: startOfWeek,
+            isLessThanOrEqualTo: endOfWeek,
+          )
+          .get();
+
+      final monthTransactions = await transactions
+          .where(
+            "timestamp",
+            isGreaterThanOrEqualTo: startOfMonth,
+            isLessThanOrEqualTo: endOfMonth,
+          )
+          .get();
+
+      // Calculate totals
+      int dayTotalExpenses = 0;
+      for (var doc in dayTransactions.docs) {
+        dayTotalExpenses += (doc.data()['price'] as num).toInt();
+      }
+
+      int weekTotalExpenses = 0;
+      if (startOfWeek.month == now.month) {
+        for (var doc in weekTransactions.docs) {
+          weekTotalExpenses += (doc.data()['price'] as num).toInt();
+        }
+      }
+
+      int monthTotalExpenses = 0;
+      if (startOfMonth.month == now.month) {
+        for (var doc in monthTransactions.docs) {
+          monthTotalExpenses += (doc.data()['price'] as num).toInt();
+        }
+      }
+
+      _dayAccumulation = dayTotalExpenses;
+      _weekAccumulation = weekTotalExpenses;
+      _monthAccumulation = monthTotalExpenses;
+
+      notifyListeners();
+    } catch (e) {
+      print('Error fetching accumulations: $e');
+    }
+  }
+
+  Future<void> _updateAccumulations({
+    required String actionType,
+    required int amount,
+    required DateTime transactionDate,
+    DateTime? oldTransactionDate, // Add this for updates
+  }) async {
+    final now = DateTime.now();
+
+    // Helper function to get week number
+    int getWeekNumber(DateTime date) {
+      final day = date.day;
+      if (day <= 7) return 1;
+      if (day <= 14) return 2;
+      if (day <= 21) return 3;
+      if (day <= 28) return 4;
+      return 5; // days 29-31
+    }
+
+    // Helper function to check if date is in current month
+    bool isCurrentMonth(DateTime date) {
+      return date.year == now.year && date.month == now.month;
+    }
+
+    // Helper function to check if date is today
+    bool isCurrentDay(DateTime date) {
+      return date.year == now.year && date.month == now.month && date.day == now.day;
+    }
+
+    // Helper function to check if date is in specific week
+    bool isInWeek(DateTime date, int weekNumber) {
+      if (!isCurrentMonth(date)) return false;
+      return getWeekNumber(date) == weekNumber;
+    }
+
+    switch (actionType) {
+      case TransactionActions.add:
+        if (isCurrentDay(transactionDate)) {
+          _dayAccumulation += amount;
+        }
+        if (isCurrentMonth(transactionDate)) {
+          _monthAccumulation += amount;
+          if (isInWeek(transactionDate, getWeekNumber(now))) {
+            _weekAccumulation += amount;
+          }
+        }
+        break;
+
+      case TransactionActions.delete:
+        if (isCurrentDay(transactionDate)) {
+          _dayAccumulation -= amount;
+        }
+        if (isCurrentMonth(transactionDate)) {
+          _monthAccumulation -= amount;
+          if (isInWeek(transactionDate, getWeekNumber(now))) {
+            _weekAccumulation -= amount;
+          }
+        }
+        break;
+
+      case TransactionActions.update:
+        if (oldTransactionDate != null) {
+          // First remove the old transaction's effect
+          if (isCurrentDay(oldTransactionDate)) {
+            _dayAccumulation += amount; // amount is already negative for expense
+          }
+          if (isCurrentMonth(oldTransactionDate)) {
+            _monthAccumulation += amount;
+            if (isInWeek(oldTransactionDate, getWeekNumber(now))) {
+              _weekAccumulation += amount;
+            }
+          }
+
+          // Then add the new transaction's effect
+          final newAmount = -amount; // Reverse the amount for the new transaction
+          if (isCurrentDay(transactionDate)) {
+            _dayAccumulation += newAmount;
+          }
+          if (isCurrentMonth(transactionDate)) {
+            _monthAccumulation += newAmount;
+            if (isInWeek(transactionDate, getWeekNumber(now))) {
+              _weekAccumulation += newAmount;
+            }
+          }
+        }
+        break;
+    }
+
+    notifyListeners();
   }
 
   Future<void> _fetchCategories(String userId) async {
@@ -296,6 +500,14 @@ class ApplicationState extends ChangeNotifier {
       throw Exception('Must be logged in');
     }
 
+    if (transaction.type == transaction_model.TransactionType.expense) {
+      await _updateAccumulations(
+        actionType: TransactionActions.add,
+        amount: transaction.price,
+        transactionDate: transaction.timestamp,
+      );
+    }
+
     await updateBalance(
       actionType: TransactionActions.add,
       transactionType: transaction.type,
@@ -319,6 +531,15 @@ class ApplicationState extends ChangeNotifier {
       throw Exception('Must be logged in');
     }
 
+    if (oldTransaction.type == transaction_model.TransactionType.expense) {
+      await _updateAccumulations(
+        actionType: TransactionActions.update,
+        amount: oldTransaction.price - newTransaction.price,
+        transactionDate: newTransaction.timestamp, // Use new timestamp
+        oldTransactionDate: oldTransaction.timestamp, // Add this
+      );
+    }
+
     await updateBalance(
       actionType: TransactionActions.update,
       transactionType: oldTransaction.type,
@@ -338,6 +559,14 @@ class ApplicationState extends ChangeNotifier {
   Future<void> deleteTransaction(transaction_model.Transaction transaction) async {
     if (!_loggedIn) {
       throw Exception('Must be logged in');
+    }
+
+    if (transaction.type == transaction_model.TransactionType.expense) {
+      await _updateAccumulations(
+        actionType: TransactionActions.delete,
+        amount: transaction.price,
+        transactionDate: transaction.timestamp,
+      );
     }
 
     await updateBalance(
