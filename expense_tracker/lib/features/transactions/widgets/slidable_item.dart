@@ -51,13 +51,14 @@ class _SlidableItemState extends State<SlidableItem> {
       ),
       child: AppListTile(
         title: widget.item.title.toString(),
-        icon: widget.item.type == TransactionType.expense ? Icons.arrow_downward : Icons.arrow_upward,
+        icon: widget.item.type == TransactionType.expense ? "arrow_downward" : "arrow_upward",
         iconBackgroundColor: widget.item.type == TransactionType.expense ? AppColors.red : AppColors.green,
         trailingTitle: formatePrice(widget.item.price),
         trailingSubTitle: formateDate(widget.item.timestamp),
         titleStyle: const TextStyle(
           fontWeight: FontWeight.w300,
         ),
+        subTitle: widget.item.category,
       ),
     );
   }

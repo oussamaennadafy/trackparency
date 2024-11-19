@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:expense_tracker/features/categories/models/category.dart';
 import 'package:expense_tracker/features/categories/models/selected_category.dart';
+import 'package:expense_tracker/features/home/models/top_category.dart';
 import 'package:expense_tracker/features/transactions/models/transaction.dart' as transaction_model;
 import 'package:firebase_auth/firebase_auth.dart' hide EmailAuthProvider, PhoneAuthProvider;
 import 'package:firebase_core/firebase_core.dart';
@@ -60,6 +61,16 @@ class ApplicationState extends ChangeNotifier {
   int _monthAccumulation = 0;
   int get monthAccumulation => _monthAccumulation;
 
+  // list of three categories
+  List<TopCategory> _topThreeSpendingCategories = [];
+  List<TopCategory> get topThreeSpendingCategories => _topThreeSpendingCategories;
+
+  // function getter
+  get fetchTopThreeSpendingCategories => _fetchTopThreeSpendingCategories();
+
+  bool _isTopThreeSpendingCategoriesLoading = true;
+  bool get isTopThreeSpendingCategoriesLoading => _isTopThreeSpendingCategoriesLoading;
+
   StreamSubscription<QuerySnapshot>? _transactionSubscription;
   List<transaction_model.Transaction> _transactions = [];
   List<transaction_model.Transaction> get transactions => _transactions;
@@ -67,13 +78,14 @@ class ApplicationState extends ChangeNotifier {
   Future<void> init() async {
     await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-    FirebaseAuth.instance.userChanges().listen((user) {
+    FirebaseAuth.instance.userChanges().listen((user) async {
       if (user != null) {
         _loggedIn = true;
         _checkOnboardingStatus();
         _fetchUserBalance();
-        _fetchCategories(user.uid);
-        _fetchDayAccumulation();
+        await _fetchCategories(user.uid);
+        _fetchAccumulations();
+        _fetchTopThreeSpendingCategories();
         _transactionSubscription = FirebaseFirestore.instance.collection('transactions').where('userId', isEqualTo: user.uid).orderBy("timestamp", descending: true).snapshots().listen(
           (snapshot) {
             _transactions = [];
@@ -104,6 +116,7 @@ class ApplicationState extends ChangeNotifier {
         _userSelectedCategories = [];
         _isCategoriesLoading = false;
         _dayAccumulation = 0;
+        _topThreeSpendingCategories = [];
         _onboardingStatus = OnboardingStatus.notStarted;
         _transactionSubscription?.cancel();
       }
@@ -115,13 +128,86 @@ class ApplicationState extends ChangeNotifier {
     ]);
   }
 
-  Future<void> _fetchDayAccumulation() async {
+  Future<void> _fetchTopThreeSpendingCategories() async {
+    // now
+    final now = DateTime.now();
+    // Month range
+    final startOfMonth = DateTime(now.year, now.month, 1);
+    final endOfMonth = DateTime(now.year, now.month + 1, 0, 23, 59, 59);
+
+    final monthTransactions = await FirebaseFirestore.instance
+        .collection('transactions')
+        .where(
+          "userId",
+          isEqualTo: FirebaseAuth.instance.currentUser!.uid,
+        )
+        .where(
+          "type",
+          isEqualTo: transaction_model.TransactionType.expense,
+        )
+        .where(
+          "timestamp",
+          isGreaterThanOrEqualTo: startOfMonth,
+          isLessThanOrEqualTo: endOfMonth,
+        )
+        .get();
+
+    final Map<String, TopCategory> listOfTopThree = {};
+
+    // loop throught monthTransactions and calculate sum of categories
+    for (var i = 0; i < monthTransactions.docs.length; i++) {
+      final transaction = monthTransactions.docs[i].data();
+      final category = transaction["category"];
+      TopCategory? topCategory = listOfTopThree[category];
+      if (topCategory == null) {
+        final fullcategory = userSelectedCategories.where((el) => el.name == category).first;
+        listOfTopThree[category] = TopCategory(
+          icon: fullcategory.icon,
+          color: fullcategory.color,
+          name: category,
+          total: transaction["price"],
+        );
+      } else {
+        topCategory.total += transaction["price"] as int;
+      }
+    }
+
+    var sortedList = (listOfTopThree.values.toList()..sort((a, b) => b.total.compareTo(a.total)));
+
+    if (sortedList.length >= 3) sortedList = sortedList.sublist(0, 3);
+
+    // fill listOfTopThree with empty categories if not enough
+    if (sortedList.length < 3) {
+      final List<SelectedCategory> placeHolderCategories = [];
+      for (var i = 0; i < userSelectedCategories.length; i++) {
+        if (sortedList.length + placeHolderCategories.length >= 3) break;
+        final item = sortedList.where((element) => element.name == userSelectedCategories[i].name);
+        if (item.isEmpty) {
+          placeHolderCategories.add(userSelectedCategories[i]);
+        }
+      }
+
+      for (var i = 0; i < placeHolderCategories.length; i++) {
+        sortedList.add(
+          TopCategory(
+            icon: placeHolderCategories[i].icon,
+            name: placeHolderCategories[i].name,
+            color: placeHolderCategories[i].color,
+            total: 0,
+            percentage: 0,
+          ),
+        );
+      }
+    }
+
+    _topThreeSpendingCategories = sortedList;
+    _isTopThreeSpendingCategoriesLoading = false;
+    notifyListeners();
+  }
+
+  Future<void> _fetchAccumulations() async {
     try {
       final now = DateTime.now();
-
-      // Day range (current day)
-      final startOfDay = DateTime(now.year, now.month, now.day);
-      final endOfDay = DateTime(now.year, now.month, now.day, 23, 59, 59);
 
       // Get correct week boundaries
       final currentDay = now.day;
@@ -145,6 +231,10 @@ class ApplicationState extends ChangeNotifier {
         weekStart = 29;
         weekEnd = DateTime(now.year, now.month + 1, 0).day; // Last day of current month
       }
+
+      // Day range (current day)
+      final startOfDay = DateTime(now.year, now.month, now.day);
+      final endOfDay = DateTime(now.year, now.month, now.day, 23, 59, 59);
 
       // Week range
       final startOfWeek = DateTime(now.year, now.month, weekStart);
@@ -362,6 +452,7 @@ class ApplicationState extends ChangeNotifier {
     final docRef = await FirebaseFirestore.instance.collection('categories').add({
       'name': name,
       'icon': icon,
+      'color': 'onSurface',
       'userId': FirebaseAuth.instance.currentUser!.uid,
     });
 
@@ -369,6 +460,7 @@ class ApplicationState extends ChangeNotifier {
       id: docRef.id,
       name: name,
       icon: icon,
+      color: 'onSurface',
       userId: FirebaseAuth.instance.currentUser!.uid,
     );
 
@@ -495,26 +587,30 @@ class ApplicationState extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<DocumentReference<Map<String, dynamic>>> addTransaction(transaction_model.Transaction transaction) async {
+  void addTransaction(transaction_model.Transaction transaction) async {
     if (!_loggedIn) {
       throw Exception('Must be logged in');
     }
 
-    if (transaction.type == transaction_model.TransactionType.expense) {
-      await _updateAccumulations(
-        actionType: TransactionActions.add,
-        amount: transaction.price,
-        transactionDate: transaction.timestamp,
-      );
-    }
+    // update Accumulations
+    // if (transaction.type == transaction_model.TransactionType.expense) {
+    //   await _updateAccumulations(
+    //     actionType: TransactionActions.add,
+    //     amount: transaction.price,
+    //     transactionDate: transaction.timestamp,
+    //   );
+    // }
+    _fetchAccumulations();
 
-    await updateBalance(
+    // update balance
+    updateBalance(
       actionType: TransactionActions.add,
       transactionType: transaction.type,
       amount: transaction.price,
     );
 
-    return FirebaseFirestore.instance.collection('transactions').add(<String, dynamic>{
+    // add transaction
+    await FirebaseFirestore.instance.collection('transactions').add(<String, dynamic>{
       'userId': FirebaseAuth.instance.currentUser!.uid,
       'paymentMethod': transaction.paymentMethod,
       'category': transaction.category,
@@ -524,23 +620,27 @@ class ApplicationState extends ChangeNotifier {
       'timestamp': transaction.timestamp,
       'type': transaction.type,
     });
+
+    // update top categories
+    _fetchTopThreeSpendingCategories();
   }
 
-  Future<void> updateTransaction(transaction_model.Transaction oldTransaction, transaction_model.Transaction newTransaction) async {
+  void updateTransaction(transaction_model.Transaction oldTransaction, transaction_model.Transaction newTransaction) async {
     if (!_loggedIn) {
       throw Exception('Must be logged in');
     }
 
-    if (oldTransaction.type == transaction_model.TransactionType.expense) {
-      await _updateAccumulations(
-        actionType: TransactionActions.update,
-        amount: oldTransaction.price - newTransaction.price,
-        transactionDate: newTransaction.timestamp, // Use new timestamp
-        oldTransactionDate: oldTransaction.timestamp, // Add this
-      );
-    }
+    // if (oldTransaction.type == transaction_model.TransactionType.expense) {
+    //   await _updateAccumulations(
+    //     actionType: TransactionActions.update,
+    //     amount: oldTransaction.price - newTransaction.price,
+    //     transactionDate: newTransaction.timestamp,
+    //     oldTransactionDate: oldTransaction.timestamp,
+    //   );
+    // }
+    _fetchAccumulations();
 
-    await updateBalance(
+    updateBalance(
       actionType: TransactionActions.update,
       transactionType: oldTransaction.type,
       amount: oldTransaction.price - newTransaction.price,
@@ -554,6 +654,9 @@ class ApplicationState extends ChangeNotifier {
       'price': newTransaction.price,
       'timestamp': newTransaction.timestamp,
     });
+
+    // update top categories
+    _fetchTopThreeSpendingCategories();
   }
 
   Future<void> deleteTransaction(transaction_model.Transaction transaction) async {
@@ -561,20 +664,24 @@ class ApplicationState extends ChangeNotifier {
       throw Exception('Must be logged in');
     }
 
-    if (transaction.type == transaction_model.TransactionType.expense) {
-      await _updateAccumulations(
-        actionType: TransactionActions.delete,
-        amount: transaction.price,
-        transactionDate: transaction.timestamp,
-      );
-    }
+    // if (transaction.type == transaction_model.TransactionType.expense) {
+    //   await _updateAccumulations(
+    //     actionType: TransactionActions.delete,
+    //     amount: transaction.price,
+    //     transactionDate: transaction.timestamp,
+    //   );
+    // }
+    _fetchAccumulations();
 
-    await updateBalance(
+    updateBalance(
       actionType: TransactionActions.delete,
       transactionType: transaction.type,
       amount: transaction.price,
     );
 
     await FirebaseFirestore.instance.collection('transactions').doc(transaction.id).delete();
+
+    // update top categories
+    _fetchTopThreeSpendingCategories();
   }
 }

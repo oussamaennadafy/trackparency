@@ -1,3 +1,4 @@
+import 'package:expense_tracker/features/categories/utils/get_icon_from_string.dart';
 import 'package:expense_tracker/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -15,7 +16,7 @@ class AppListTile extends StatelessWidget {
     this.titleStyle,
   });
 
-  final dynamic icon;
+  final String icon;
   final Color iconBackgroundColor;
   final String title;
   final String? subTitle;
@@ -44,7 +45,7 @@ class AppListTile extends StatelessWidget {
                   Radius.circular(9999),
                 ),
               ),
-              child: icon is String ? SvgPicture.asset(icon) : Icon(icon),
+              child: icon.startsWith("assets/icons/") ? SvgPicture.asset(icon) : Icon(getIconFromString(icon)),
             ),
             const SizedBox(width: 16),
             // Title and subtitle

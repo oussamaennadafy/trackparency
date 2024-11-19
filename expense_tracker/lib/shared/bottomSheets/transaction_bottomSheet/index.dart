@@ -251,13 +251,13 @@ class TransactioneBottomSheetState extends State<TransactionBottomSheet> {
 
       if (widget.transaction != null) {
         // Call and await updateTransaction
-        await applicationState.updateTransaction(
+        applicationState.updateTransaction(
           widget.transaction as Transaction,
           newTransaction,
         );
       } else {
         // Call and await addTransaction
-        await applicationState.addTransaction(newTransaction);
+        applicationState.addTransaction(newTransaction);
       }
 
       // If successful, show a success message
