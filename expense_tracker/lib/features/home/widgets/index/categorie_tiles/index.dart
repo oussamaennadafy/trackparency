@@ -58,7 +58,6 @@ class CategoryTiles extends StatelessWidget {
             ? const Center(child: CircularProgressIndicator())
             : Column(
                 children: appState.topThreeSpendingCategories.map((el) {
-                  print(el.icon);
                   return Expanded(
                     child: AppListTile(
                       icon: el.icon,
