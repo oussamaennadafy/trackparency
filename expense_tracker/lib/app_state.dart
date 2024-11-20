@@ -134,6 +134,8 @@ class ApplicationState extends ChangeNotifier {
     // Month range
     final startOfMonth = DateTime(now.year, now.month, 1);
     final endOfMonth = DateTime(now.year, now.month + 1, 0, 23, 59, 59);
+    // month total
+    int mountTotal = 0;
 
     final monthTransactions = await FirebaseFirestore.instance
         .collection('transactions')
@@ -170,6 +172,8 @@ class ApplicationState extends ChangeNotifier {
       } else {
         topCategory.total += transaction["price"] as int;
       }
+      // add mountTotal
+      mountTotal += transaction["price"] as int;
     }
 
     var sortedList = (listOfTopThree.values.toList()..sort((a, b) => b.total.compareTo(a.total)));
@@ -198,6 +202,13 @@ class ApplicationState extends ChangeNotifier {
           ),
         );
       }
+    }
+
+    for (var i = 0; i < sortedList.length; i++) {
+      if (mountTotal == 0) {
+        mountTotal = 1;
+      }
+      sortedList[i].percentage = (sortedList[i].total / mountTotal * 100);
     }
 
     _topThreeSpendingCategories = sortedList;

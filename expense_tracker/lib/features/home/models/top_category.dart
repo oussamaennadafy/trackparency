@@ -13,5 +13,5 @@ class TopCategory {
   String name;
   int total;
   String? color;
-  int? percentage;
+  double? percentage;
 }
