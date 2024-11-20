@@ -6,12 +6,14 @@ class PriceCard extends StatelessWidget {
     super.key,
     required this.label,
     required this.price,
+    this.onPress,
     this.border,
   });
 
   final String label;
   final String price;
   final bool? border;
+  final GestureTapCallback? onPress;
 
   @override
   Widget build(BuildContext context) {
@@ -34,9 +36,7 @@ class PriceCard extends StatelessWidget {
         ),
         child: InkWell(
           borderRadius: BorderRadius.circular(32),
-          onTap: () {
-            print(label);
-          },
+          onTap: onPress,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 14.0),
             child: Column(

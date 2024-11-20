@@ -17,16 +17,28 @@ class Cards extends StatelessWidget {
               label: "Day",
               price: appState.dayAccumulation.toString(),
               border: true,
+              onPress: () => {
+                // print((333 / (appState.monthAccumulation != 0 ? appState.monthAccumulation : 1)) * 100)
+                print((90 / (90 != 0 ? 90 : 1)) * 100)
+              },
             ),
             const SizedBox(width: 8.0),
             PriceCard(
               label: "Week",
               price: appState.weekAccumulation.toString(),
+              onPress: () => {
+                // print((333 / (appState.monthAccumulation != 0 ? appState.monthAccumulation : 1)) * 100)
+                print((0 / (0 != 0 ? 0 : 1)) * 100)
+              },
             ),
             const SizedBox(width: 8.0),
             PriceCard(
               label: "Month",
               price: appState.monthAccumulation.toString(),
+              onPress: () => {
+                // print((1 / (appState.monthAccumulation != 0 ? appState.monthAccumulation : 1)) * 100)
+                print((0 / (0 != 0 ? 0 : 1)) * 100)
+              },
             ),
           ],
         ),
