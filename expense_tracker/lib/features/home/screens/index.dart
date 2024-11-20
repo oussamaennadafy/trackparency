@@ -1,13 +1,10 @@
-import 'package:expense_tracker/app_state.dart';
 import 'package:expense_tracker/features/home/widgets/index/cards/index.dart';
 import 'package:expense_tracker/features/home/widgets/index/categorie_tiles/index.dart';
 import 'package:expense_tracker/features/home/widgets/index/chart/index.dart';
 import 'package:expense_tracker/features/home/widgets/index/filter/index.dart';
 import 'package:expense_tracker/shared/components/drop_downs/classes/drop_down_item.dart';
-import 'package:expense_tracker/shared/components/headers/header/index.dart';
 import 'package:expense_tracker/shared/components/switchers/tab_switcher/classes/tab_button.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
