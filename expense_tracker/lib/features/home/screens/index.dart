@@ -16,6 +16,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   String selectedTab = "EXPENSES";
   String selectedMonth = "SEPTEMBER";
+  String selectedCard = "MONTH";
 
   final months = const [
     DropDownItem(label: "JANUARY"),
@@ -34,6 +35,12 @@ class _HomeState extends State<Home> {
   void onMonthSelect(String month) {
     setState(() {
       selectedMonth = month;
+    });
+  }
+
+  void onCardPress(String month) {
+    setState(() {
+      selectedCard = month;
     });
   }
 
@@ -79,7 +86,7 @@ class _HomeState extends State<Home> {
             onMonthSelect: onMonthSelect,
           ),
           const Chart(),
-          const Cards(),
+          Cards(onCardPress: onCardPress, selectedCard: selectedCard),
           const CategoryTiles(),
         ],
       ),

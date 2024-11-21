@@ -1,10 +1,18 @@
 import 'package:expense_tracker/app_state.dart';
 import 'package:expense_tracker/shared/components/cards/price_card.dart';
+import 'package:expense_tracker/utils/formaters/formate_price.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class Cards extends StatelessWidget {
-  const Cards({super.key});
+  const Cards({
+    super.key,
+    required this.onCardPress,
+    required this.selectedCard,
+  });
+
+  final Function(String) onCardPress;
+  final String selectedCard;
 
   @override
   Widget build(BuildContext context) {
@@ -15,30 +23,23 @@ class Cards extends StatelessWidget {
           children: [
             PriceCard(
               label: "Day",
-              price: appState.dayAccumulation.toString(),
-              border: true,
-              onPress: () => {
-                // print((333 / (appState.monthAccumulation != 0 ? appState.monthAccumulation : 1)) * 100)
-                print((90 / (90 != 0 ? 90 : 1)) * 100)
-              },
+              price: formatePrice(appState.dayAccumulation),
+              border: selectedCard == "DAY",
+              onPress: () => onCardPress("DAY"),
             ),
             const SizedBox(width: 8.0),
             PriceCard(
               label: "Week",
-              price: appState.weekAccumulation.toString(),
-              onPress: () => {
-                // print((333 / (appState.monthAccumulation != 0 ? appState.monthAccumulation : 1)) * 100)
-                print((0 / (0 != 0 ? 0 : 1)) * 100)
-              },
+              price: formatePrice(appState.weekAccumulation),
+              border: selectedCard == "WEEK",
+              onPress: () => onCardPress("WEEK"),
             ),
             const SizedBox(width: 8.0),
             PriceCard(
               label: "Month",
-              price: appState.monthAccumulation.toString(),
-              onPress: () => {
-                // print((1 / (appState.monthAccumulation != 0 ? appState.monthAccumulation : 1)) * 100)
-                print((0 / (0 != 0 ? 0 : 1)) * 100)
-              },
+              price: formatePrice(appState.monthAccumulation),
+              border: selectedCard == "MONTH",
+              onPress: () => onCardPress("MONTH"),
             ),
           ],
         ),

@@ -144,9 +144,6 @@ class _AddCategoryModalState extends State<AddCategoryModal> {
                 if (value == null || value.trim().isEmpty) {
                   return 'Please enter a category name';
                 }
-                if (value.trim().length < 3) {
-                  return 'Category name must be at least 3 characters';
-                }
                 return null;
               },
             ),
