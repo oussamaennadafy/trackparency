@@ -1,6 +1,6 @@
 import 'package:expense_tracker/app_state.dart';
 import 'package:expense_tracker/features/categories/models/selected_category.dart';
-import 'package:expense_tracker/helpers/get_icon.dart';
+import 'package:expense_tracker/features/categories/utils/get_icon_from_string.dart';
 import 'package:expense_tracker/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -245,7 +245,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                                             const SizedBox(width: 4),
                                           ] else ...[
                                             Icon(
-                                              getIconData(category.icon),
+                                              getIconFromString(category.icon),
                                               size: 32,
                                               color: AppColors.extraDarkGray,
                                             ),

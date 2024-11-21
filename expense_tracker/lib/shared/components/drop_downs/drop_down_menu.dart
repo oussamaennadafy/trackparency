@@ -1,4 +1,4 @@
-import 'package:expense_tracker/helpers/get_icon.dart';
+import 'package:expense_tracker/features/categories/utils/get_icon_from_string.dart';
 import 'package:expense_tracker/shared/components/drop_downs/classes/drop_down_item.dart';
 import 'package:expense_tracker/utils/formaters/capitalize_first_letter.dart';
 import 'package:expense_tracker/theme/colors.dart';
@@ -52,7 +52,7 @@ class DropDownMenu extends StatelessWidget {
                         SvgPicture.asset(selectedObject.icon!),
                         const SizedBox(width: 4),
                       ] else ...[
-                        if (selectedObject.icon != null) Icon(getIconData(selectedObject.icon!)),
+                        if (selectedObject.icon != null) Icon(getIconFromString(selectedObject.icon!)),
                         const SizedBox(width: 4),
                       ],
                       Flexible(
