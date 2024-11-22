@@ -64,6 +64,10 @@ class ApplicationState extends ChangeNotifier {
   // list of three categories
   List<TopCategory> _topThreeSpendingCategories = [];
   List<TopCategory> get topThreeSpendingCategories => _topThreeSpendingCategories;
+  // setter of _topThreeSpendingCategories
+  set setTopThreeSpendingCategories(List<TopCategory> topThreeSpendingCategories) {
+    _topThreeSpendingCategories = topThreeSpendingCategories;
+  }
 
   // function getter
   get fetchTopThreeSpendingCategories => _fetchTopThreeSpendingCategories();

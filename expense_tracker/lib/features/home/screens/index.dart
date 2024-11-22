@@ -86,7 +86,10 @@ class _HomeState extends State<Home> {
             onMonthSelect: onMonthSelect,
           ),
           const Chart(),
-          Cards(onCardPress: onCardPress, selectedCard: selectedCard),
+          Cards(
+            onCardPress: onCardPress,
+            selectedCard: selectedCard,
+          ),
           const CategoryTiles(),
         ],
       ),

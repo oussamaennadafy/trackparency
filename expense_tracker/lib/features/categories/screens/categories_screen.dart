@@ -1,6 +1,7 @@
 import 'package:expense_tracker/app_state.dart';
 import 'package:expense_tracker/features/categories/models/selected_category.dart';
 import 'package:expense_tracker/features/categories/utils/get_icon_from_string.dart';
+import 'package:expense_tracker/features/home/utils/fill_top_categories.dart';
 import 'package:expense_tracker/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -45,11 +46,11 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   }
 
   Future<void> _handleSubmit() async {
-    if (selectedCategories.isEmpty) {
+    if (selectedCategories.length < 3) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
-            'Please select at least one category',
+            'Please select at least 3 categories',
             style: TextStyle(color: AppColors.primary),
           ),
           backgroundColor: AppColors.red,
@@ -68,6 +69,9 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
 
       // Save selected categories
       await appState.saveUserCategories(selectedCategories);
+
+      // fill top categories
+      fillTopCategories(context, selectedCategories);
 
       // Update onboarding status
       await appState.updateOnboardingStatus(OnboardingStatus.completed);
