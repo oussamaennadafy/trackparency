@@ -26,3 +26,7 @@ class AppIcons {
 class AppIllustrations {
   static const String emptyList = "assets/images/empty-list.svg";
 }
+
+class AppMemojis {
+  static const String smilingYouth = "assets/images/memoji.png";
+}
