@@ -1,4 +1,6 @@
+import 'package:confirm_dialog/confirm_dialog.dart';
 import 'package:expense_tracker/app_state.dart';
+import 'package:expense_tracker/features/categories/models/category.dart';
 import 'package:expense_tracker/features/categories/models/selected_category.dart';
 import 'package:expense_tracker/features/categories/utils/get_icon_from_string.dart';
 import 'package:expense_tracker/features/home/utils/fill_top_categories.dart';
@@ -36,6 +38,22 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       context,
       (name, icon) async {
         final appState = Provider.of<ApplicationState>(context, listen: false);
+        final existingCategory = selectedCategories.where((selectedCategory) {
+          return selectedCategory.name == name;
+        });
+        if (existingCategory.isNotEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'the category is already exist !',
+                style: TextStyle(color: AppColors.primary),
+              ),
+              backgroundColor: AppColors.red,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+          return;
+        }
         final newCategory = await appState.addCustomCategory(name, icon);
         final selectedCategory = SelectedCategory.fromCategory(newCategory);
         setState(() {
@@ -66,6 +84,8 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
 
     try {
       final appState = Provider.of<ApplicationState>(context, listen: false);
+
+      print('selectedCategories: ${selectedCategories.length}');
 
       // Save selected categories
       await appState.saveUserCategories(selectedCategories);
@@ -99,6 +119,12 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
         });
       }
     }
+  }
+
+  Future<void> deleteCategory(Category category) async {
+    final appState = Provider.of<ApplicationState>(context, listen: false);
+    await appState.deleteCustomCategory(category);
+    selectedCategories = selectedCategories.where((item) => item.name != category.name).toList();
   }
 
   @override
@@ -216,6 +242,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                             return InkWell(
                               overlayColor: MaterialStateProperty.all(Colors.transparent),
                               onTap: () {
+                                if (category.userId == "ALL") {}
                                 setState(() {
                                   if (isSelected) {
                                     selectedCategories.removeWhere((selectedCat) => selectedCat.id == category.id);
@@ -223,6 +250,19 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                                     selectedCategories.add(SelectedCategory.fromCategory(category));
                                   }
                                 });
+                              },
+                              onLongPress: () async {
+                                if (category.userId == "ALL") return;
+                                final confirmed = await confirm(
+                                  context,
+                                  title: const Text("do you want to delete this category?"),
+                                  content: const Text("Deleting this category will also delete all transactions associated with it. Are you sure you want to proceed?"),
+                                  textOK: const Text(
+                                    "Delete",
+                                  ),
+                                  textCancel: const Text("Cancel"),
+                                );
+                                if (confirmed) await deleteCategory(category);
                               },
                               child: AnimatedContainer(
                                 padding: const EdgeInsets.symmetric(horizontal: 4.0),

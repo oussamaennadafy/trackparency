@@ -485,6 +485,39 @@ class ApplicationState extends ChangeNotifier {
     return newCategory;
   }
 
+  Future<void> deleteCustomCategory(Category category) async {
+    if (!_loggedIn) {
+      throw Exception('Must be logged in');
+    }
+
+    // delete category
+    await FirebaseFirestore.instance.collection('categories').doc(category.id).delete();
+    // delete userSelectedCategory
+    final selectedCategories = FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid);
+
+    final selectedCategoriesDocs = await selectedCategories.get();
+
+    final filteredList = selectedCategoriesDocs.data()!["selectedCategories"].where((item) => item["name"] != category.name);
+
+    await selectedCategories.set({
+      "selectedCategories": filteredList.map((cat) => cat).toList(),
+    }, SetOptions(merge: true));
+
+    _categories = _categories.where((item) => item.name != category.name).toList();
+
+    _userSelectedCategories = _userSelectedCategories.where((item) => item.name != category.name).toList();
+
+    notifyListeners();
+    // delete related transactions
+    final transactionsOfCategory = await FirebaseFirestore.instance.collection('transactions').where("category", isEqualTo: category.name).get();
+
+    final transactionsOfCategoryDoc = transactionsOfCategory.docs;
+
+    for (var i = 0; i < transactionsOfCategoryDoc.length; i++) {
+      await FirebaseFirestore.instance.collection("transactions").doc(transactionsOfCategoryDoc[i].id).delete();
+    }
+  }
+
   Future<void> _checkOnboardingStatus() async {
     _isCheckingOnboarding = true;
     notifyListeners();

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 IconData? getIconFromString(String iconName) {
   switch (iconName) {
+    case 'local_taxi':
+      return Icons.local_taxi;
     case 'shopping_bag':
       return Icons.shopping_bag;
     case 'restaurant':
