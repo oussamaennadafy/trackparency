@@ -500,12 +500,10 @@ class ApplicationState extends ChangeNotifier {
     final filteredList = selectedCategoriesDocs.data()!["selectedCategories"].where((item) => item["name"] != category.name);
 
     await selectedCategories.set({
-      "selectedCategories": filteredList.map((cat) => cat).toList(),
+      "selectedCategories": filteredList,
     }, SetOptions(merge: true));
 
     _categories = _categories.where((item) => item.name != category.name).toList();
-
-    _userSelectedCategories = _userSelectedCategories.where((item) => item.name != category.name).toList();
 
     notifyListeners();
     // delete related transactions
@@ -514,8 +512,17 @@ class ApplicationState extends ChangeNotifier {
     final transactionsOfCategoryDoc = transactionsOfCategory.docs;
 
     for (var i = 0; i < transactionsOfCategoryDoc.length; i++) {
-      await FirebaseFirestore.instance.collection("transactions").doc(transactionsOfCategoryDoc[i].id).delete();
+      final transaction = transactionsOfCategoryDoc[i];
+      updateBalance(
+        actionType: TransactionActions.delete,
+        transactionType: transaction.data()["type"],
+        amount: transaction.data()["price"],
+      );
+      await FirebaseFirestore.instance.collection("transactions").doc(transaction.id).delete();
     }
+
+    await _fetchTopThreeSpendingCategories();
+    await _fetchAccumulations();
   }
 
   Future<void> _checkOnboardingStatus() async {

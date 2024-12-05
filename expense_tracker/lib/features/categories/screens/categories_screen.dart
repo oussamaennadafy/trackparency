@@ -85,13 +85,13 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     try {
       final appState = Provider.of<ApplicationState>(context, listen: false);
 
-      print('selectedCategories: ${selectedCategories.length}');
-
       // Save selected categories
       await appState.saveUserCategories(selectedCategories);
 
       // fill top categories
-      fillTopCategories(context, selectedCategories);
+      if (appState.topThreeSpendingCategories.isEmpty) {
+        fillTopCategories(context, selectedCategories);
+      }
 
       // Update onboarding status
       await appState.updateOnboardingStatus(OnboardingStatus.completed);

@@ -104,35 +104,35 @@ class Profile extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Container(
-                    height: 1.0,
-                    width: double.infinity,
-                    color: AppColors.extraLightGray,
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 18.0),
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(4.0),
-                          decoration: const BoxDecoration(
-                            color: AppColors.surface,
-                            borderRadius: BorderRadius.all(Radius.circular(4.0)),
-                          ),
-                          child: const Icon(Icons.align_horizontal_left_sharp),
-                        ),
-                        const SizedBox(width: 12.0),
-                        const Expanded(
-                          child: Text("Manage categories"),
-                        ),
-                        const Icon(
-                          Icons.arrow_forward,
-                          size: 18.0,
-                          color: AppColors.gray,
-                        ),
-                      ],
-                    ),
-                  ),
+                  // Container(
+                  //   height: 1.0,
+                  //   width: double.infinity,
+                  //   color: AppColors.extraLightGray,
+                  // ),
+                  // Container(
+                  //   padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 18.0),
+                  //   child: Row(
+                  //     children: [
+                  //       Container(
+                  //         padding: const EdgeInsets.all(4.0),
+                  //         decoration: const BoxDecoration(
+                  //           color: AppColors.surface,
+                  //           borderRadius: BorderRadius.all(Radius.circular(4.0)),
+                  //         ),
+                  //         child: const Icon(Icons.align_horizontal_left_sharp),
+                  //       ),
+                  //       const SizedBox(width: 12.0),
+                  //       const Expanded(
+                  //         child: Text("Manage categories"),
+                  //       ),
+                  //       const Icon(
+                  //         Icons.arrow_forward,
+                  //         size: 18.0,
+                  //         color: AppColors.gray,
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
                 ],
               ),
             ),
