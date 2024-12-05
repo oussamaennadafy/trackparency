@@ -497,15 +497,14 @@ class ApplicationState extends ChangeNotifier {
 
     final selectedCategoriesDocs = await selectedCategories.get();
 
-    final filteredList = selectedCategoriesDocs.data()!["selectedCategories"].where((item) => item["name"] != category.name);
+    final filteredList = selectedCategoriesDocs.data()!["selectedCategories"].where((item) => item["id"] != category.id);
 
-    await selectedCategories.set({
+    await selectedCategories.update({
       "selectedCategories": filteredList,
-    }, SetOptions(merge: true));
+    });
 
     _categories = _categories.where((item) => item.name != category.name).toList();
 
-    notifyListeners();
     // delete related transactions
     final transactionsOfCategory = await FirebaseFirestore.instance.collection('transactions').where("category", isEqualTo: category.name).get();
 
@@ -523,6 +522,7 @@ class ApplicationState extends ChangeNotifier {
 
     await _fetchTopThreeSpendingCategories();
     await _fetchAccumulations();
+    notifyListeners();
   }
 
   Future<void> _checkOnboardingStatus() async {
