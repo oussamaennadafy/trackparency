@@ -64,6 +64,8 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   }
 
   Future<void> _handleSubmit() async {
+    final appState = Provider.of<ApplicationState>(context, listen: false);
+    if (appState.deleteCustomCategoryLoading) return;
     if (selectedCategories.length < 3) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -83,8 +85,6 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     });
 
     try {
-      final appState = Provider.of<ApplicationState>(context, listen: false);
-
       // Save selected categories
       await appState.saveUserCategories(selectedCategories);
 
@@ -358,8 +358,9 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                     child: Column(
                       children: [
                         ElevatedButton(
-                          onPressed: _isSaving ? null : _handleSubmit,
+                          onPressed: _isSaving || appState.deleteCustomCategoryLoading ? null : _handleSubmit,
                           style: ElevatedButton.styleFrom(
+                            disabledBackgroundColor: AppColors.extraDarkGray,
                             backgroundColor: AppColors.primary,
                             foregroundColor: AppColors.surface,
                             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),

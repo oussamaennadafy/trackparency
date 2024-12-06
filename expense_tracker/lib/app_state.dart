@@ -75,6 +75,9 @@ class ApplicationState extends ChangeNotifier {
   bool _isTopThreeSpendingCategoriesLoading = true;
   bool get isTopThreeSpendingCategoriesLoading => _isTopThreeSpendingCategoriesLoading;
 
+  bool _deleteCustomCategoryLoading = false;
+  bool get deleteCustomCategoryLoading => _deleteCustomCategoryLoading;
+
   StreamSubscription<QuerySnapshot>? _transactionSubscription;
   List<transaction_model.Transaction> _transactions = [];
   List<transaction_model.Transaction> get transactions => _transactions;
@@ -486,6 +489,8 @@ class ApplicationState extends ChangeNotifier {
   }
 
   Future<void> deleteCustomCategory(Category category) async {
+    _deleteCustomCategoryLoading = true;
+    notifyListeners();
     if (!_loggedIn) {
       throw Exception('Must be logged in');
     }
@@ -522,6 +527,7 @@ class ApplicationState extends ChangeNotifier {
 
     await _fetchTopThreeSpendingCategories();
     await _fetchAccumulations();
+    _deleteCustomCategoryLoading = false;
     notifyListeners();
   }
 
