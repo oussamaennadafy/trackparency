@@ -511,24 +511,28 @@ class ApplicationState extends ChangeNotifier {
     _categories = _categories.where((item) => item.name != category.name).toList();
 
     // delete related transactions
-    final transactionsOfCategory = await FirebaseFirestore.instance.collection('transactions').where("category", isEqualTo: category.name).get();
+    await deleteAllTransactionsOfCategory(category.name);
+
+    await _fetchTopThreeSpendingCategories();
+    await _fetchAccumulations();
+    _deleteCustomCategoryLoading = false;
+    notifyListeners();
+  }
+
+  Future<void> deleteAllTransactionsOfCategory(String categoryName) async {
+    final transactionsOfCategory = await FirebaseFirestore.instance.collection('transactions').where("category", isEqualTo: categoryName).get();
 
     final transactionsOfCategoryDoc = transactionsOfCategory.docs;
 
     for (var i = 0; i < transactionsOfCategoryDoc.length; i++) {
       final transaction = transactionsOfCategoryDoc[i];
-      updateBalance(
+      updateBalanceSync(
         actionType: TransactionActions.delete,
         transactionType: transaction.data()["type"],
         amount: transaction.data()["price"],
       );
       await FirebaseFirestore.instance.collection("transactions").doc(transaction.id).delete();
     }
-
-    await _fetchTopThreeSpendingCategories();
-    await _fetchAccumulations();
-    _deleteCustomCategoryLoading = false;
-    notifyListeners();
   }
 
   Future<void> _checkOnboardingStatus() async {
@@ -597,7 +601,7 @@ class ApplicationState extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> updateBalance({
+  Future<void> updateBalanceSync({
     String actionType = TransactionActions.add,
     String transactionType = transaction_model.TransactionType.expense,
     int amount = 0,
@@ -648,6 +652,11 @@ class ApplicationState extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> updateBalanceAsync() async {
+    final user = await FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser!.uid).get();
+    _balance = user.data()?["balance"];
+  }
+
   void addTransaction(transaction_model.Transaction transaction) async {
     if (!_loggedIn) {
       throw Exception('Must be logged in');
@@ -664,7 +673,7 @@ class ApplicationState extends ChangeNotifier {
     _fetchAccumulations();
 
     // update balance
-    updateBalance(
+    updateBalanceSync(
       actionType: TransactionActions.add,
       transactionType: transaction.type,
       amount: transaction.price,
@@ -701,7 +710,7 @@ class ApplicationState extends ChangeNotifier {
     // }
     _fetchAccumulations();
 
-    updateBalance(
+    updateBalanceSync(
       actionType: TransactionActions.update,
       transactionType: oldTransaction.type,
       amount: oldTransaction.price - newTransaction.price,
@@ -734,7 +743,7 @@ class ApplicationState extends ChangeNotifier {
     // }
     _fetchAccumulations();
 
-    updateBalance(
+    updateBalanceSync(
       actionType: TransactionActions.delete,
       transactionType: transaction.type,
       amount: transaction.price,
@@ -744,5 +753,15 @@ class ApplicationState extends ChangeNotifier {
 
     // update top categories
     _fetchTopThreeSpendingCategories();
+  }
+
+  Future<void> unselectCategory(List<SelectedCategory> unSelectedCategories) async {
+    for (var i = 0; i < unSelectedCategories.length; i++) {
+      final category = unSelectedCategories[i];
+      await deleteAllTransactionsOfCategory(category.name);
+    }
+    await _fetchTopThreeSpendingCategories();
+    await _fetchAccumulations();
+    notifyListeners();
   }
 }

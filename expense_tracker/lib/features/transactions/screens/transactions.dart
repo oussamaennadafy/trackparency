@@ -71,7 +71,7 @@ class _TransactionsState extends State<Transactions> {
                     ),
                     const SizedBox(height: 8.0),
                     const Text(
-                      "you dont't have any transaction yet!",
+                      "you don't have any transaction yet!",
                       style: TextStyle(
                         fontSize: 12,
                         color: AppColors.gray,

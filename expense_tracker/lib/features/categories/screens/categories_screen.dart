@@ -20,6 +20,7 @@ class CategoriesScreen extends StatefulWidget {
 
 class _CategoriesScreenState extends State<CategoriesScreen> {
   List<SelectedCategory> selectedCategories = [];
+  List<SelectedCategory> unSelectedCategories = [];
   bool _isSaving = false;
 
   @override
@@ -63,6 +64,36 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     );
   }
 
+  void reSelectCategories() {
+    selectedCategories.addAll(unSelectedCategories);
+    unSelectedCategories = [];
+  }
+
+  Future<void> deleteTransactions() async {
+    final appState = Provider.of<ApplicationState>(context, listen: false);
+    appState.unselectCategory(unSelectedCategories);
+  }
+
+  Future<bool> deleteUnselectedTransactions() async {
+    if (unSelectedCategories.isEmpty) return true;
+    final confirmed = await confirm(
+      context,
+      title: const Text("unselect categories detected!"),
+      content: const Text("by unselecting a category, means you dont need it any more so we will delete all transactions associated with it. Are you sure you want to proceed?"),
+      textOK: const Text(
+        "Delete",
+      ),
+      textCancel: const Text("Cancel"),
+    );
+    if (confirmed) {
+      await deleteTransactions();
+    } else {
+      reSelectCategories();
+    }
+
+    return confirmed;
+  }
+
   Future<void> _handleSubmit() async {
     final appState = Provider.of<ApplicationState>(context, listen: false);
     if (appState.deleteCustomCategoryLoading) return;
@@ -80,11 +111,13 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       return;
     }
 
-    setState(() {
-      _isSaving = true;
-    });
-
     try {
+      // delete unselected transactions
+      final confirmed = await deleteUnselectedTransactions();
+
+      setState(() {
+        _isSaving = true;
+      });
       // Save selected categories
       await appState.saveUserCategories(selectedCategories);
 
@@ -96,7 +129,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       // Update onboarding status
       await appState.updateOnboardingStatus(OnboardingStatus.completed);
 
-      if (mounted) {
+      if (mounted && confirmed) {
         context.go('/');
       }
     } catch (e) {
@@ -245,9 +278,15 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                                 if (category.userId == "ALL") {}
                                 setState(() {
                                   if (isSelected) {
+                                    // remove from selectedCategories
                                     selectedCategories.removeWhere((selectedCat) => selectedCat.id == category.id);
+                                    //add to unSelectedCategories
+                                    unSelectedCategories.add(SelectedCategory.fromCategory(category));
                                   } else {
+                                    // add to selectedCategories
                                     selectedCategories.add(SelectedCategory.fromCategory(category));
+                                    // remove from unSelectedCategories
+                                    unSelectedCategories.removeWhere((selectedCat) => selectedCat.id == category.id);
                                   }
                                 });
                               },
