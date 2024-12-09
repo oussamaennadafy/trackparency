@@ -76,6 +76,7 @@ class Profile extends StatelessWidget {
               child: Column(
                 children: [
                   InkWell(
+                    overlayColor: const WidgetStatePropertyAll(Colors.transparent),
                     onTap: () {
                       context.go("/onboarding/categories");
                     },

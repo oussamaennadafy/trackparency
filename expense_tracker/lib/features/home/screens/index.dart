@@ -77,7 +77,6 @@ class _HomeState extends State<Home> {
       resizeToAvoidBottomInset: false,
       body: Column(
         children: [
-          // const Header(),
           Filter(
             tabs: tabs,
             selectedTab: selectedTab,
