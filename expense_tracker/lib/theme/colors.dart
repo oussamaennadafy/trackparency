@@ -18,6 +18,7 @@ class AppColors {
   static const Color extraLightGray = Color(0xFFE1E1E1);
   static const Color extraDarkGray = Color(0xFF272727);
   static const Color lavenderGray = Color(0xFFCEBCCB);
+  static const Color brown = Color(0xFFE4BD9F);
 
   Map<String, dynamic> _toMap() {
     return {
@@ -38,6 +39,7 @@ class AppColors {
       'extraLightGray': extraLightGray,
       'extraDarkGray': extraDarkGray,
       'lavenderGray': lavenderGray,
+      'brown': brown,
     };
   }
 
