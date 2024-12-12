@@ -245,7 +245,7 @@ class TransactioneBottomSheetState extends State<TransactionBottomSheet> {
         paymentMethod: paymentMethod,
         category: category,
         title: title != "" ? title : (widget.type == TransactionType.expense ? "Expense" : "Income"),
-        price: int.parse(price), // Convert price to int
+        price: int.parse(price),
         comment: comment,
         timestamp: date,
         type: widget.type,
@@ -264,6 +264,7 @@ class TransactioneBottomSheetState extends State<TransactionBottomSheet> {
 
       // If successful, show a success message
       if (mounted) {
+        ScaffoldMessenger.of(context).clearSnackBars();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: widget.transaction != null ? const Text('Expense updated successfully') : const Text('Expense added successfully'),
@@ -273,6 +274,7 @@ class TransactioneBottomSheetState extends State<TransactionBottomSheet> {
     } catch (e) {
       // If there's an error, show an error message
       if (mounted) {
+        ScaffoldMessenger.of(context).clearSnackBars();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: widget.transaction != null ? Text('Error updating expense $e') : Text('Expense adding expense $e')),
         );

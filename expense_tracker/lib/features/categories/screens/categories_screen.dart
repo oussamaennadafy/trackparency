@@ -98,6 +98,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     final appState = Provider.of<ApplicationState>(context, listen: false);
     if (appState.deleteCustomCategoryLoading) return;
     if (selectedCategories.length < 3) {
+      ScaffoldMessenger.of(context).clearSnackBars();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(

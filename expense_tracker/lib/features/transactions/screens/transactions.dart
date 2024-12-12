@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'package:expense_tracker/app_state.dart';
+import 'package:expense_tracker/features/transactions/widgets/empty_transactions_state.dart';
 import 'package:expense_tracker/features/transactions/widgets/slidable_item.dart';
 import 'package:expense_tracker/features/transactions/models/transaction.dart';
 import 'package:expense_tracker/shared/components/list_tiles/list_tile.dart';
 import 'package:expense_tracker/theme/colors.dart';
 import 'package:expense_tracker/theme/icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:expense_tracker/shared/bottomSheets/transaction_bottomSheet/index.dart';
 
@@ -25,6 +25,7 @@ class _TransactionsState extends State<Transactions> {
     await applicationState.deleteTransaction(transaction);
 
     if (mounted) {
+      ScaffoldMessenger.of(context).clearSnackBars();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Expense deleted successfully')),
       );
@@ -56,30 +57,7 @@ class _TransactionsState extends State<Transactions> {
                   );
                 },
               )
-            : Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SvgPicture.asset(AppIllustrations.emptyList),
-                    const SizedBox(height: 24.0),
-                    const Text(
-                      "no transaction found",
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(height: 8.0),
-                    const Text(
-                      "you don't have any transaction yet!",
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: AppColors.gray,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+            : const EmptyTransactionsState(),
       ),
     );
   }
