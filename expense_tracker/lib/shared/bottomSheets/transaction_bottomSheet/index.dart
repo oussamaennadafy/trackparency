@@ -1,7 +1,7 @@
 import 'package:expense_tracker/app_state.dart';
 import 'package:expense_tracker/features/transactions/models/transaction.dart';
 import 'package:expense_tracker/shared/bottomSheets/transaction_bottomSheet/data/drop_down_items.dart';
-import 'package:expense_tracker/shared/bottomSheets/transaction_bottomSheet/keyboard/index.dart';
+import 'package:expense_tracker/shared/bottomSheets/transaction_bottomSheet/widgets/keyboard/index.dart';
 import 'package:expense_tracker/shared/components/drop_downs/classes/drop_down_item.dart';
 import 'package:expense_tracker/shared/components/drop_downs/drop_down_menu.dart';
 import 'package:expense_tracker/shared/components/texts/shake_text.dart';
@@ -65,6 +65,8 @@ class TransactioneBottomSheetState extends State<TransactionBottomSheet> {
   late List<DropDownItem> categories = [];
   bool isLoading = false;
   bool isPriceInvalid = false;
+  final _titleInputController = TextEditingController();
+  final _commentInputController = TextEditingController();
 
   @override
   void initState() {
@@ -90,8 +92,8 @@ class TransactioneBottomSheetState extends State<TransactionBottomSheet> {
       selectedPaymentMethod = widget.transaction!.paymentMethod;
       selectedCategory = widget.transaction!.category;
       price = widget.transaction!.price.toString();
-      titleInputController.text = widget.transaction!.title;
-      commentInputController.text = widget.transaction!.comment;
+      _titleInputController.text = widget.transaction!.title;
+      _commentInputController.text = widget.transaction!.comment;
       selectedDate = widget.transaction!.timestamp;
     } else {
       selectedPaymentMethod = widget.type == TransactionType.expense ? "Cash" : "Card";
@@ -149,9 +151,9 @@ class TransactioneBottomSheetState extends State<TransactionBottomSheet> {
         handleSubmit(
           paymentMethod: selectedPaymentMethod,
           category: selectedCategory,
-          title: titleInputController.text,
+          title: _titleInputController.text,
           price: price,
-          comment: commentInputController.text,
+          comment: _commentInputController.text,
           date: selectedDate,
         );
       }
@@ -287,14 +289,10 @@ class TransactioneBottomSheetState extends State<TransactionBottomSheet> {
     }
   }
 
-  final titleInputController = TextEditingController();
-  final commentInputController = TextEditingController();
-
   @override
   void dispose() {
-    // Clean up the controller when the widget is disposed.
-    titleInputController.dispose();
-    commentInputController.dispose();
+    _titleInputController.dispose();
+    _commentInputController.dispose();
     super.dispose();
   }
 
@@ -358,7 +356,7 @@ class TransactioneBottomSheetState extends State<TransactionBottomSheet> {
           Expanded(
             child: Center(
               child: TextField(
-                controller: titleInputController,
+                controller: _titleInputController,
                 textAlign: TextAlign.center,
                 decoration: InputDecoration(
                   border: InputBorder.none,
@@ -412,7 +410,6 @@ class TransactioneBottomSheetState extends State<TransactionBottomSheet> {
                         ),
                       )
                     : Text(
-                        // TODO: add formater of addition expression
                         price.contains("+") ? price : formatePrice(int.parse(price)),
                         style: TextStyle(
                           fontSize: 54,
@@ -428,7 +425,7 @@ class TransactioneBottomSheetState extends State<TransactionBottomSheet> {
             child: Container(
               alignment: Alignment.center,
               child: TextField(
-                controller: commentInputController,
+                controller: _commentInputController,
                 textAlign: TextAlign.center,
                 decoration: const InputDecoration(
                   border: InputBorder.none,
