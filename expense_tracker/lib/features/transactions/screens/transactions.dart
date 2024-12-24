@@ -113,17 +113,6 @@ class _TransactionsState extends State<Transactions> {
   Widget build(BuildContext context) {
     return Consumer<ApplicationState>(
       builder: (context, appState, _) => Scaffold(
-        appBar: AppBar(
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                print(removedItem);
-                print(removedItemIndex);
-              },
-              child: Text("data"),
-            )
-          ],
-        ),
         body: appState.transactions.isNotEmpty
             ? ListView.builder(
                 itemCount: appState.transactions.length,
