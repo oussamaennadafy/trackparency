@@ -20,6 +20,7 @@ class Cards extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 14.0),
       child: Consumer<ApplicationState>(
         builder: (context, appState, _) => Row(
+          spacing: 8.0,
           children: [
             PriceCard(
               label: "Day",
@@ -27,14 +28,12 @@ class Cards extends StatelessWidget {
               border: selectedCard == "DAY",
               onPress: () => onCardPress("DAY"),
             ),
-            const SizedBox(width: 8.0),
             PriceCard(
               label: "Week",
               price: formatePrice(appState.weekAccumulation),
               border: selectedCard == "WEEK",
               onPress: () => onCardPress("WEEK"),
             ),
-            const SizedBox(width: 8.0),
             PriceCard(
               label: "Month",
               price: formatePrice(appState.monthAccumulation),

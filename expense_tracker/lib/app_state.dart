@@ -729,7 +729,7 @@ class ApplicationState extends ChangeNotifier {
     _fetchTopThreeSpendingCategories();
   }
 
-  Future<void> deleteTransaction(transaction_model.Transaction transaction) async {
+  Future<void> deleteTransaction(transaction_model.Transaction transaction, [bool? shouldUpdatebalance = true]) async {
     if (!_loggedIn) {
       throw Exception('Must be logged in');
     }
@@ -742,12 +742,13 @@ class ApplicationState extends ChangeNotifier {
     //   );
     // }
     _fetchAccumulations();
-
-    updateBalanceSync(
-      actionType: TransactionActions.delete,
-      transactionType: transaction.type,
-      amount: transaction.price,
-    );
+    if (shouldUpdatebalance!) {
+      updateBalanceSync(
+        actionType: TransactionActions.delete,
+        transactionType: transaction.type,
+        amount: transaction.price,
+      );
+    }
 
     await FirebaseFirestore.instance.collection('transactions').doc(transaction.id).delete();
 
