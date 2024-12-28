@@ -4,7 +4,7 @@ import 'package:expense_tracker/shared/components/switchers/tab_switcher/classes
 import 'package:expense_tracker/shared/components/switchers/tab_switcher/index.dart';
 import 'package:flutter/material.dart';
 
-class Filter extends StatefulWidget {
+class Filter extends StatelessWidget {
   const Filter({
     super.key,
     required this.selectedTab,
@@ -12,19 +12,16 @@ class Filter extends StatefulWidget {
     required this.tabs,
     required this.months,
     required this.onMonthSelect,
+    required this.onTabPress,
   });
 
   final String selectedMonth;
-  final String selectedTab;
+  final TabButton selectedTab;
   final List<TabButton> tabs;
   final List<DropDownItem> months;
   final void Function(String month) onMonthSelect;
+  final void Function(TabButton tab) onTabPress;
 
-  @override
-  State<Filter> createState() => _FilterState();
-}
-
-class _FilterState extends State<Filter> {
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -32,14 +29,15 @@ class _FilterState extends State<Filter> {
       child: Row(
         children: [
           TabSwitcher(
-            selectedTab: widget.selectedTab,
-            tabs: widget.tabs,
+            selectedTab: selectedTab,
+            tabs: tabs,
+            onTabPress: onTabPress,
           ),
           const SizedBox(width: 8),
           DropDownMenu(
-            options: widget.months,
-            onSelect: widget.onMonthSelect,
-            selectedOption: widget.selectedMonth,
+            options: months,
+            onSelect: onMonthSelect,
+            selectedOption: selectedMonth,
           ),
         ],
       ),

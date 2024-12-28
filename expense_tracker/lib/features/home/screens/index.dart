@@ -14,7 +14,17 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  String selectedTab = "EXPENSES";
+  List<TabButton> tabs = [
+    const TabButton(
+      id: "EXPENSES",
+      label: "Expenses",
+    ),
+    const TabButton(
+      id: "INCOME",
+      label: "Income",
+    ),
+  ];
+  late TabButton selectedTab;
   String selectedMonth = "SEPTEMBER";
   String selectedCard = "DAY";
 
@@ -44,31 +54,16 @@ class _HomeState extends State<Home> {
     });
   }
 
-  late List<TabButton> tabs;
+  void onTabPress(TabButton tab) {
+    setState(() {
+      selectedTab = tab;
+    });
+  }
 
   @override
   void initState() {
     super.initState();
-    tabs = [
-      TabButton(
-        id: "EXPENSES",
-        label: "Expenses",
-        onPressed: () {
-          setState(() {
-            selectedTab = "EXPENSES";
-          });
-        },
-      ),
-      TabButton(
-        id: "INCOME",
-        label: "Income",
-        onPressed: () {
-          setState(() {
-            selectedTab = "INCOME";
-          });
-        },
-      ),
-    ];
+    selectedTab = tabs[0];
   }
 
   @override
@@ -80,6 +75,7 @@ class _HomeState extends State<Home> {
           Filter(
             tabs: tabs,
             selectedTab: selectedTab,
+            onTabPress: onTabPress,
             months: months,
             selectedMonth: selectedMonth,
             onMonthSelect: onMonthSelect,
