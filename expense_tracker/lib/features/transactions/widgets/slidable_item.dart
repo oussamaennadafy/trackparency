@@ -2,7 +2,6 @@ import 'package:expense_tracker/features/transactions/models/transaction.dart';
 import 'package:expense_tracker/shared/components/list_tiles/list_tile.dart';
 import 'package:expense_tracker/theme/colors.dart';
 import 'package:expense_tracker/utils/formaters/formate_date.dart';
-import 'package:expense_tracker/utils/formaters/formate_price.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
@@ -53,7 +52,7 @@ class _SlidableItemState extends State<SlidableItem> {
         title: widget.item.title.toString(),
         icon: widget.item.type == TransactionType.expense ? "arrow_downward" : "arrow_upward",
         iconBackgroundColor: widget.item.type == TransactionType.expense ? AppColors.red : AppColors.green,
-        trailingTitle: formatePrice(widget.item.price),
+        trailingTitle: widget.item.price,
         trailingSubTitle: formateDate(widget.item.timestamp),
         titleStyle: const TextStyle(
           fontWeight: FontWeight.w300,

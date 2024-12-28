@@ -1,3 +1,4 @@
+import 'package:animated_digit/animated_digit.dart';
 import 'package:expense_tracker/features/categories/utils/get_icon_from_string.dart';
 import 'package:expense_tracker/theme/colors.dart';
 import 'package:flutter/material.dart';
@@ -14,16 +15,18 @@ class AppListTile extends StatelessWidget {
     this.trailingSubTitle,
     this.onTap,
     this.titleStyle,
+    this.isTrailingTitleAnimated,
   });
 
   final String icon;
   final Color iconBackgroundColor;
   final String title;
   final String? subTitle;
-  final String trailingTitle;
+  final int trailingTitle;
   final String? trailingSubTitle;
   final GestureTapCallback? onTap;
   final TextStyle? titleStyle;
+  final bool? isTrailingTitleAnimated;
 
   @override
   Widget build(BuildContext context) {
@@ -80,14 +83,23 @@ class AppListTile extends StatelessWidget {
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                      trailingTitle,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.primary,
-                      ),
-                    ),
+                    isTrailingTitleAnimated == true
+                        ? AnimatedDigitWidget(
+                            value: trailingTitle,
+                            textStyle: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.primary,
+                            ),
+                          )
+                        : Text(
+                            trailingTitle.toString(),
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.primary,
+                            ),
+                          ),
                     const SizedBox(width: 2),
                     const Text(
                       "DH",

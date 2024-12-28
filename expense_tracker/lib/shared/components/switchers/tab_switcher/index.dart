@@ -33,30 +33,37 @@ class _TabSwitcherState extends State<TabSwitcher> {
             children: widget.tabs
                 .map(
                   (tab) => Expanded(
-                    child: InkWell(
-                      onTap: tab.onPressed,
-                      customBorder: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(9999),
-                      ),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: tab.id == widget.selectedTab ? AppColors.primary : AppColors.onSurface,
-                          borderRadius: const BorderRadius.all(
-                            Radius.circular(9999),
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        return InkWell(
+                          onTap: () {
+                            tab.onPressed();
+                            print(constraints.minWidth);
+                          },
+                          customBorder: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(9999),
                           ),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Center(
-                            child: Text(
-                              tab.label,
-                              style: TextStyle(
-                                color: tab.id == widget.selectedTab ? AppColors.onSurface : AppColors.primary,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: tab.id == widget.selectedTab ? AppColors.primary : AppColors.onSurface,
+                              borderRadius: const BorderRadius.all(
+                                Radius.circular(9999),
+                              ),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Center(
+                                child: Text(
+                                  tab.label,
+                                  style: TextStyle(
+                                    color: tab.id == widget.selectedTab ? AppColors.onSurface : AppColors.primary,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ),
+                        );
+                      },
                     ),
                   ),
                 )

@@ -120,7 +120,7 @@ class _TransactionsState extends State<Transactions> {
                   title: "Expense",
                   icon: AppIcons.analytics,
                   iconBackgroundColor: AppColors.blue,
-                  trailingTitle: "30",
+                  trailingTitle: 30,
                 ),
                 itemBuilder: (context, index) {
                   return SlidableItem(

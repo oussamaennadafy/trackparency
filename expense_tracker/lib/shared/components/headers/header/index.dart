@@ -1,8 +1,8 @@
+import 'package:animated_digit/animated_digit.dart';
 import 'package:expense_tracker/app_state.dart';
 import 'package:expense_tracker/features/transactions/models/transaction.dart';
 import 'package:expense_tracker/shared/bottomSheets/transaction_bottomSheet/index.dart';
 import 'package:expense_tracker/theme/colors.dart';
-import 'package:expense_tracker/utils/formaters/formate_price.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -36,14 +36,30 @@ class Header extends StatelessWidget {
                 return Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      "${formatePrice(appState.balance)} DH",
-                      style: const TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      textBaseline: TextBaseline.alphabetic,
+                      children: [
+                        AnimatedDigitWidget(
+                          value: appState.balance,
+                          textStyle: const TextStyle(
+                            fontSize: 22,
+                            height: 1,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          "DH",
+                          style: const TextStyle(
+                            fontSize: 22,
+                            height: 1,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
                     ),
-                    const Row(
+                    Row(
                       children: [
                         Text(
                           "Total Balance",

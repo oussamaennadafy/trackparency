@@ -1,6 +1,5 @@
 import 'package:expense_tracker/app_state.dart';
 import 'package:expense_tracker/shared/components/cards/price_card.dart';
-import 'package:expense_tracker/utils/formaters/formate_price.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -24,19 +23,19 @@ class Cards extends StatelessWidget {
           children: [
             PriceCard(
               label: "Day",
-              price: formatePrice(appState.dayAccumulation),
+              price: appState.dayAccumulation.toString(),
               border: selectedCard == "DAY",
               onPress: () => onCardPress("DAY"),
             ),
             PriceCard(
               label: "Week",
-              price: formatePrice(appState.weekAccumulation),
+              price: appState.weekAccumulation.toString(),
               border: selectedCard == "WEEK",
               onPress: () => onCardPress("WEEK"),
             ),
             PriceCard(
               label: "Month",
-              price: formatePrice(appState.monthAccumulation),
+              price: appState.monthAccumulation.toString(),
               border: selectedCard == "MONTH",
               onPress: () => onCardPress("MONTH"),
             ),

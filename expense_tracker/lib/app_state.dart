@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:expense_tracker/features/categories/models/category.dart';
 import 'package:expense_tracker/features/categories/models/selected_category.dart';
+import 'package:expense_tracker/features/home/models/chart_data.dart';
 import 'package:expense_tracker/features/home/models/top_category.dart';
 import 'package:expense_tracker/features/transactions/models/transaction.dart' as transaction_model;
 import 'package:firebase_auth/firebase_auth.dart' hide EmailAuthProvider, PhoneAuthProvider;
@@ -78,6 +79,12 @@ class ApplicationState extends ChangeNotifier {
   bool _deleteCustomCategoryLoading = false;
   bool get deleteCustomCategoryLoading => _deleteCustomCategoryLoading;
 
+  ChartData? _chartData;
+  ChartData? get chartData => _chartData;
+
+  bool _chartDataLoading = true;
+  get chartDataLoading => _chartDataLoading;
+
   StreamSubscription<QuerySnapshot>? _transactionSubscription;
   List<transaction_model.Transaction> _transactions = [];
   List<transaction_model.Transaction> get transactions => _transactions;
@@ -92,6 +99,7 @@ class ApplicationState extends ChangeNotifier {
         _fetchUserBalance();
         await _fetchCategories(user.uid);
         _fetchAccumulations();
+        _fetchChartData();
         _fetchTopThreeSpendingCategories();
         _transactionSubscription = FirebaseFirestore.instance.collection('transactions').where('userId', isEqualTo: user.uid).orderBy("timestamp", descending: true).snapshots().listen(
           (snapshot) {
@@ -133,6 +141,60 @@ class ApplicationState extends ChangeNotifier {
     FirebaseUIAuth.configureProviders([
       EmailAuthProvider(),
     ]);
+  }
+
+  Future<void> _fetchChartData() async {
+    final now = DateTime.now();
+
+    final startDate = DateTime(now.year, now.month, now.day - 7);
+
+    final transactions = await FirebaseFirestore.instance
+        .collection('transactions')
+        .where(
+          "userId",
+          isEqualTo: FirebaseAuth.instance.currentUser!.uid,
+        )
+        .where(
+          "type",
+          isEqualTo: transaction_model.TransactionType.expense,
+        )
+        .where(
+          "timestamp",
+          isGreaterThanOrEqualTo: startDate,
+          isLessThanOrEqualTo: now,
+        )
+        .get();
+
+    final Map<int, int> resultsMap = {};
+    for (var i = 0; i < 8; i++) {
+      resultsMap[startDate.day + i] = 0;
+      // print(startDate.day + i);
+    }
+    for (final transaction in transactions.docs) {
+      final day = (transaction.data()["timestamp"] as Timestamp).toDate().day;
+      final price = int.tryParse(transaction.data()["price"].toString());
+      if (resultsMap[day] != null) {
+        resultsMap[day] = resultsMap[day]! + price!;
+      } else {
+        resultsMap[day] = price!;
+      }
+    }
+    Map<int, int> biggestDay = {
+      resultsMap.keys.first: resultsMap[resultsMap.keys.first]!,
+    };
+    resultsMap.forEach((key, value) {
+      if (value > biggestDay[biggestDay.keys.first]!) {
+        biggestDay = {
+          key: value
+        };
+      }
+    });
+    _chartData = ChartData(
+      biggestDay: BiggestDay(day: biggestDay.keys.first, total: biggestDay.values.first),
+      resultsMap: resultsMap.entries.toList(),
+    );
+    _chartDataLoading = false;
+    notifyListeners();
   }
 
   Future<void> _fetchTopThreeSpendingCategories() async {
@@ -693,6 +755,8 @@ class ApplicationState extends ChangeNotifier {
 
     // update top categories
     _fetchTopThreeSpendingCategories();
+    // fetchChartData
+    _fetchChartData();
   }
 
   void updateTransaction(transaction_model.Transaction oldTransaction, transaction_model.Transaction newTransaction) async {
@@ -727,6 +791,8 @@ class ApplicationState extends ChangeNotifier {
 
     // update top categories
     _fetchTopThreeSpendingCategories();
+    // fetchChartData
+    _fetchChartData();
   }
 
   Future<void> deleteTransaction(transaction_model.Transaction transaction, [bool? shouldUpdatebalance = true]) async {
@@ -754,6 +820,8 @@ class ApplicationState extends ChangeNotifier {
 
     // update top categories
     _fetchTopThreeSpendingCategories();
+    // fetchChartData
+    _fetchChartData();
   }
 
   Future<void> unselectCategory(List<SelectedCategory> unSelectedCategories) async {
