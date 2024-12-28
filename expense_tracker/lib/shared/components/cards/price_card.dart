@@ -21,15 +21,10 @@ class PriceCard extends StatelessWidget {
     return Expanded(
       child: Ink(
         decoration: BoxDecoration(
-          border: border == true
-              ? Border.all(
-                  color: AppColors.lightGray,
-                  width: 1,
-                )
-              : Border.all(
-                  color: Colors.transparent,
-                  width: 1,
-                ),
+          border: Border.all(
+            color: border == true ? AppColors.lightGray : Colors.transparent,
+            width: 1,
+          ),
           color: AppColors.onSurface,
           borderRadius: const BorderRadius.all(
             Radius.circular(32),
