@@ -1,6 +1,7 @@
 import 'package:animated_digit/animated_digit.dart';
 import 'package:expense_tracker/features/categories/utils/get_icon_from_string.dart';
 import 'package:expense_tracker/theme/colors.dart';
+import 'package:expense_tracker/utils/formaters/formate_price.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -86,6 +87,8 @@ class AppListTile extends StatelessWidget {
                     isTrailingTitleAnimated == true
                         ? AnimatedDigitWidget(
                             value: trailingTitle,
+                            enableSeparator: true,
+                            separateSymbol: " ",
                             textStyle: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -93,7 +96,7 @@ class AppListTile extends StatelessWidget {
                             ),
                           )
                         : Text(
-                            trailingTitle.toString(),
+                            formatePrice(trailingTitle),
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,

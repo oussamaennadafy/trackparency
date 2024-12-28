@@ -43,6 +43,8 @@ class Header extends StatelessWidget {
                       children: [
                         AnimatedDigitWidget(
                           value: appState.balance,
+                          enableSeparator: true,
+                          separateSymbol: " ",
                           textStyle: const TextStyle(
                             fontSize: 22,
                             height: 1,

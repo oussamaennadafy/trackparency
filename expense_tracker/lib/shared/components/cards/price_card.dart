@@ -50,6 +50,8 @@ class PriceCard extends StatelessWidget {
                   children: [
                     AnimatedDigitWidget(
                       value: int.tryParse(price) ?? 0,
+                      enableSeparator: true,
+                      separateSymbol: " ",
                       textStyle: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
