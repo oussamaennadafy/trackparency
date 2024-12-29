@@ -28,54 +28,48 @@ class Header extends StatelessWidget {
           ),
           Consumer<ApplicationState>(
             builder: (context, appState, _) {
-              if (appState.isBalanceLoading) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              } else {
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      textBaseline: TextBaseline.alphabetic,
-                      children: [
-                        AnimatedDigitWidget(
-                          value: appState.balance,
-                          enableSeparator: true,
-                          separateSymbol: " ",
-                          textStyle: const TextStyle(
-                            fontSize: 22,
-                            height: 1,
-                            fontWeight: FontWeight.bold,
-                          ),
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    textBaseline: TextBaseline.alphabetic,
+                    children: [
+                      AnimatedDigitWidget(
+                        value: appState.balance,
+                        enableSeparator: true,
+                        separateSymbol: " ",
+                        textStyle: const TextStyle(
+                          fontSize: 22,
+                          height: 1,
+                          fontWeight: FontWeight.bold,
                         ),
-                        Text(
-                          "DH",
-                          style: const TextStyle(
-                            fontSize: 22,
-                            height: 1,
-                            fontWeight: FontWeight.bold,
-                          ),
+                      ),
+                      Text(
+                        "DH",
+                        style: const TextStyle(
+                          fontSize: 22,
+                          height: 1,
+                          fontWeight: FontWeight.bold,
                         ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Text(
-                          "Total Balance",
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: AppColors.gray,
-                          ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Text(
+                        "Total Balance",
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.gray,
                         ),
-                        Icon(Icons.expand_more)
-                      ],
-                    ),
-                  ],
-                );
-              }
+                      ),
+                      Icon(Icons.expand_more)
+                    ],
+                  ),
+                ],
+              );
             },
           ),
           Center(

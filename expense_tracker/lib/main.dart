@@ -160,7 +160,8 @@ class _MyAppState extends State<MyApp> {
       const SystemUiOverlayStyle(
         statusBarColor: AppColors.surface,
         statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
+        // systemStatusBarContrastEnforced: true,
       ),
     );
   }

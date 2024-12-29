@@ -35,8 +35,8 @@ class ApplicationState extends ChangeNotifier {
   int _balance = 0;
   int get balance => _balance;
 
-  bool _isBalanceLoading = true;
-  bool get isBalanceLoading => _isBalanceLoading;
+  // bool _isBalanceLoading = true;
+  // bool get isBalanceLoading => _isBalanceLoading;
 
   OnboardingStatus _onboardingStatus = OnboardingStatus.notStarted;
   OnboardingStatus get onboardingStatus => _onboardingStatus;
@@ -96,11 +96,7 @@ class ApplicationState extends ChangeNotifier {
       if (user != null) {
         _loggedIn = true;
         _checkOnboardingStatus();
-        _fetchUserBalance();
         await _fetchCategories(user.uid);
-        _fetchAccumulations();
-        _fetchChartData();
-        _fetchTopThreeSpendingCategories();
         _transactionSubscription = FirebaseFirestore.instance.collection('transactions').where('userId', isEqualTo: user.uid).orderBy("timestamp", descending: true).snapshots().listen(
           (snapshot) {
             _transactions = [];
@@ -118,6 +114,10 @@ class ApplicationState extends ChangeNotifier {
                 ),
               );
             }
+            _fetchUserBalance();
+            _fetchChartData();
+            _fetchAccumulations();
+            _fetchTopThreeSpendingCategories();
             notifyListeners();
           },
         );
@@ -125,7 +125,7 @@ class ApplicationState extends ChangeNotifier {
         _loggedIn = false;
         _balance = 0;
         _transactions = [];
-        _isBalanceLoading = false;
+        // _isBalanceLoading = false;
         _isCheckingOnboarding = false;
         _categories = [];
         _userSelectedCategories = [];
@@ -628,9 +628,6 @@ class ApplicationState extends ChangeNotifier {
   }
 
   Future<void> _fetchUserBalance() async {
-    _isBalanceLoading = true;
-    notifyListeners();
-
     try {
       final userDoc = await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).get();
 
@@ -646,7 +643,6 @@ class ApplicationState extends ChangeNotifier {
       print('Error fetching user balance: $e');
       _balance = 0;
     } finally {
-      _isBalanceLoading = false;
       notifyListeners();
     }
   }
@@ -732,7 +728,7 @@ class ApplicationState extends ChangeNotifier {
     //     transactionDate: transaction.timestamp,
     //   );
     // }
-    _fetchAccumulations();
+    // _fetchAccumulations();
 
     // update balance
     updateBalanceSync(
@@ -754,9 +750,9 @@ class ApplicationState extends ChangeNotifier {
     });
 
     // update top categories
-    _fetchTopThreeSpendingCategories();
+    // _fetchTopThreeSpendingCategories();
     // fetchChartData
-    _fetchChartData();
+    // _fetchChartData();
   }
 
   void updateTransaction(transaction_model.Transaction oldTransaction, transaction_model.Transaction newTransaction) async {
@@ -772,7 +768,7 @@ class ApplicationState extends ChangeNotifier {
     //     oldTransactionDate: oldTransaction.timestamp,
     //   );
     // }
-    _fetchAccumulations();
+    // _fetchAccumulations();
 
     updateBalanceSync(
       actionType: TransactionActions.update,
@@ -790,9 +786,9 @@ class ApplicationState extends ChangeNotifier {
     });
 
     // update top categories
-    _fetchTopThreeSpendingCategories();
+    // _fetchTopThreeSpendingCategories();
     // fetchChartData
-    _fetchChartData();
+    // _fetchChartData();
   }
 
   Future<void> deleteTransaction(transaction_model.Transaction transaction, [bool? shouldUpdatebalance = true]) async {
@@ -807,7 +803,7 @@ class ApplicationState extends ChangeNotifier {
     //     transactionDate: transaction.timestamp,
     //   );
     // }
-    _fetchAccumulations();
+    // _fetchAccumulations();
     if (shouldUpdatebalance!) {
       updateBalanceSync(
         actionType: TransactionActions.delete,
@@ -818,10 +814,10 @@ class ApplicationState extends ChangeNotifier {
 
     await FirebaseFirestore.instance.collection('transactions').doc(transaction.id).delete();
 
-    // update top categories
-    _fetchTopThreeSpendingCategories();
-    // fetchChartData
-    _fetchChartData();
+    // // update top categories
+    // _fetchTopThreeSpendingCategories();
+    // // fetchChartData
+    // _fetchChartData();
   }
 
   Future<void> unselectCategory(List<SelectedCategory> unSelectedCategories) async {
