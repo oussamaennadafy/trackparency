@@ -8,7 +8,6 @@ import 'package:expense_tracker/shared/components/texts/shake_text.dart';
 import 'package:expense_tracker/theme/colors.dart';
 import 'package:expense_tracker/utils/formaters/formate_price.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class TransactionBottomSheet extends StatefulWidget {
@@ -37,13 +36,6 @@ class TransactionBottomSheet extends StatefulWidget {
       scrollControlDisabledMaxHeightRatio: maxHeightRatio,
       builder: (context) => TransactionBottomSheet(type: type),
     );
-    SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
-        statusBarColor: Color.fromARGB(117, 255, 255, 255),
-        statusBarIconBrightness: Brightness.light,
-        statusBarBrightness: Brightness.light,
-      ),
-    );
   }
 
   static void edit(
@@ -60,13 +52,6 @@ class TransactionBottomSheet extends StatefulWidget {
       builder: (context) => TransactionBottomSheet(
         transaction: transaction,
         type: transaction.type,
-      ),
-    );
-    SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
-        statusBarColor: Color.fromARGB(117, 255, 255, 255),
-        statusBarIconBrightness: Brightness.light,
-        statusBarBrightness: Brightness.light,
       ),
     );
   }
@@ -310,14 +295,6 @@ class TransactioneBottomSheetState extends State<TransactionBottomSheet> {
   void dispose() {
     _titleInputController.dispose();
     _commentInputController.dispose();
-    SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
-        statusBarColor: AppColors.surface,
-        statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness: Brightness.dark,
-        // systemStatusBarContrastEnforced: true,
-      ),
-    );
     super.dispose();
   }
 
