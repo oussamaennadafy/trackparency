@@ -1,9 +1,13 @@
 import 'package:expense_tracker/app_state.dart';
 import 'package:expense_tracker/features/transactions/models/transaction.dart';
 import 'package:expense_tracker/shared/bottomSheets/transaction_bottomSheet/data/drop_down_items.dart';
+import 'package:expense_tracker/shared/bottomSheets/transaction_bottomSheet/widgets/commentInput/index.dart';
+import 'package:expense_tracker/shared/bottomSheets/transaction_bottomSheet/widgets/dragHandler/index.dart';
 import 'package:expense_tracker/shared/bottomSheets/transaction_bottomSheet/widgets/keyboard/index.dart';
+import 'package:expense_tracker/shared/bottomSheets/transaction_bottomSheet/widgets/priceText/index.dart';
+import 'package:expense_tracker/shared/bottomSheets/transaction_bottomSheet/widgets/titleInput/index.dart';
+import 'package:expense_tracker/shared/bottomSheets/transaction_bottomSheet/widgets/transactionDropDowns/index.dart';
 import 'package:expense_tracker/shared/components/drop_downs/classes/drop_down_item.dart';
-import 'package:expense_tracker/shared/components/drop_downs/drop_down_menu.dart';
 import 'package:expense_tracker/shared/components/texts/shake_text.dart';
 import 'package:expense_tracker/theme/colors.dart';
 import 'package:expense_tracker/utils/formaters/formate_price.dart';
@@ -73,8 +77,8 @@ class TransactioneBottomSheetState extends State<TransactionBottomSheet> {
     super.initState();
     // define vriables based on transaction type
     if (widget.type == TransactionType.expense) {
-      // categories = expenseCategories;
       final applicationState = Provider.of<ApplicationState>(context, listen: false);
+      // categories = expenseCategories;
       categories = applicationState.userSelectedCategories
           .map(
             (el) => DropDownItem(
@@ -88,6 +92,7 @@ class TransactioneBottomSheetState extends State<TransactionBottomSheet> {
       categories = incomeCategories;
     }
     // define vriables based on action type : edit or creation
+    // add case
     if (widget.transaction != null) {
       selectedPaymentMethod = widget.transaction!.paymentMethod;
       selectedCategory = widget.transaction!.category;
@@ -96,6 +101,7 @@ class TransactioneBottomSheetState extends State<TransactionBottomSheet> {
       _commentInputController.text = widget.transaction!.comment;
       selectedDate = widget.transaction!.timestamp;
     } else {
+      // edit case
       selectedPaymentMethod = widget.type == TransactionType.expense ? "Cash" : "Card";
       selectedCategory = widget.type == TransactionType.expense ? categories.first.label : "Salary";
       price = "0";
@@ -167,12 +173,12 @@ class TransactioneBottomSheetState extends State<TransactionBottomSheet> {
         firstDate: DateTime(
           selectedDate.year,
           selectedDate.month,
-          selectedDate.day - 7,
+          selectedDate.day - 6,
         ),
         lastDate: DateTime(
           selectedDate.year,
           selectedDate.month,
-          selectedDate.day + 7,
+          selectedDate.day + 6,
         ),
         initialDate: selectedDate,
         // currentDate: selectedDate,
@@ -211,6 +217,8 @@ class TransactioneBottomSheetState extends State<TransactionBottomSheet> {
     if (price == "0" && character == "+") return price;
 
     if (price == "0") return character;
+
+    // if (price.length == 6) return price;
 
     newValue += character;
 
@@ -301,7 +309,6 @@ class TransactioneBottomSheetState extends State<TransactionBottomSheet> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      clipBehavior: Clip.hardEdge,
       decoration: const BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.all(
@@ -309,132 +316,32 @@ class TransactioneBottomSheetState extends State<TransactionBottomSheet> {
         ),
       ),
       margin: const EdgeInsets.all(6.0),
-      width: double.infinity,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const SizedBox(height: 12),
-          Container(
-            width: 35,
-            height: 3,
-            decoration: const BoxDecoration(
-              borderRadius: BorderRadius.all(
-                Radius.circular(20),
-              ),
-              color: AppColors.gray,
-            ),
-          ),
+          const DragHandler(),
           Expanded(
             flex: 2,
-            child: Container(
-              alignment: Alignment.center,
-              margin: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: DropDownMenu(
-                      options: paymentMethods,
-                      onSelect: (selectedOption) {
-                        onPaymentMethodSelect(selectedOption);
-                      },
-                      selectedOption: selectedPaymentMethod,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: DropDownMenu(
-                      options: categories,
-                      onSelect: (selectedOption) {
-                        onCategorySelect(selectedOption);
-                      },
-                      selectedOption: selectedCategory,
-                    ),
-                  ),
-                ],
-              ),
+            child: TransactionDropDowns(
+              transactionType: widget.type,
+              onPaymentMethodSelect: onPaymentMethodSelect,
+              selectedPaymentMethod: selectedPaymentMethod,
+              onCategorySelect: onCategorySelect,
+              selectedCategory: selectedCategory,
             ),
           ),
           Expanded(
-            child: Center(
-              child: TextField(
-                controller: _titleInputController,
-                textAlign: TextAlign.center,
-                decoration: InputDecoration(
-                  border: InputBorder.none,
-                  hintText: widget.type == TransactionType.expense ? 'Expense' : "Income",
-                  hintStyle: const TextStyle(
-                    fontSize: 14,
-                    color: AppColors.primary,
-                  ),
-                ),
-              ),
+            child: TitleInput(
+              transactionType: widget.type,
+              titleInputController: _titleInputController,
             ),
           ),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            reverse: true,
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Container(
-                  margin: const EdgeInsets.only(top: 15),
-                  child: isPriceInvalid
-                      ? ShakeWidget(
-                          child: Text(
-                            "DH",
-                            style: TextStyle(
-                              fontSize: 28,
-                              color: isPriceInvalid ? Colors.red.shade400 : AppColors.gray,
-                            ),
-                          ),
-                        )
-                      : Text(
-                          "DH",
-                          style: TextStyle(
-                            fontSize: 28,
-                            color: isPriceInvalid ? Colors.red.shade400 : AppColors.gray,
-                          ),
-                        ),
-                ),
-                const SizedBox(width: 4),
-                isPriceInvalid
-                    ? ShakeWidget(
-                        child: Text(
-                          price,
-                          style: TextStyle(
-                            fontSize: 54,
-                            color: isPriceInvalid ? Colors.red : AppColors.primary,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      )
-                    : Text(
-                        price.contains("+") ? price : formatePrice(int.parse(price)),
-                        style: TextStyle(
-                          fontSize: 54,
-                          color: isPriceInvalid ? Colors.red : AppColors.primary,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-              ],
-            ),
+          PriceText(
+            price: price,
+            isPriceInvalid: isPriceInvalid,
           ),
-          Expanded(
-            flex: 2,
-            child: Container(
-              alignment: Alignment.center,
-              child: TextField(
-                controller: _commentInputController,
-                textAlign: TextAlign.center,
-                decoration: const InputDecoration(
-                  border: InputBorder.none,
-                  hintText: 'Add comment...',
-                ),
-              ),
-            ),
+          CommentInput(
+            commentInputController: _commentInputController,
           ),
           AppKeyboard(
             handleItemPress: onkeyboardPress,

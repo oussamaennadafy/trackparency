@@ -1,5 +1,5 @@
 import 'package:expense_tracker/features/home/screens/index.dart';
-import 'package:expense_tracker/features/profile/profile.dart';
+import 'package:expense_tracker/features/profile/screens/profile.dart';
 import 'package:expense_tracker/features/transactions/screens/transactions.dart';
 import 'package:expense_tracker/shared/components/headers/header/index.dart';
 import 'package:expense_tracker/theme/colors.dart';

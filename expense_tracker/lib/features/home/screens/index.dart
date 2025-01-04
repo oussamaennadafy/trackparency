@@ -1,3 +1,5 @@
+import 'package:expense_tracker/app_state.dart';
+import 'package:expense_tracker/features/home/enums/date_frames.dart';
 import 'package:expense_tracker/features/home/widgets/index/cards/index.dart';
 import 'package:expense_tracker/features/home/widgets/index/categorie_tiles/index.dart';
 import 'package:expense_tracker/features/home/widgets/index/chart/index.dart';
@@ -5,6 +7,7 @@ import 'package:expense_tracker/features/home/widgets/index/filter/index.dart';
 import 'package:expense_tracker/shared/components/drop_downs/classes/drop_down_item.dart';
 import 'package:expense_tracker/shared/components/switchers/tab_switcher/classes/tab_button.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -26,7 +29,7 @@ class _HomeState extends State<Home> {
   ];
   late TabButton selectedTab;
   String selectedMonth = "SEPTEMBER";
-  String selectedCard = "DAY";
+  late DateFrame selectedCard;
 
   final months = const [
     DropDownItem(label: "JANUARY"),
@@ -48,10 +51,9 @@ class _HomeState extends State<Home> {
     });
   }
 
-  void onCardPress(String month) {
-    setState(() {
-      selectedCard = month;
-    });
+  void onCardPress(DateFrame dateFrame) async {
+    final appState = Provider.of<ApplicationState>(context, listen: false);
+    appState.setSelectedDateFrame = dateFrame;
   }
 
   void onTabPress(TabButton tab) {
@@ -63,6 +65,8 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
+    final appState = Provider.of<ApplicationState>(context, listen: false);
+    selectedCard = appState.selectedDateFrame;
     selectedTab = tabs[0];
   }
 
@@ -81,10 +85,7 @@ class _HomeState extends State<Home> {
             onMonthSelect: onMonthSelect,
           ),
           const Chart(),
-          Cards(
-            onCardPress: onCardPress,
-            selectedCard: selectedCard,
-          ),
+          const Cards(),
           const CategoryTiles(),
         ],
       ),

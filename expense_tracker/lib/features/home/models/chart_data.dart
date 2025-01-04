@@ -1,5 +1,5 @@
 class BiggestDay {
-  final int day;
+  final String day;
   final int total;
 
   const BiggestDay({
@@ -9,7 +9,7 @@ class BiggestDay {
 }
 
 class ChartData {
-  final List<MapEntry<int, int>> resultsMap;
+  final List<MapEntry<String, int>> resultsMap;
   final BiggestDay biggestDay;
 
   const ChartData({

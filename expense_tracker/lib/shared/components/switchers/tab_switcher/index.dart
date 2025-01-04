@@ -68,17 +68,18 @@ class _TabSwitcherState extends State<TabSwitcher> with SingleTickerProviderStat
                                 right: 0,
                                 child: AnimatedBuilder(
                                   animation: _animationController,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: AppColors.primary,
+                                      borderRadius: const BorderRadius.all(
+                                        Radius.circular(9999),
+                                      ),
+                                    ),
+                                  ),
                                   builder: (context, child) {
                                     return FractionalTranslation(
                                       translation: Offset(_animationController.value, 0),
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          color: AppColors.primary,
-                                          borderRadius: const BorderRadius.all(
-                                            Radius.circular(9999),
-                                          ),
-                                        ),
-                                      ),
+                                      child: child,
                                     );
                                   },
                                 ),

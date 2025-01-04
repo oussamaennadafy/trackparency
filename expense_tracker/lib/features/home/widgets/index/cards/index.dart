@@ -1,17 +1,22 @@
 import 'package:expense_tracker/app_state.dart';
+import 'package:expense_tracker/features/home/enums/date_frames.dart';
 import 'package:expense_tracker/shared/components/cards/price_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class Cards extends StatelessWidget {
-  const Cards({
-    super.key,
-    required this.onCardPress,
-    required this.selectedCard,
-  });
+class Cards extends StatefulWidget {
+  const Cards({super.key});
 
-  final Function(String) onCardPress;
-  final String selectedCard;
+  @override
+  State<Cards> createState() => _CardsState();
+}
+
+class _CardsState extends State<Cards> {
+  Future<void> onCardPress(DateFrame dateFrame) async {
+    final appState = Provider.of<ApplicationState>(context, listen: false);
+    if (appState.selectedDateFrame == dateFrame) return;
+    appState.setSelectedDateFrame = dateFrame;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,22 +27,22 @@ class Cards extends StatelessWidget {
           spacing: 8.0,
           children: [
             PriceCard(
-              label: "Day",
+              label: "Today",
               price: appState.dayAccumulation.toString(),
-              border: selectedCard == "DAY",
-              onPress: () => onCardPress("DAY"),
+              border: appState.selectedDateFrame == DateFrame.day,
+              onPress: () => onCardPress(DateFrame.day),
             ),
             PriceCard(
-              label: "Week",
+              label: "This week",
               price: appState.weekAccumulation.toString(),
-              border: selectedCard == "WEEK",
-              onPress: () => onCardPress("WEEK"),
+              border: appState.selectedDateFrame == DateFrame.week,
+              onPress: () => onCardPress(DateFrame.week),
             ),
             PriceCard(
-              label: "Month",
+              label: "This Month",
               price: appState.monthAccumulation.toString(),
-              border: selectedCard == "MONTH",
-              onPress: () => onCardPress("MONTH"),
+              border: appState.selectedDateFrame == DateFrame.month,
+              onPress: () => onCardPress(DateFrame.month),
             ),
           ],
         ),

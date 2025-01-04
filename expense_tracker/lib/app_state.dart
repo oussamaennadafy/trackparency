@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:expense_tracker/features/categories/models/category.dart';
 import 'package:expense_tracker/features/categories/models/selected_category.dart';
+import 'package:expense_tracker/features/home/enums/date_frames.dart';
 import 'package:expense_tracker/features/home/models/chart_data.dart';
 import 'package:expense_tracker/features/home/models/top_category.dart';
 import 'package:expense_tracker/features/transactions/models/transaction.dart' as transaction_model;
@@ -10,6 +11,39 @@ import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'firebase_options.dart';
+
+// Day range (current day)
+final now = DateTime.now();
+final startOfDay = DateTime(now.year, now.month, now.day);
+final endOfDay = DateTime(now.year, now.month, now.day, 23, 59, 59);
+
+// Week range
+final startOfWeek = DateTime(now.year, now.month, now.day - (now.weekday - 1));
+final endOfWeek = DateTime(now.year, now.month, now.day + (7 - now.weekday));
+
+// Month range
+final startOfMonth = DateTime(now.year, now.month, 1);
+final endOfMonth = DateTime(now.year, now.month + 1, 0, 23, 59, 59);
+
+enum Weekdays {
+  monday,
+  tuesday,
+  wednesday,
+  thursday,
+  friday,
+  saturday,
+  sunday,
+}
+
+enum WeekdaysSortcut {
+  mon,
+  tue,
+  wed,
+  thu,
+  fri,
+  sat,
+  sun,
+}
 
 enum OnboardingStatus {
   notStarted,
@@ -70,8 +104,19 @@ class ApplicationState extends ChangeNotifier {
     _topThreeSpendingCategories = topThreeSpendingCategories;
   }
 
+  // selected dateFrame
+  DateFrame _selectedDateFrame = DateFrame.day;
+  DateFrame get selectedDateFrame => _selectedDateFrame;
+
+  // _setSelectedDateFrame
+  set setSelectedDateFrame(DateFrame selectedDateFrame) {
+    _selectedDateFrame = selectedDateFrame;
+    _fetchTopThreeSpendingCategories(_selectedDateFrame);
+    notifyListeners();
+  }
+
   // function getter
-  get fetchTopThreeSpendingCategories => _fetchTopThreeSpendingCategories();
+  get fetchTopThreeSpendingCategories => _fetchTopThreeSpendingCategories(_selectedDateFrame);
 
   bool _isTopThreeSpendingCategoriesLoading = true;
   bool get isTopThreeSpendingCategoriesLoading => _isTopThreeSpendingCategoriesLoading;
@@ -117,7 +162,7 @@ class ApplicationState extends ChangeNotifier {
             _fetchUserBalance();
             _fetchChartData();
             _fetchAccumulations();
-            _fetchTopThreeSpendingCategories();
+            _fetchTopThreeSpendingCategories(_selectedDateFrame);
             notifyListeners();
           },
         );
@@ -144,10 +189,6 @@ class ApplicationState extends ChangeNotifier {
   }
 
   Future<void> _fetchChartData() async {
-    final now = DateTime.now();
-
-    final startDate = DateTime(now.year, now.month, now.day - 7);
-
     final transactions = await FirebaseFirestore.instance
         .collection('transactions')
         .where(
@@ -160,26 +201,22 @@ class ApplicationState extends ChangeNotifier {
         )
         .where(
           "timestamp",
-          isGreaterThanOrEqualTo: startDate,
-          isLessThanOrEqualTo: now,
+          isGreaterThanOrEqualTo: startOfWeek,
+          isLessThanOrEqualTo: endOfWeek,
         )
         .get();
 
-    final Map<int, int> resultsMap = {};
-    for (var i = 0; i < 8; i++) {
-      resultsMap[startDate.day + i] = 0;
-      // print(startDate.day + i);
+    final Map<String, int> resultsMap = {};
+
+    for (var i = 0; i < 7; i++) {
+      resultsMap[WeekdaysSortcut.values[i].toString().split(".")[1]] = 0;
     }
     for (final transaction in transactions.docs) {
-      final day = (transaction.data()["timestamp"] as Timestamp).toDate().day;
+      final day = (transaction.data()["timestamp"] as Timestamp).toDate().weekday;
       final price = int.tryParse(transaction.data()["price"].toString());
-      if (resultsMap[day] != null) {
-        resultsMap[day] = resultsMap[day]! + price!;
-      } else {
-        resultsMap[day] = price!;
-      }
+      resultsMap[WeekdaysSortcut.values[day - 1].toString().split(".")[1]] = resultsMap[WeekdaysSortcut.values[day - 1].toString().split(".")[1]]! + price!;
     }
-    Map<int, int> biggestDay = {
+    Map<String, int> biggestDay = {
       resultsMap.keys.first: resultsMap[resultsMap.keys.first]!,
     };
     resultsMap.forEach((key, value) {
@@ -197,12 +234,27 @@ class ApplicationState extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> _fetchTopThreeSpendingCategories() async {
-    // now
-    final now = DateTime.now();
+  Future<void> _fetchTopThreeSpendingCategories(DateFrame frametime) async {
+    _isTopThreeSpendingCategoriesLoading = true;
+    notifyListeners();
     // Month range
-    final startOfMonth = DateTime(now.year, now.month, 1);
-    final endOfMonth = DateTime(now.year, now.month + 1, 0, 23, 59, 59);
+    late final DateTime startOfDateFrame;
+    late final DateTime endOfDateFrame;
+
+    switch (frametime) {
+      case DateFrame.day:
+        startOfDateFrame = startOfDay;
+        endOfDateFrame = endOfDay;
+        break;
+      case DateFrame.week:
+        startOfDateFrame = startOfWeek;
+        endOfDateFrame = endOfWeek;
+        break;
+      case DateFrame.month:
+        startOfDateFrame = startOfMonth;
+        endOfDateFrame = endOfMonth;
+        break;
+    }
     // month total
     int mountTotal = 0;
 
@@ -218,8 +270,8 @@ class ApplicationState extends ChangeNotifier {
         )
         .where(
           "timestamp",
-          isGreaterThanOrEqualTo: startOfMonth,
-          isLessThanOrEqualTo: endOfMonth,
+          isGreaterThanOrEqualTo: startOfDateFrame,
+          isLessThanOrEqualTo: endOfDateFrame,
         )
         .get();
 
@@ -287,43 +339,6 @@ class ApplicationState extends ChangeNotifier {
 
   Future<void> _fetchAccumulations() async {
     try {
-      final now = DateTime.now();
-
-      // Get correct week boundaries
-      final currentDay = now.day;
-      int weekStart;
-      int weekEnd;
-
-      if (currentDay <= 7) {
-        weekStart = 1;
-        weekEnd = 7;
-      } else if (currentDay <= 14) {
-        weekStart = 8;
-        weekEnd = 14;
-      } else if (currentDay <= 21) {
-        weekStart = 15;
-        weekEnd = 21;
-      } else if (currentDay <= 28) {
-        weekStart = 22;
-        weekEnd = 28;
-      } else {
-        // For days 29-31, they form their own "week"
-        weekStart = 29;
-        weekEnd = DateTime(now.year, now.month + 1, 0).day; // Last day of current month
-      }
-
-      // Day range (current day)
-      final startOfDay = DateTime(now.year, now.month, now.day);
-      final endOfDay = DateTime(now.year, now.month, now.day, 23, 59, 59);
-
-      // Week range
-      final startOfWeek = DateTime(now.year, now.month, weekStart);
-      final endOfWeek = DateTime(now.year, now.month, weekEnd, 23, 59, 59);
-
-      // Month range
-      final startOfMonth = DateTime(now.year, now.month, 1);
-      final endOfMonth = DateTime(now.year, now.month + 1, 0, 23, 59, 59);
-
       final transactions = FirebaseFirestore.instance
           .collection('transactions')
           .where(
@@ -366,10 +381,8 @@ class ApplicationState extends ChangeNotifier {
       }
 
       int weekTotalExpenses = 0;
-      if (startOfWeek.month == now.month) {
-        for (var doc in weekTransactions.docs) {
-          weekTotalExpenses += (doc.data()['price'] as num).toInt();
-        }
+      for (var doc in weekTransactions.docs) {
+        weekTotalExpenses += (doc.data()['price'] as num).toInt();
       }
 
       int monthTotalExpenses = 0;
@@ -387,96 +400,6 @@ class ApplicationState extends ChangeNotifier {
     } catch (e) {
       print('Error fetching accumulations: $e');
     }
-  }
-
-  Future<void> _updateAccumulations({
-    required String actionType,
-    required int amount,
-    required DateTime transactionDate,
-    DateTime? oldTransactionDate, // Add this for updates
-  }) async {
-    final now = DateTime.now();
-
-    // Helper function to get week number
-    int getWeekNumber(DateTime date) {
-      final day = date.day;
-      if (day <= 7) return 1;
-      if (day <= 14) return 2;
-      if (day <= 21) return 3;
-      if (day <= 28) return 4;
-      return 5; // days 29-31
-    }
-
-    // Helper function to check if date is in current month
-    bool isCurrentMonth(DateTime date) {
-      return date.year == now.year && date.month == now.month;
-    }
-
-    // Helper function to check if date is today
-    bool isCurrentDay(DateTime date) {
-      return date.year == now.year && date.month == now.month && date.day == now.day;
-    }
-
-    // Helper function to check if date is in specific week
-    bool isInWeek(DateTime date, int weekNumber) {
-      if (!isCurrentMonth(date)) return false;
-      return getWeekNumber(date) == weekNumber;
-    }
-
-    switch (actionType) {
-      case TransactionActions.add:
-        if (isCurrentDay(transactionDate)) {
-          _dayAccumulation += amount;
-        }
-        if (isCurrentMonth(transactionDate)) {
-          _monthAccumulation += amount;
-          if (isInWeek(transactionDate, getWeekNumber(now))) {
-            _weekAccumulation += amount;
-          }
-        }
-        break;
-
-      case TransactionActions.delete:
-        if (isCurrentDay(transactionDate)) {
-          _dayAccumulation -= amount;
-        }
-        if (isCurrentMonth(transactionDate)) {
-          _monthAccumulation -= amount;
-          if (isInWeek(transactionDate, getWeekNumber(now))) {
-            _weekAccumulation -= amount;
-          }
-        }
-        break;
-
-      case TransactionActions.update:
-        if (oldTransactionDate != null) {
-          // First remove the old transaction's effect
-          if (isCurrentDay(oldTransactionDate)) {
-            _dayAccumulation += amount; // amount is already negative for expense
-          }
-          if (isCurrentMonth(oldTransactionDate)) {
-            _monthAccumulation += amount;
-            if (isInWeek(oldTransactionDate, getWeekNumber(now))) {
-              _weekAccumulation += amount;
-            }
-          }
-
-          // Then add the new transaction's effect
-          final newAmount = -amount; // Reverse the amount for the new transaction
-          if (isCurrentDay(transactionDate)) {
-            _dayAccumulation += newAmount;
-          }
-          if (isCurrentMonth(transactionDate)) {
-            _monthAccumulation += newAmount;
-            if (isInWeek(transactionDate, getWeekNumber(now))) {
-              _weekAccumulation += newAmount;
-            }
-          }
-        }
-        break;
-    }
-
-    notifyListeners();
   }
 
   Future<void> _fetchCategories(String userId) async {
@@ -575,7 +498,7 @@ class ApplicationState extends ChangeNotifier {
     // delete related transactions
     await deleteAllTransactionsOfCategory(category.name);
 
-    await _fetchTopThreeSpendingCategories();
+    await _fetchTopThreeSpendingCategories(_selectedDateFrame);
     await _fetchAccumulations();
     _deleteCustomCategoryLoading = false;
     notifyListeners();
@@ -825,7 +748,7 @@ class ApplicationState extends ChangeNotifier {
       final category = unSelectedCategories[i];
       await deleteAllTransactionsOfCategory(category.name);
     }
-    await _fetchTopThreeSpendingCategories();
+    await _fetchTopThreeSpendingCategories(_selectedDateFrame);
     await _fetchAccumulations();
     notifyListeners();
   }

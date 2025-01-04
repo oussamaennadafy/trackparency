@@ -1,7 +1,7 @@
 import 'package:expense_tracker/theme/colors.dart';
 import 'package:flutter/material.dart';
 
-class ChartBar extends StatelessWidget {
+class ChartBar extends StatefulWidget {
   const ChartBar({
     super.key,
     required this.color,
@@ -14,6 +14,34 @@ class ChartBar extends StatelessWidget {
   final double heightFactor;
   final String value;
   final String label;
+
+  @override
+  State<ChartBar> createState() => _ChartBarState();
+}
+
+class _ChartBarState extends State<ChartBar> {
+  double _currentHeightFactor = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    // Schedule the animation to start after the first frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {
+        _currentHeightFactor = widget.heightFactor;
+      });
+    });
+  }
+
+  @override
+  void didUpdateWidget(ChartBar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.heightFactor != widget.heightFactor) {
+      setState(() {
+        _currentHeightFactor = widget.heightFactor;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +58,7 @@ class ChartBar extends StatelessWidget {
                       duration: const Duration(milliseconds: 300),
                       curve: Curves.ease,
                       alignment: Alignment.bottomCenter,
-                      heightFactor: heightFactor,
+                      heightFactor: _currentHeightFactor,
                       child: LayoutBuilder(
                         builder: (context, constraints) {
                           return Stack(
@@ -39,9 +67,8 @@ class ChartBar extends StatelessWidget {
                             children: [
                               Container(
                                 width: 20,
-                                // height: 20,
                                 decoration: BoxDecoration(
-                                  color: color,
+                                  color: widget.color,
                                   borderRadius: const BorderRadius.all(
                                     Radius.circular(9999),
                                   ),
@@ -50,7 +77,7 @@ class ChartBar extends StatelessWidget {
                               Positioned(
                                 bottom: constraints.minHeight,
                                 child: Text(
-                                  value,
+                                  widget.value,
                                   style: const TextStyle(
                                     fontWeight: FontWeight.w600,
                                   ),
@@ -67,7 +94,7 @@ class ChartBar extends StatelessWidget {
             ),
             const SizedBox(height: 4.0),
             Text(
-              label,
+              widget.label,
               style: const TextStyle(
                 color: AppColors.gray,
               ),

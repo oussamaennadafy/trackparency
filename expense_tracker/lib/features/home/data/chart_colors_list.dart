@@ -9,5 +9,4 @@ List<Color> chartBarColors = [
   AppColors.violet,
   AppColors.lightBlue,
   AppColors.pink,
-  AppColors.orange,
 ];

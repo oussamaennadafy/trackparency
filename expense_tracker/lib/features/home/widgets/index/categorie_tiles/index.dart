@@ -1,5 +1,5 @@
 import 'package:expense_tracker/app_state.dart';
-import 'package:expense_tracker/shared/components/list_tiles/list_tile.dart';
+import 'package:expense_tracker/shared/components/tiles/app_tile/index.dart';
 import 'package:expense_tracker/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -22,7 +22,6 @@ class CategoryTiles extends StatelessWidget {
                       title: el.name,
                       subTitle: "Cash",
                       trailingTitle: el.total,
-                      isTrailingTitleAnimated: true,
                       trailingSubTitle: "${el.percentage?.toStringAsFixed(2)}%",
                       onTap: () {},
                     ),
