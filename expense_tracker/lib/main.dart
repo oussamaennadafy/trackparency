@@ -11,6 +11,7 @@ import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'app_state.dart';
+import 'package:expense_tracker/enums/index.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

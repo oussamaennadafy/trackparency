@@ -11,23 +11,21 @@ class CategoryTiles extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: Consumer<ApplicationState>(
-        builder: (context, appState, _) => appState.isTopThreeSpendingCategoriesLoading
-            ? const Center(child: CircularProgressIndicator())
-            : Column(
-                children: appState.topThreeSpendingCategories.map((el) {
-                  return Expanded(
-                    child: AppListTile(
-                      icon: el.icon,
-                      iconBackgroundColor: AppColors().get(el.color),
-                      title: el.name,
-                      subTitle: "Cash",
-                      trailingTitle: el.total,
-                      trailingSubTitle: "${el.percentage?.toStringAsFixed(2)}%",
-                      onTap: () {},
-                    ),
-                  );
-                }).toList(),
+        builder: (context, appState, _) => Column(
+          children: appState.topThreeSpendingCategories.map((el) {
+            return Expanded(
+              child: AppListTile(
+                icon: el.icon,
+                iconBackgroundColor: AppColors().get(el.color),
+                title: el.name,
+                subTitle: "Cash",
+                trailingTitle: el.total,
+                trailingSubTitle: "${el.percentage?.toStringAsFixed(2)}%",
+                onTap: () {},
               ),
+            );
+          }).toList(),
+        ),
       ),
     );
   }

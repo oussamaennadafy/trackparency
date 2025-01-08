@@ -1,6 +1,6 @@
 import 'package:expense_tracker/app_state.dart';
 import 'package:expense_tracker/features/home/data/chart_colors_list.dart';
-import 'package:expense_tracker/features/home/helpers/get_chart_height_factor.dart';
+import 'package:expense_tracker/features/home/utils/get_chart_height_factor.dart';
 import 'package:expense_tracker/features/home/widgets/index/chart/chart_bar/index.dart';
 import 'package:expense_tracker/theme/colors.dart';
 import 'package:flutter/material.dart';

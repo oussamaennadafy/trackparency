@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:expense_tracker/features/categories/models/category.dart';
 import 'package:expense_tracker/features/categories/models/selected_category.dart';
-import 'package:expense_tracker/features/home/enums/date_frames.dart';
+import 'package:expense_tracker/enums/index.dart';
 import 'package:expense_tracker/features/home/models/chart_data.dart';
 import 'package:expense_tracker/features/home/models/top_category.dart';
 import 'package:expense_tracker/features/transactions/models/transaction.dart' as transaction_model;
+import 'package:expense_tracker/utils/date_manipulators/get_last_seven_months.dart';
+import 'package:expense_tracker/utils/date_manipulators/get_last_seven_weeks.dart';
 import 'package:firebase_auth/firebase_auth.dart' hide EmailAuthProvider, PhoneAuthProvider;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
@@ -24,39 +26,6 @@ final endOfWeek = DateTime(now.year, now.month, now.day + (7 - now.weekday));
 // Month range
 final startOfMonth = DateTime(now.year, now.month, 1);
 final endOfMonth = DateTime(now.year, now.month + 1, 0, 23, 59, 59);
-
-enum Weekdays {
-  monday,
-  tuesday,
-  wednesday,
-  thursday,
-  friday,
-  saturday,
-  sunday,
-}
-
-enum WeekdaysSortcut {
-  mon,
-  tue,
-  wed,
-  thu,
-  fri,
-  sat,
-  sun,
-}
-
-enum OnboardingStatus {
-  notStarted,
-  balanceSet,
-  categoriesSet,
-  completed
-}
-
-class TransactionActions {
-  static const add = "ADD";
-  static const update = "UPDATE";
-  static const delete = "DELETE";
-}
 
 class ApplicationState extends ChangeNotifier {
   ApplicationState() {
@@ -112,14 +81,12 @@ class ApplicationState extends ChangeNotifier {
   set setSelectedDateFrame(DateFrame selectedDateFrame) {
     _selectedDateFrame = selectedDateFrame;
     _fetchTopThreeSpendingCategories(_selectedDateFrame);
+    _fetchChartData(_selectedDateFrame);
     notifyListeners();
   }
 
   // function getter
   get fetchTopThreeSpendingCategories => _fetchTopThreeSpendingCategories(_selectedDateFrame);
-
-  bool _isTopThreeSpendingCategoriesLoading = true;
-  bool get isTopThreeSpendingCategoriesLoading => _isTopThreeSpendingCategoriesLoading;
 
   bool _deleteCustomCategoryLoading = false;
   bool get deleteCustomCategoryLoading => _deleteCustomCategoryLoading;
@@ -160,7 +127,7 @@ class ApplicationState extends ChangeNotifier {
               );
             }
             _fetchUserBalance();
-            _fetchChartData();
+            _fetchChartData(_selectedDateFrame);
             _fetchAccumulations();
             _fetchTopThreeSpendingCategories(_selectedDateFrame);
             notifyListeners();
@@ -188,7 +155,30 @@ class ApplicationState extends ChangeNotifier {
     ]);
   }
 
-  Future<void> _fetchChartData() async {
+  Future<void> _fetchChartData(DateFrame frametime) async {
+    // // Month range
+    late final DateTime startOfDateFrame;
+    late final DateTime endOfDateFrame;
+
+    final lastSevenWeeksFrame = getLastSevenWeeks();
+
+    final lastSevenMonthsFrame = getLastSevenMonths();
+
+    switch (frametime) {
+      case DateFrame.day:
+        startOfDateFrame = startOfWeek;
+        endOfDateFrame = endOfWeek;
+        break;
+      case DateFrame.week:
+        startOfDateFrame = lastSevenWeeksFrame.startOfPeriod;
+        endOfDateFrame = lastSevenWeeksFrame.endOfPeriod;
+        break;
+      case DateFrame.month:
+        startOfDateFrame = lastSevenMonthsFrame.startOfPeriod;
+        endOfDateFrame = lastSevenMonthsFrame.endOfPeriod;
+        break;
+    }
+
     final transactions = await FirebaseFirestore.instance
         .collection('transactions')
         .where(
@@ -201,24 +191,84 @@ class ApplicationState extends ChangeNotifier {
         )
         .where(
           "timestamp",
-          isGreaterThanOrEqualTo: startOfWeek,
-          isLessThanOrEqualTo: endOfWeek,
+          isGreaterThanOrEqualTo: startOfDateFrame,
+          isLessThanOrEqualTo: endOfDateFrame,
         )
         .get();
 
-    final Map<String, int> resultsMap = {};
-
+    Map<String, int> resultsMap = {};
+    // create resultsMap keys
     for (var i = 0; i < 7; i++) {
-      resultsMap[WeekdaysSortcut.values[i].toString().split(".")[1]] = 0;
+      switch (frametime) {
+        case DateFrame.day:
+          resultsMap[WeekdaysSortcut.values[i].toString().split(".")[1]] = 0;
+          break;
+        case DateFrame.week:
+          {
+            final startOfPeriod = lastSevenWeeksFrame.startOfPeriod;
+            final start = DateTime(startOfPeriod.year, startOfPeriod.month, startOfPeriod.day + (7 * i)).day;
+            final end = DateTime(startOfPeriod.year, startOfPeriod.month, startOfPeriod.day + (7 * (i + 1)) - 1).day;
+            resultsMap['$start-$end'] = 0;
+          }
+          break;
+        case DateFrame.month:
+          final startOfPeriod = lastSevenMonthsFrame.startOfPeriod;
+          final month = DateTime(startOfPeriod.year, startOfPeriod.month + i, 1).month;
+          // resultsMap[MonthsShortcut.values[month - 1].toString().split(".")[1]] = 0;
+          resultsMap[month.toString()] = 0;
+          break;
+      }
     }
-    for (final transaction in transactions.docs) {
-      final day = (transaction.data()["timestamp"] as Timestamp).toDate().weekday;
-      final price = int.tryParse(transaction.data()["price"].toString());
-      resultsMap[WeekdaysSortcut.values[day - 1].toString().split(".")[1]] = resultsMap[WeekdaysSortcut.values[day - 1].toString().split(".")[1]]! + price!;
+
+    // fill resultsMap values
+    switch (frametime) {
+      case DateFrame.day:
+        {
+          for (final transaction in transactions.docs) {
+            final day = (transaction.data()["timestamp"] as Timestamp).toDate().weekday;
+            final price = int.tryParse(transaction.data()["price"].toString());
+            resultsMap[WeekdaysSortcut.values[day - 1].toString().split(".")[1]] = resultsMap[WeekdaysSortcut.values[day - 1].toString().split(".")[1]]! + price!;
+          }
+        }
+        break;
+      case DateFrame.week:
+        {
+          final List<int> listOfAccumulations = List.filled(7, 0);
+          for (final transaction in transactions.docs) {
+            final date = (transaction.data()["timestamp"] as Timestamp).toDate();
+            final price = int.tryParse(transaction.data()["price"].toString());
+            final index = (date.difference(lastSevenWeeksFrame.startOfPeriod).inDays / 7).floor();
+            listOfAccumulations[index] += price ?? 0;
+          }
+          final listKeys = resultsMap.keys.toList();
+          for (var i = 0; i < listKeys.length; i++) {
+            resultsMap[listKeys[i]] = listOfAccumulations[i];
+          }
+        }
+        break;
+      case DateFrame.month:
+        {
+          for (final transaction in transactions.docs) {
+            final date = (transaction.data()["timestamp"] as Timestamp).toDate();
+            if (resultsMap.containsKey(date.month.toString())) {
+              final price = int.tryParse(transaction.data()["price"].toString());
+              resultsMap[date.month.toString()] = resultsMap[date.month.toString()]! + price!;
+            }
+          }
+          final Map<String, int> tempList = {};
+          final listEntries = resultsMap.entries.toList();
+          for (var i = 0; i < listEntries.length; i++) {
+            tempList[MonthsShortcut.values[int.parse(listEntries[i].key) - 1].toString().split(".")[1]] = listEntries[i].value;
+          }
+          resultsMap = tempList;
+        }
+        break;
     }
+
     Map<String, int> biggestDay = {
       resultsMap.keys.first: resultsMap[resultsMap.keys.first]!,
     };
+
     resultsMap.forEach((key, value) {
       if (value > biggestDay[biggestDay.keys.first]!) {
         biggestDay = {
@@ -226,17 +276,19 @@ class ApplicationState extends ChangeNotifier {
         };
       }
     });
+
     _chartData = ChartData(
       biggestDay: BiggestDay(day: biggestDay.keys.first, total: biggestDay.values.first),
       resultsMap: resultsMap.entries.toList(),
     );
-    _chartDataLoading = false;
+
+    if (_chartDataLoading == true) {
+      _chartDataLoading = false;
+    }
     notifyListeners();
   }
 
   Future<void> _fetchTopThreeSpendingCategories(DateFrame frametime) async {
-    _isTopThreeSpendingCategoriesLoading = true;
-    notifyListeners();
     // Month range
     late final DateTime startOfDateFrame;
     late final DateTime endOfDateFrame;
@@ -333,7 +385,6 @@ class ApplicationState extends ChangeNotifier {
     }
 
     _topThreeSpendingCategories = sortedList;
-    _isTopThreeSpendingCategoriesLoading = false;
     notifyListeners();
   }
 
@@ -583,7 +634,7 @@ class ApplicationState extends ChangeNotifier {
   }
 
   Future<void> updateBalanceSync({
-    String actionType = TransactionActions.add,
+    TransactionActions actionType = TransactionActions.add,
     String transactionType = transaction_model.TransactionType.expense,
     int amount = 0,
   }) async {

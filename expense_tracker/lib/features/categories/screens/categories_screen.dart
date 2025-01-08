@@ -1,5 +1,6 @@
 import 'package:confirm_dialog/confirm_dialog.dart';
 import 'package:expense_tracker/app_state.dart';
+import 'package:expense_tracker/enums/index.dart';
 import 'package:expense_tracker/features/categories/models/category.dart';
 import 'package:expense_tracker/features/categories/models/selected_category.dart';
 import 'package:expense_tracker/features/categories/utils/get_icon_from_string.dart';
