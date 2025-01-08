@@ -449,7 +449,7 @@ class ApplicationState extends ChangeNotifier {
 
       notifyListeners();
     } catch (e) {
-      print('Error fetching accumulations: $e');
+      //
     }
   }
 
@@ -475,7 +475,7 @@ class ApplicationState extends ChangeNotifier {
         _userSelectedCategories = [];
       }
     } catch (e) {
-      print('Error fetching categories: $e');
+      //
       _categories = [];
       _userSelectedCategories = [];
     } finally {
