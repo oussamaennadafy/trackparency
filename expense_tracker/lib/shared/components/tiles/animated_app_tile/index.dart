@@ -67,7 +67,7 @@ class _AnimatedAppListTileState extends State<AnimatedAppListTile> with SingleTi
     super.didUpdateWidget(oldWidget);
 
     // Check for relevant prop changes that should trigger animation
-    if (oldWidget.trailingTitle != widget.trailingTitle || oldWidget.title != widget.title || oldWidget.icon != widget.icon || oldWidget.iconBackgroundColor != widget.iconBackgroundColor) {
+    if (oldWidget.title != widget.title) {
       _playAnimation();
     }
   }
