@@ -39,7 +39,7 @@ class _CardsState extends State<Cards> {
               onPress: () => onCardPress(DateFrame.week),
             ),
             PriceCard(
-              label: "This Month",
+              label: Months.values[DateTime.now().month - 1].toString().split(".")[1] == appState.selectedMonth ? "This Month" : appState.selectedMonth,
               price: appState.monthAccumulation.toString(),
               border: appState.selectedDateFrame == DateFrame.month,
               onPress: () => onCardPress(DateFrame.month),

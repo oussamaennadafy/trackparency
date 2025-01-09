@@ -28,33 +28,23 @@ class _HomeState extends State<Home> {
     ),
   ];
   late TabButton selectedTab;
-  String selectedMonth = "SEPTEMBER";
+  String selectedMonth = Months.values[DateTime.now().month - 1].toString().split(".")[1].toLowerCase();
   late DateFrame selectedCard;
 
   final months = const [
-    DropDownItem(label: "JANUARY"),
-    DropDownItem(label: "FEBRUARY"),
-    DropDownItem(label: "MARCH"),
-    DropDownItem(label: "APRIL"),
-    DropDownItem(label: "MAY"),
-    DropDownItem(label: "JUNE"),
-    DropDownItem(label: "AUGUST"),
-    DropDownItem(label: "SEPTEMBER"),
-    DropDownItem(label: "OCTOBER"),
-    DropDownItem(label: "NOVEMBER"),
-    DropDownItem(label: "DECEMBER"),
+    DropDownItem(label: "january"),
+    DropDownItem(label: "february"),
+    DropDownItem(label: "march"),
+    DropDownItem(label: "april"),
+    DropDownItem(label: "may"),
+    DropDownItem(label: "june"),
+    DropDownItem(label: "july"),
+    DropDownItem(label: "august"),
+    DropDownItem(label: "september"),
+    DropDownItem(label: "october"),
+    DropDownItem(label: "november"),
+    DropDownItem(label: "december"),
   ];
-
-  void onMonthSelect(String month) {
-    setState(() {
-      selectedMonth = month;
-    });
-  }
-
-  void onCardPress(DateFrame dateFrame) async {
-    final appState = Provider.of<ApplicationState>(context, listen: false);
-    appState.setSelectedDateFrame = dateFrame;
-  }
 
   void onTabPress(TabButton tab) {
     setState(() {
@@ -81,8 +71,6 @@ class _HomeState extends State<Home> {
             selectedTab: selectedTab,
             onTabPress: onTabPress,
             months: months,
-            selectedMonth: selectedMonth,
-            onMonthSelect: onMonthSelect,
           ),
           const Chart(),
           const Cards(),

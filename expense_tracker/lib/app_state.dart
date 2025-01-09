@@ -85,6 +85,18 @@ class ApplicationState extends ChangeNotifier {
     notifyListeners();
   }
 
+  // selected month
+  String _selectedMonth = Months.values[DateTime.now().month - 1].toString().split(".")[1].toLowerCase();
+  String get selectedMonth => _selectedMonth;
+
+  // set selected month
+  set setSelectedMonth(String selectedMonth) {
+    _selectedMonth = selectedMonth;
+    _fetchMonthAccumulation(selectedMonth);
+    _fetchTopThreeSpendingCategories(_selectedDateFrame, selectedMonth);
+    notifyListeners();
+  }
+
   // function getter
   get fetchTopThreeSpendingCategories => _fetchTopThreeSpendingCategories(_selectedDateFrame);
 
@@ -153,6 +165,40 @@ class ApplicationState extends ChangeNotifier {
     FirebaseUIAuth.configureProviders([
       EmailAuthProvider(),
     ]);
+  }
+
+  Future<void> _fetchMonthAccumulation(String month) async {
+    final thisYear = DateTime.now().year;
+    final monthNumber = Months.values.map((e) => e.toString().split(".")[1]).toList().indexOf(month) + 1;
+    final startOfMonth = DateTime(thisYear, monthNumber, 1);
+    final endOfMonth = DateTime(thisYear, monthNumber + 1, 0, 23, 59, 59);
+
+    final transactions = FirebaseFirestore.instance
+        .collection('transactions')
+        .where(
+          "userId",
+          isEqualTo: FirebaseAuth.instance.currentUser!.uid,
+        )
+        .where(
+          "type",
+          isEqualTo: transaction_model.TransactionType.expense,
+        );
+
+    final monthTransactions = await transactions
+        .where(
+          "timestamp",
+          isGreaterThanOrEqualTo: startOfMonth,
+          isLessThanOrEqualTo: endOfMonth,
+        )
+        .get();
+
+    int monthTotalExpenses = 0;
+    for (var doc in monthTransactions.docs) {
+      monthTotalExpenses += (doc.data()['price'] as num).toInt();
+    }
+
+    _monthAccumulation = monthTotalExpenses;
+    notifyListeners();
   }
 
   Future<void> _fetchChartData(DateFrame frametime) async {
@@ -288,7 +334,7 @@ class ApplicationState extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> _fetchTopThreeSpendingCategories(DateFrame frametime) async {
+  Future<void> _fetchTopThreeSpendingCategories(DateFrame frametime, [String? speacialMonth]) async {
     // Month range
     late final DateTime startOfDateFrame;
     late final DateTime endOfDateFrame;
@@ -303,8 +349,19 @@ class ApplicationState extends ChangeNotifier {
         endOfDateFrame = endOfWeek;
         break;
       case DateFrame.month:
-        startOfDateFrame = startOfMonth;
-        endOfDateFrame = endOfMonth;
+        {
+          if (speacialMonth != null) {
+            final thisYear = DateTime.now().year;
+            final monthNumber = Months.values.map((e) => e.toString().split(".")[1]).toList().indexOf(speacialMonth) + 1;
+            final startOfMonth = DateTime(thisYear, monthNumber, 1);
+            final endOfMonth = DateTime(thisYear, monthNumber + 1, 0, 23, 59, 59);
+            startOfDateFrame = startOfMonth;
+            endOfDateFrame = endOfMonth;
+          } else {
+            startOfDateFrame = startOfMonth;
+            endOfDateFrame = endOfMonth;
+          }
+        }
         break;
     }
     // month total

@@ -1,26 +1,34 @@
+import 'package:expense_tracker/app_state.dart';
 import 'package:expense_tracker/shared/components/drop_downs/classes/drop_down_item.dart';
 import 'package:expense_tracker/shared/components/drop_downs/drop_down_menu.dart';
 import 'package:expense_tracker/shared/components/switchers/tab_switcher/classes/tab_button.dart';
 import 'package:expense_tracker/shared/components/switchers/tab_switcher/index.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class Filter extends StatelessWidget {
+class Filter extends StatefulWidget {
   const Filter({
     super.key,
     required this.selectedTab,
-    required this.selectedMonth,
     required this.tabs,
     required this.months,
-    required this.onMonthSelect,
     required this.onTabPress,
   });
 
-  final String selectedMonth;
   final TabButton selectedTab;
   final List<TabButton> tabs;
   final List<DropDownItem> months;
-  final void Function(String month) onMonthSelect;
   final void Function(TabButton tab) onTabPress;
+
+  @override
+  State<Filter> createState() => _FilterState();
+}
+
+class _FilterState extends State<Filter> {
+  void onMonthSelect(newSelectedMonth) async {
+    final appState = Provider.of<ApplicationState>(context, listen: false);
+    appState.setSelectedMonth = newSelectedMonth;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,15 +37,19 @@ class Filter extends StatelessWidget {
       child: Row(
         children: [
           TabSwitcher(
-            selectedTab: selectedTab,
-            tabs: tabs,
-            onTabPress: onTabPress,
+            selectedTab: widget.selectedTab,
+            tabs: widget.tabs,
+            onTabPress: widget.onTabPress,
           ),
           const SizedBox(width: 8),
-          DropDownMenu(
-            options: months,
-            onSelect: onMonthSelect,
-            selectedOption: selectedMonth,
+          Consumer<ApplicationState>(
+            builder: (context, appState, _) {
+              return DropDownMenu(
+                options: widget.months,
+                onSelect: onMonthSelect,
+                selectedOption: appState.selectedMonth,
+              );
+            },
           ),
         ],
       ),

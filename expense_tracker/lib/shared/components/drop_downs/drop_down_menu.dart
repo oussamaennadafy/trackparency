@@ -1,8 +1,11 @@
+import 'package:expense_tracker/app_state.dart';
+import 'package:expense_tracker/enums/index.dart';
 import 'package:expense_tracker/features/categories/utils/get_icon_from_string.dart';
 import 'package:expense_tracker/shared/components/drop_downs/classes/drop_down_item.dart';
 import 'package:expense_tracker/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 
 class DropDownMenu extends StatelessWidget {
   const DropDownMenu({
@@ -21,64 +24,72 @@ class DropDownMenu extends StatelessWidget {
     final selectedObject = options.where((element) => element.label == selectedOption).first;
     final dropdownWidth = MediaQuery.of(context).size.width * 0.3;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: selectedObject.backgroundColor ?? AppColors.onSurface,
-        borderRadius: BorderRadius.circular(9999),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-      child: DropdownButtonHideUnderline(
-        child: SizedBox(
-          width: dropdownWidth,
-          child: DropdownButton<String>(
-            isDense: true,
-            value: selectedOption,
-            icon: const Icon(Icons.expand_more),
-            iconSize: 24,
-            elevation: 2,
-            style: const TextStyle(color: Colors.black),
-            onChanged: (value) {
-              if (value != null) onSelect(value);
-            },
-            selectedItemBuilder: (BuildContext context) {
-              return options.map<Widget>((DropDownItem item) {
-                return ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: dropdownWidth - 2),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (selectedObject.icon?.startsWith("assets/icons/") == true) ...[
-                        SvgPicture.asset(selectedObject.icon!),
-                        const SizedBox(width: 4),
-                      ] else ...[
-                        if (selectedObject.icon != null) Icon(getIconFromString(selectedObject.icon!)),
-                        const SizedBox(width: 4),
-                      ],
-                      Flexible(
-                        child: Text(
-                          item.label,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              }).toList();
-            },
-            items: options.map<DropdownMenuItem<String>>((DropDownItem value) {
-              return DropdownMenuItem<String>(
-                value: value.label,
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: dropdownWidth - 2),
-                  child: Text(
-                    value.label,
-                  ),
-                ),
-              );
-            }).toList(),
+    return Consumer<ApplicationState>(
+      builder: (context, appState, _) {
+        return Container(
+          decoration: BoxDecoration(
+            color: selectedObject.backgroundColor ?? AppColors.onSurface,
+            borderRadius: BorderRadius.circular(9999),
+            border: Border.all(
+              width: .5,
+              color: Months.values[DateTime.now().month - 1].toString().split(".")[1] == appState.selectedMonth ? Colors.transparent : AppColors.primary,
+            ),
           ),
-        ),
-      ),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          child: DropdownButtonHideUnderline(
+            child: SizedBox(
+              width: dropdownWidth,
+              child: DropdownButton<String>(
+                isDense: true,
+                value: selectedOption,
+                icon: const Icon(Icons.expand_more),
+                iconSize: 24,
+                elevation: 2,
+                style: const TextStyle(color: Colors.black),
+                onChanged: (value) {
+                  if (value != null) onSelect(value);
+                },
+                selectedItemBuilder: (BuildContext context) {
+                  return options.map<Widget>((DropDownItem item) {
+                    return ConstrainedBox(
+                      constraints: BoxConstraints(maxWidth: dropdownWidth - 2),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (selectedObject.icon?.startsWith("assets/icons/") == true) ...[
+                            SvgPicture.asset(selectedObject.icon!),
+                            const SizedBox(width: 4),
+                          ] else ...[
+                            if (selectedObject.icon != null) Icon(getIconFromString(selectedObject.icon!)),
+                            const SizedBox(width: 4),
+                          ],
+                          Flexible(
+                            child: Text(
+                              item.label,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList();
+                },
+                items: options.map<DropdownMenuItem<String>>((DropDownItem value) {
+                  return DropdownMenuItem<String>(
+                    value: value.label,
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(maxWidth: dropdownWidth - 2),
+                      child: Text(
+                        value.label,
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
