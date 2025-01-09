@@ -8,9 +8,7 @@ import 'package:expense_tracker/shared/bottomSheets/transaction_bottomSheet/widg
 import 'package:expense_tracker/shared/bottomSheets/transaction_bottomSheet/widgets/titleInput/index.dart';
 import 'package:expense_tracker/shared/bottomSheets/transaction_bottomSheet/widgets/transactionDropDowns/index.dart';
 import 'package:expense_tracker/shared/components/drop_downs/classes/drop_down_item.dart';
-import 'package:expense_tracker/shared/components/texts/shake_text.dart';
 import 'package:expense_tracker/theme/colors.dart';
-import 'package:expense_tracker/utils/formaters/formate_price.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -78,7 +76,6 @@ class TransactioneBottomSheetState extends State<TransactionBottomSheet> {
     // define vriables based on transaction type
     if (widget.type == TransactionType.expense) {
       final applicationState = Provider.of<ApplicationState>(context, listen: false);
-      // categories = expenseCategories;
       categories = applicationState.userSelectedCategories
           .map(
             (el) => DropDownItem(

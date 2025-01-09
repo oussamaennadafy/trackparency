@@ -36,7 +36,6 @@ class _TransactionDropDownsState extends State<TransactionDropDowns> {
     // define vriables based on transaction type
     if (widget.transactionType == TransactionType.expense) {
       final applicationState = Provider.of<ApplicationState>(context, listen: false);
-      // categories = expenseCategories;
       categories = applicationState.userSelectedCategories
           .map(
             (el) => DropDownItem(
