@@ -9,9 +9,14 @@ const incomeCategories = [
     icon: AppIcons.handUnderCash,
   ),
   DropDownItem(
-    label: "side hustle",
-    backgroundColor: AppColors.green,
+    label: "Passive Income",
+    backgroundColor: AppColors.brown,
     icon: AppIcons.dollar,
+  ),
+  DropDownItem(
+    label: "Side Hustle",
+    backgroundColor: AppColors.red,
+    icon: AppIcons.letsIconsMoney,
   ),
 ];
 

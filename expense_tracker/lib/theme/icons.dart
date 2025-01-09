@@ -21,6 +21,7 @@ class AppIcons {
   static const String handUnderCash = "assets/icons/hand-under-cash.svg";
   static const String menuList = "assets/icons/menu-list.svg";
   static const String menuListFill = "assets/icons/menu-list-fill.svg";
+  static const String letsIconsMoney = "assets/icons/lets-icons_money.svg";
 }
 
 class AppIllustrations {

@@ -1,4 +1,3 @@
-import 'package:expense_tracker/shared/components/switchers/tab_switcher/classes/tab_button.dart';
 import 'package:expense_tracker/theme/colors.dart';
 import 'package:flutter/material.dart';
 
@@ -10,30 +9,32 @@ class TabSwitcher extends StatefulWidget {
     required this.onTabPress,
   });
 
-  final List<TabButton> tabs;
-  final TabButton selectedTab;
-  final void Function(TabButton tab) onTabPress;
+  final List<String> tabs;
+  final String selectedTab;
+  final void Function(String tab) onTabPress;
 
   @override
   State<TabSwitcher> createState() => _TabSwitcherState();
 }
 
 class _TabSwitcherState extends State<TabSwitcher> with SingleTickerProviderStateMixin {
-  late AnimationController _animationController;
+  late AnimationController _sliderAnimationController;
 
   @override
   void initState() {
     super.initState();
-    _animationController = AnimationController(
+    _sliderAnimationController = AnimationController(
       vsync: this,
       lowerBound: 0,
       upperBound: widget.tabs.length.toDouble(),
+      duration: Duration(milliseconds: 200),
     );
+    _sliderAnimationController.value = widget.tabs.indexOf(widget.selectedTab).toDouble();
   }
 
   @override
   void dispose() {
-    _animationController.dispose();
+    _sliderAnimationController.dispose();
     super.dispose();
   }
 
@@ -67,7 +68,7 @@ class _TabSwitcherState extends State<TabSwitcher> with SingleTickerProviderStat
                                 left: 0,
                                 right: 0,
                                 child: AnimatedBuilder(
-                                  animation: _animationController,
+                                  animation: _sliderAnimationController,
                                   child: Container(
                                     decoration: BoxDecoration(
                                       color: AppColors.primary,
@@ -78,7 +79,7 @@ class _TabSwitcherState extends State<TabSwitcher> with SingleTickerProviderStat
                                   ),
                                   builder: (context, child) {
                                     return FractionalTranslation(
-                                      translation: Offset(_animationController.value, 0),
+                                      translation: Offset(_sliderAnimationController.value, 0),
                                       child: child,
                                     );
                                   },
@@ -87,7 +88,12 @@ class _TabSwitcherState extends State<TabSwitcher> with SingleTickerProviderStat
                             InkWell(
                               onTap: () {
                                 widget.onTabPress(entry.value);
-                                _animationController.animateTo(
+                                print({
+                                  "entry.value.label": entry.value,
+                                  "selectedTab.label": widget.selectedTab
+                                });
+                                _sliderAnimationController.animateTo(1);
+                                _sliderAnimationController.animateTo(
                                   entry.key.toDouble(),
                                   duration: Duration(milliseconds: 200),
                                   curve: Curves.easeIn,
@@ -106,9 +112,9 @@ class _TabSwitcherState extends State<TabSwitcher> with SingleTickerProviderStat
                                   padding: const EdgeInsets.all(10.0),
                                   child: Center(
                                     child: Text(
-                                      entry.value.label,
+                                      entry.value,
                                       style: TextStyle(
-                                        color: entry.value.id == widget.selectedTab.id ? AppColors.onSurface : AppColors.primary,
+                                        color: entry.value == widget.selectedTab ? AppColors.onSurface : AppColors.primary,
                                       ),
                                     ),
                                   ),

@@ -89,6 +89,15 @@ class ApplicationState extends ChangeNotifier {
   String _selectedMonth = Months.values[DateTime.now().month - 1].toString().split(".")[1].toLowerCase();
   String get selectedMonth => _selectedMonth;
 
+  String _selectedTab = "Expenses";
+  String get selectedTab => _selectedTab;
+
+  set setSelectedTab(String selectedTab) {
+    _selectedTab = selectedTab;
+    // fetch data accourding to the selected tab
+    notifyListeners();
+  }
+
   // set selected month
   set setSelectedMonth(String selectedMonth) {
     _selectedMonth = selectedMonth;
