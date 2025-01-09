@@ -1,5 +1,6 @@
 import 'package:expense_tracker/app_state.dart';
-import 'package:expense_tracker/shared/components/tiles/app_tile/index.dart';
+import 'package:expense_tracker/shared/components/tiles/animated_app_tile/index.dart';
+// import 'package:expense_tracker/shared/components/tiles/app_tile/index.dart';
 import 'package:expense_tracker/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -12,15 +13,16 @@ class CategoryTiles extends StatelessWidget {
     return Expanded(
       child: Consumer<ApplicationState>(
         builder: (context, appState, _) => Column(
-          children: appState.topThreeSpendingCategories.map((el) {
+          children: appState.topThreeSpendingCategories.toList().asMap().entries.map((el) {
             return Expanded(
-              child: AppListTile(
-                icon: el.icon,
-                iconBackgroundColor: AppColors().get(el.color),
-                title: el.name,
+              child: AnimatedAppListTile(
+                index: el.key,
+                icon: el.value.icon,
+                iconBackgroundColor: AppColors().get(el.value.color),
+                title: el.value.name,
                 subTitle: "Cash",
-                trailingTitle: el.total,
-                trailingSubTitle: "${el.percentage?.toStringAsFixed(2)}%",
+                trailingTitle: el.value.total,
+                trailingSubTitle: "${el.value.percentage?.toStringAsFixed(2)}%",
                 onTap: () {},
               ),
             );

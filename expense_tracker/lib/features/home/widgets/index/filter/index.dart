@@ -1,4 +1,5 @@
 import 'package:expense_tracker/app_state.dart';
+import 'package:expense_tracker/enums/index.dart';
 import 'package:expense_tracker/shared/components/drop_downs/classes/drop_down_item.dart';
 import 'package:expense_tracker/shared/components/drop_downs/drop_down_menu.dart';
 import 'package:expense_tracker/shared/components/switchers/tab_switcher/classes/tab_button.dart';
@@ -48,6 +49,7 @@ class _FilterState extends State<Filter> {
                 options: widget.months,
                 onSelect: onMonthSelect,
                 selectedOption: appState.selectedMonth,
+                hasBorder: Months.values[DateTime.now().month - 1].toString().split(".")[1] != appState.selectedMonth,
               );
             },
           ),
