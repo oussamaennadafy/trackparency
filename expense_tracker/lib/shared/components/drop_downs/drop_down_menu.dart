@@ -27,12 +27,10 @@ class DropDownMenu extends StatelessWidget {
       decoration: BoxDecoration(
         color: selectedObject.backgroundColor ?? AppColors.onSurface,
         borderRadius: BorderRadius.circular(9999),
-        border: hasBorder == true
-            ? Border.all(
-                width: .5,
-                color: AppColors.primary,
-              )
-            : null,
+        border: Border.all(
+          width: .5,
+          color: hasBorder == true ? AppColors.primary : Colors.transparent,
+        ),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       child: DropdownButtonHideUnderline(
