@@ -100,6 +100,7 @@ class ApplicationState extends ChangeNotifier {
 
   // set selected month
   set setSelectedMonth(String selectedMonth) {
+    _selectedDateFrame = DateFrame.month;
     _selectedMonth = selectedMonth;
     _fetchMonthAccumulation(selectedMonth);
     _fetchTopThreeSpendingCategories(_selectedDateFrame, selectedMonth);
