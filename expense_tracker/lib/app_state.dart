@@ -5,6 +5,7 @@ import 'package:expense_tracker/enums/index.dart';
 import 'package:expense_tracker/features/home/models/chart_data.dart';
 import 'package:expense_tracker/features/home/models/top_category.dart';
 import 'package:expense_tracker/features/transactions/models/transaction.dart' as transaction_model;
+import 'package:expense_tracker/shared/bottomSheets/transaction_bottomSheet/data/drop_down_items.dart';
 import 'package:expense_tracker/utils/date_manipulators/get_last_seven_months.dart';
 import 'package:expense_tracker/utils/date_manipulators/get_last_seven_weeks.dart';
 import 'package:firebase_auth/firebase_auth.dart' hide EmailAuthProvider, PhoneAuthProvider;
@@ -81,7 +82,7 @@ class ApplicationState extends ChangeNotifier {
   set setSelectedDateFrame(DateFrame selectedDateFrame) {
     _selectedDateFrame = selectedDateFrame;
     _fetchTopThreeSpendingCategories(_selectedDateFrame);
-    _fetchChartData(_selectedDateFrame);
+    _fetchChartData(_selectedDateFrame, _selectedTab);
     notifyListeners();
   }
 
@@ -94,7 +95,9 @@ class ApplicationState extends ChangeNotifier {
 
   set setSelectedTab(String selectedTab) {
     _selectedTab = selectedTab;
-    // fetch data accourding to the selected tab
+    _fetchChartData(_selectedDateFrame, selectedTab);
+    _fetchAccumulations(selectedTab);
+    _fetchTopThreeSpendingCategories(_selectedDateFrame);
     notifyListeners();
   }
 
@@ -149,8 +152,8 @@ class ApplicationState extends ChangeNotifier {
               );
             }
             _fetchUserBalance();
-            _fetchChartData(_selectedDateFrame);
-            _fetchAccumulations();
+            _fetchChartData(_selectedDateFrame, _selectedTab);
+            _fetchAccumulations(_selectedTab);
             _fetchTopThreeSpendingCategories(_selectedDateFrame);
             notifyListeners();
           },
@@ -177,6 +180,88 @@ class ApplicationState extends ChangeNotifier {
     ]);
   }
 
+  void _fillIncomeCategories() async {
+    // Month range
+    late final DateTime startOfDateFrame;
+    late final DateTime endOfDateFrame;
+
+    switch (_selectedDateFrame) {
+      case DateFrame.day:
+        startOfDateFrame = startOfDay;
+        endOfDateFrame = endOfDay;
+        break;
+      case DateFrame.week:
+        startOfDateFrame = startOfWeek;
+        endOfDateFrame = endOfWeek;
+        break;
+      case DateFrame.month:
+        {
+          if (_selectedMonth != null) {
+            final thisYear = DateTime.now().year;
+            final monthNumber = Months.values.map((e) => e.toString().split(".")[1]).toList().indexOf(_selectedMonth) + 1;
+            final startOfMonth = DateTime(thisYear, monthNumber, 1);
+            final endOfMonth = DateTime(thisYear, monthNumber + 1, 0, 23, 59, 59);
+            startOfDateFrame = startOfMonth;
+            endOfDateFrame = endOfMonth;
+          } else {
+            startOfDateFrame = startOfMonth;
+            endOfDateFrame = endOfMonth;
+          }
+        }
+        break;
+    }
+    final transactions = await FirebaseFirestore.instance
+        .collection("transactions")
+        .where(
+          "userId",
+          isEqualTo: FirebaseAuth.instance.currentUser!.uid,
+        )
+        .where(
+          "type",
+          isEqualTo: transaction_model.TransactionType.income,
+        )
+        .where(
+          "timestamp",
+          isGreaterThanOrEqualTo: startOfDateFrame,
+          isLessThanOrEqualTo: endOfDateFrame,
+        )
+        .get();
+
+    final incomeTransactions = transactions.docs;
+    final resultsMap = {};
+    var totalAccumulation = 0;
+    resultsMap[incomeCategories[0].label] = 0;
+    resultsMap[incomeCategories[1].label] = 0;
+    resultsMap[incomeCategories[2].label] = 0;
+    for (final transaction in incomeTransactions) {
+      final category = transaction.data()["category"];
+      final price = transaction.data()["price"];
+      resultsMap[category] += price;
+      totalAccumulation += price as int;
+    }
+    // print(totalAccumulation);
+    final List<TopCategory> topThree = [];
+    for (final category in incomeCategories) {
+      topThree.add(
+        TopCategory(
+          icon: category.icon!,
+          name: category.label,
+          color: category.backgroundColor,
+          total: resultsMap[category.label],
+          percentage: 0,
+        ),
+      );
+    }
+    for (var i = 0; i < topThree.length; i++) {
+      if (totalAccumulation == 0) {
+        totalAccumulation = 1;
+      }
+      topThree[i].percentage = (topThree[i].total / totalAccumulation * 100);
+    }
+    var sortedList = (topThree.toList()..sort((a, b) => b.total.compareTo(a.total)));
+    _topThreeSpendingCategories = sortedList;
+  }
+
   Future<void> _fetchMonthAccumulation(String month) async {
     final thisYear = DateTime.now().year;
     final monthNumber = Months.values.map((e) => e.toString().split(".")[1]).toList().indexOf(month) + 1;
@@ -191,7 +276,7 @@ class ApplicationState extends ChangeNotifier {
         )
         .where(
           "type",
-          isEqualTo: transaction_model.TransactionType.expense,
+          isEqualTo: _selectedTab == "Income" ? transaction_model.TransactionType.income : transaction_model.TransactionType.expense,
         );
 
     final monthTransactions = await transactions
@@ -211,7 +296,7 @@ class ApplicationState extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> _fetchChartData(DateFrame frametime) async {
+  Future<void> _fetchChartData(DateFrame frametime, [String? selectedTab]) async {
     // // Month range
     late final DateTime startOfDateFrame;
     late final DateTime endOfDateFrame;
@@ -243,7 +328,7 @@ class ApplicationState extends ChangeNotifier {
         )
         .where(
           "type",
-          isEqualTo: transaction_model.TransactionType.expense,
+          isEqualTo: selectedTab == "Income" ? transaction_model.TransactionType.income : transaction_model.TransactionType.expense,
         )
         .where(
           "timestamp",
@@ -345,6 +430,10 @@ class ApplicationState extends ChangeNotifier {
   }
 
   Future<void> _fetchTopThreeSpendingCategories(DateFrame frametime, [String? speacialMonth]) async {
+    if (_selectedTab == "Income") {
+      _fillIncomeCategories();
+      return;
+    }
     // Month range
     late final DateTime startOfDateFrame;
     late final DateTime endOfDateFrame;
@@ -385,7 +474,7 @@ class ApplicationState extends ChangeNotifier {
         )
         .where(
           "type",
-          isEqualTo: transaction_model.TransactionType.expense,
+          isEqualTo: _selectedTab == "Income" ? transaction_model.TransactionType.income : transaction_model.TransactionType.expense,
         )
         .where(
           "timestamp",
@@ -455,7 +544,7 @@ class ApplicationState extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> _fetchAccumulations() async {
+  Future<void> _fetchAccumulations(String selectedTab) async {
     try {
       final transactions = FirebaseFirestore.instance
           .collection('transactions')
@@ -465,7 +554,7 @@ class ApplicationState extends ChangeNotifier {
           )
           .where(
             "type",
-            isEqualTo: transaction_model.TransactionType.expense,
+            isEqualTo: selectedTab == "Income" ? transaction_model.TransactionType.income : transaction_model.TransactionType.expense,
           );
 
       final dayTransactions = await transactions
@@ -617,7 +706,7 @@ class ApplicationState extends ChangeNotifier {
     await deleteAllTransactionsOfCategory(category.name);
 
     await _fetchTopThreeSpendingCategories(_selectedDateFrame);
-    await _fetchAccumulations();
+    await _fetchAccumulations(_selectedTab);
     _deleteCustomCategoryLoading = false;
     notifyListeners();
   }
@@ -867,7 +956,7 @@ class ApplicationState extends ChangeNotifier {
       await deleteAllTransactionsOfCategory(category.name);
     }
     await _fetchTopThreeSpendingCategories(_selectedDateFrame);
-    await _fetchAccumulations();
+    await _fetchAccumulations(_selectedTab);
     notifyListeners();
   }
 }

@@ -12,6 +12,6 @@ class TopCategory {
   String icon;
   String name;
   int total;
-  String? color;
+  dynamic color;
   double? percentage;
 }

@@ -18,7 +18,7 @@ class CategoryTiles extends StatelessWidget {
               child: AnimatedAppListTile(
                 index: el.key,
                 icon: el.value.icon,
-                iconBackgroundColor: AppColors().get(el.value.color),
+                iconBackgroundColor: el.value.color is String ? AppColors().get(el.value.color) : el.value.color,
                 title: el.value.name,
                 subTitle: "Cash",
                 trailingTitle: el.value.total,

@@ -88,10 +88,6 @@ class _TabSwitcherState extends State<TabSwitcher> with SingleTickerProviderStat
                             InkWell(
                               onTap: () {
                                 widget.onTabPress(entry.value);
-                                print({
-                                  "entry.value.label": entry.value,
-                                  "selectedTab.label": widget.selectedTab
-                                });
                                 _sliderAnimationController.animateTo(1);
                                 _sliderAnimationController.animateTo(
                                   entry.key.toDouble(),
