@@ -35,23 +35,29 @@ class _TransactionsState extends State<Transactions> {
     return Consumer<ApplicationState>(
       builder: (context, appState, _) => Scaffold(
         body: appState.transactions.isNotEmpty
-            ? ListView.builder(
-                itemCount: appState.transactions.length,
-                prototypeItem: const AppListTile(
-                  title: "Expense",
-                  icon: AppIcons.analytics,
-                  iconBackgroundColor: AppColors.blue,
-                  trailingTitle: 30,
-                ),
-                itemBuilder: (context, index) {
-                  return SlidableItem(
-                    item: appState.transactions[index],
-                    handleDelete: (transaction) {
-                      deleteTransactionPermanently(transaction);
-                    },
-                    handleEdit: handleEdit,
-                  );
+            ? RefreshIndicator(
+                onRefresh: () async {
+                  final applicationState = Provider.of<ApplicationState>(context, listen: false);
+                  await applicationState.refreshTransactions();
                 },
+                child: ListView.builder(
+                  itemCount: appState.transactions.length,
+                  prototypeItem: const AppListTile(
+                    title: "Expense",
+                    icon: AppIcons.analytics,
+                    iconBackgroundColor: AppColors.blue,
+                    trailingTitle: 30,
+                  ),
+                  itemBuilder: (context, index) {
+                    return SlidableItem(
+                      item: appState.transactions[index],
+                      handleDelete: (transaction) {
+                        deleteTransactionPermanently(transaction);
+                      },
+                      handleEdit: handleEdit,
+                    );
+                  },
+                ),
               )
             : const EmptyTransactionsState(),
       ),

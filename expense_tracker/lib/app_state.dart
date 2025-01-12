@@ -180,6 +180,27 @@ class ApplicationState extends ChangeNotifier {
     ]);
   }
 
+  Future<void> refreshTransactions() async {
+    final transactions = await FirebaseFirestore.instance.collection('transactions').where('userId', isEqualTo: FirebaseAuth.instance.currentUser!.uid).orderBy("timestamp", descending: true).get();
+    List<transaction_model.Transaction> transactionsList = [];
+    for (final document in transactions.docs) {
+      transactionsList.add(
+        transaction_model.Transaction(
+          id: document.id,
+          paymentMethod: document.data()['paymentMethod'] as String,
+          category: document.data()['category'] as String,
+          title: document.data()['title'] as String,
+          price: (document.data()['price'] as num).toInt(),
+          comment: document.data()['comment'] as String,
+          type: document.data()['type'] as String,
+          timestamp: (document.data()['timestamp'] as Timestamp).toDate(),
+        ),
+      );
+    }
+    _transactions = transactionsList;
+    notifyListeners();
+  }
+
   Future<void> refreshHome() async {
     _selectedTab = "Expenses";
     _selectedDateFrame = DateFrame.day;
