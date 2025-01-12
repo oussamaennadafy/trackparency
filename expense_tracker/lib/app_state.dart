@@ -22,7 +22,7 @@ final endOfDay = DateTime(now.year, now.month, now.day, 23, 59, 59);
 
 // Week range
 final startOfWeek = DateTime(now.year, now.month, now.day - (now.weekday - 1));
-final endOfWeek = DateTime(now.year, now.month, now.day + (7 - now.weekday));
+final endOfWeek = DateTime(now.year, now.month, now.day + (7 - now.weekday), 23, 59, 59);
 
 // Month range
 final startOfMonth = DateTime(now.year, now.month, 1);
@@ -367,6 +367,12 @@ class ApplicationState extends ChangeNotifier {
           isLessThanOrEqualTo: endOfDateFrame,
         )
         .get();
+
+    // print(transactions.docs.length);
+    print({
+      "isGreaterThanOrEqualTo": startOfDateFrame,
+      "isLessThanOrEqualTo": endOfDateFrame,
+    });
 
     Map<String, int> resultsMap = {};
     // create resultsMap keys
