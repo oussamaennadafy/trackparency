@@ -180,6 +180,17 @@ class ApplicationState extends ChangeNotifier {
     ]);
   }
 
+  Future<void> refreshHome() async {
+    _selectedTab = "Expenses";
+    _selectedDateFrame = DateFrame.day;
+    _selectedMonth = Months.values[DateTime.now().month - 1].toString().split(".")[1].toLowerCase();
+    await _fetchUserBalance();
+    await _fetchChartData(_selectedDateFrame, _selectedTab);
+    await _fetchAccumulations(_selectedTab);
+    await _fetchTopThreeSpendingCategories(_selectedDateFrame);
+    notifyListeners();
+  }
+
   void _fillIncomeCategories() async {
     // Month range
     late final DateTime startOfDateFrame;

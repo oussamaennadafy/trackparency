@@ -12,31 +12,34 @@ class Chart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: Consumer<ApplicationState>(
-        builder: (context, appState, _) {
-          return appState.chartDataLoading
-              ? Center(child: CircularProgressIndicator())
-              : Stack(
-                  alignment: Alignment.bottomCenter,
-                  children: [
-                    Row(
-                      children: appState.chartData!.resultsMap.toList().asMap().entries.map((e) {
-                        return ChartBar(
-                          color: chartBarColors[e.key],
-                          heightFactor: getChartHeightFactor(e.value.value, appState.chartData!.biggestDay.total),
-                          value: e.value.value.toString(),
-                          label: e.value.key.toString(),
-                        );
-                      }).toList(),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.only(left: 12.0, right: 12.0, bottom: 23.0),
-                      color: AppColors.extraLightGray,
-                      height: 1,
-                    ),
-                  ],
-                );
-        },
+      child: Container(
+        color: AppColors.surface,
+        child: Consumer<ApplicationState>(
+          builder: (context, appState, _) {
+            return appState.chartDataLoading
+                ? Center(child: CircularProgressIndicator())
+                : Stack(
+                    alignment: Alignment.bottomCenter,
+                    children: [
+                      Row(
+                        children: appState.chartData!.resultsMap.toList().asMap().entries.map((e) {
+                          return ChartBar(
+                            color: chartBarColors[e.key],
+                            heightFactor: getChartHeightFactor(e.value.value, appState.chartData!.biggestDay.total),
+                            value: e.value.value.toString(),
+                            label: e.value.key.toString(),
+                          );
+                        }).toList(),
+                      ),
+                      Container(
+                        margin: const EdgeInsets.only(left: 12.0, right: 12.0, bottom: 23.0),
+                        color: AppColors.extraLightGray,
+                        height: 1,
+                      ),
+                    ],
+                  );
+          },
+        ),
       ),
     );
   }
