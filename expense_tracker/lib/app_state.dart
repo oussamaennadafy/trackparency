@@ -271,7 +271,6 @@ class ApplicationState extends ChangeNotifier {
       resultsMap[category] += price;
       totalAccumulation += price as int;
     }
-    // print(totalAccumulation);
     final List<TopCategory> topThree = [];
     for (final category in incomeCategories) {
       topThree.add(
@@ -773,7 +772,6 @@ class ApplicationState extends ChangeNotifier {
         _onboardingStatus = status != null ? OnboardingStatus.values.firstWhere((e) => e.toString() == 'OnboardingStatus.$status', orElse: () => OnboardingStatus.notStarted) : OnboardingStatus.notStarted;
       }
     } catch (e) {
-      print('Error checking onboarding status: $e');
       _onboardingStatus = OnboardingStatus.notStarted;
     } finally {
       _isCheckingOnboarding = false;
@@ -802,7 +800,6 @@ class ApplicationState extends ChangeNotifier {
         _balance = 0;
       }
     } catch (e) {
-      print('Error fetching user balance: $e');
       _balance = 0;
     } finally {
       notifyListeners();

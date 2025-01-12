@@ -15,21 +15,6 @@ final profileActionsList = [
           context.go("/onboarding/categories");
         },
       ),
-      ActionTile(
-        text: "manage incomes categories",
-        leftIcon: Icons.attach_money,
-        onPress: (context) {},
-      ),
-    ],
-  ),
-  ListData(
-    sectionTitle: "customization",
-    actionsList: [
-      ActionTile(
-        text: "costimize week days",
-        leftIcon: Icons.edit_note_rounded,
-        onPress: (context) {},
-      ),
     ],
   ),
   ListData(
