@@ -105,6 +105,7 @@ class ApplicationState extends ChangeNotifier {
   set setSelectedMonth(String selectedMonth) {
     _selectedDateFrame = DateFrame.month;
     _selectedMonth = selectedMonth;
+    _fetchChartData(_selectedDateFrame, selectedTab);
     _fetchMonthAccumulation(selectedMonth);
     _fetchTopThreeSpendingCategories(_selectedDateFrame, selectedMonth);
     notifyListeners();
