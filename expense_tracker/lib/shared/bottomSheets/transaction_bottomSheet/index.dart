@@ -297,7 +297,6 @@ class TransactioneBottomSheetState extends State<TransactionBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
-    print("build whole bottomsheet...");
     return Container(
       decoration: const BoxDecoration(
         color: AppColors.surface,
