@@ -113,7 +113,7 @@ class TransactioneBottomSheetState extends State<TransactionBottomSheet> {
   String validatePrice(character) {
     var newValue = price;
 
-    if ((price + character) != "0") {
+    if ((price + character) != "0" && isPriceInvalid == true) {
       setState(() {
         isPriceInvalid = false;
       });

@@ -58,6 +58,10 @@ class _TransactionDropDownsState extends State<TransactionDropDowns> {
       selectedPaymentMethod = widget.transactionType == TransactionType.expense ? "Cash" : "Card";
       selectedCategory = widget.transactionType == TransactionType.expense ? categories.first.label : "Salary";
     }
+
+    // set data in parent
+    widget.onPaymentMethodSelect(selectedPaymentMethod);
+    widget.onCategorySelect(selectedCategory);
   }
 
   @override
