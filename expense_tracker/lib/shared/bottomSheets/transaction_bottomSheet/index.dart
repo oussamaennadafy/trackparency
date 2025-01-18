@@ -207,7 +207,7 @@ class TransactioneBottomSheetState extends State<TransactionBottomSheet> {
 
     if (price == "0") return character;
 
-    // if (price.length == 6) return price;
+    if (price.length == 6) return price;
 
     newValue += character;
 
