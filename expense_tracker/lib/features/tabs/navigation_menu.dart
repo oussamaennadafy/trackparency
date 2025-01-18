@@ -37,43 +37,46 @@ class _NavigationMenuState extends State<NavigationMenu> {
         preferredSize: Size.fromHeight(63),
         child: Header(),
       ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: selectedIndex,
-        backgroundColor: AppColors.surface,
-        onDestinationSelected: (value) {
-          setState(() {
-            selectedIndex = value;
-          });
-        },
-        destinations: [
-          IconButton(
-            highlightColor: AppColors.surface,
-            onPressed: () => handlePress(0),
-            icon: Center(
-              child: SvgPicture.asset(
-                selectedIndex == 0 ? AppIcons.menuListFill : AppIcons.menuList,
+      bottomNavigationBar: SizedBox(
+        height: 62,
+        child: NavigationBar(
+          selectedIndex: selectedIndex,
+          backgroundColor: AppColors.surface,
+          onDestinationSelected: (value) {
+            setState(() {
+              selectedIndex = value;
+            });
+          },
+          destinations: [
+            IconButton(
+              highlightColor: AppColors.surface,
+              onPressed: () => handlePress(0),
+              icon: Center(
+                child: SvgPicture.asset(
+                  selectedIndex == 0 ? AppIcons.menuListFill : AppIcons.menuList,
+                ),
               ),
             ),
-          ),
-          IconButton(
-            highlightColor: AppColors.surface,
-            onPressed: () => handlePress(1),
-            icon: Center(
-              child: SvgPicture.asset(
-                selectedIndex == 1 ? AppIcons.homeFill : AppIcons.home,
+            IconButton(
+              highlightColor: AppColors.surface,
+              onPressed: () => handlePress(1),
+              icon: Center(
+                child: SvgPicture.asset(
+                  selectedIndex == 1 ? AppIcons.homeFill : AppIcons.home,
+                ),
               ),
             ),
-          ),
-          IconButton(
-            highlightColor: AppColors.surface,
-            onPressed: () => handlePress(2),
-            icon: Center(
-              child: SvgPicture.asset(
-                selectedIndex == 2 ? AppIcons.userFill : AppIcons.user,
+            IconButton(
+              highlightColor: AppColors.surface,
+              onPressed: () => handlePress(2),
+              icon: Center(
+                child: SvgPicture.asset(
+                  selectedIndex == 2 ? AppIcons.userFill : AppIcons.user,
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
       body: screens[selectedIndex],
     );

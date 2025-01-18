@@ -37,6 +37,7 @@ class _NavigationMenuState extends State<NavigationMenu> {
         preferredSize: Size.fromHeight(63),
         child: Header(),
       ),
+      body: screens[selectedIndex],
       bottomNavigationBar: NavigationBar(
         selectedIndex: selectedIndex,
         backgroundColor: AppColors.surface,
@@ -75,7 +76,6 @@ class _NavigationMenuState extends State<NavigationMenu> {
           ),
         ],
       ),
-      body: screens[selectedIndex],
     );
   }
 }
