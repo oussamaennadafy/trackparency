@@ -12,16 +12,14 @@ class TransactionDropDowns extends StatefulWidget {
     super.key,
     required this.transactionType,
     required this.onPaymentMethodSelect,
-    required this.selectedPaymentMethod,
     required this.onCategorySelect,
-    required this.selectedCategory,
+    required this.transaction,
   });
 
   final String transactionType;
-  final String selectedPaymentMethod;
-  final String selectedCategory;
   final void Function(String newSelectedPaymentMethod) onPaymentMethodSelect;
   final void Function(String newSelectedPaymentMethod) onCategorySelect;
+  final Transaction? transaction;
 
   @override
   State<TransactionDropDowns> createState() => _TransactionDropDownsState();
@@ -29,6 +27,8 @@ class TransactionDropDowns extends StatefulWidget {
 
 class _TransactionDropDownsState extends State<TransactionDropDowns> {
   late List<DropDownItem> categories = [];
+  late String selectedPaymentMethod;
+  late String selectedCategory;
 
   @override
   void initState() {
@@ -48,6 +48,16 @@ class _TransactionDropDownsState extends State<TransactionDropDowns> {
     } else if (widget.transactionType == TransactionType.income) {
       categories = incomeCategories;
     }
+
+    // add case
+    if (widget.transaction != null) {
+      selectedPaymentMethod = widget.transaction!.paymentMethod;
+      selectedCategory = widget.transaction!.category;
+    } else {
+      // edit case
+      selectedPaymentMethod = widget.transactionType == TransactionType.expense ? "Cash" : "Card";
+      selectedCategory = widget.transactionType == TransactionType.expense ? categories.first.label : "Salary";
+    }
   }
 
   @override
@@ -62,9 +72,12 @@ class _TransactionDropDownsState extends State<TransactionDropDowns> {
             child: DropDownMenu(
               options: paymentMethods,
               onSelect: (selectedOption) {
+                setState(() {
+                  selectedPaymentMethod = selectedOption;
+                });
                 widget.onPaymentMethodSelect(selectedOption);
               },
-              selectedOption: widget.selectedPaymentMethod,
+              selectedOption: selectedPaymentMethod,
             ),
           ),
           const SizedBox(width: 8),
@@ -72,9 +85,12 @@ class _TransactionDropDownsState extends State<TransactionDropDowns> {
             child: DropDownMenu(
               options: categories,
               onSelect: (selectedOption) {
+                setState(() {
+                  selectedCategory = selectedOption;
+                });
                 widget.onCategorySelect(selectedOption);
               },
-              selectedOption: widget.selectedCategory,
+              selectedOption: selectedCategory,
             ),
           ),
         ],

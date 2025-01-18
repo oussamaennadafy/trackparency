@@ -60,8 +60,8 @@ class TransactionBottomSheet extends StatefulWidget {
 }
 
 class TransactioneBottomSheetState extends State<TransactionBottomSheet> {
-  late String selectedPaymentMethod;
-  late String selectedCategory;
+  String? selectedPaymentMethod;
+  String? selectedCategory;
   late String price;
   late DateTime selectedDate;
   late List<DropDownItem> categories = [];
@@ -91,31 +91,23 @@ class TransactioneBottomSheetState extends State<TransactionBottomSheet> {
     // define vriables based on action type : edit or creation
     // add case
     if (widget.transaction != null) {
-      selectedPaymentMethod = widget.transaction!.paymentMethod;
-      selectedCategory = widget.transaction!.category;
       price = widget.transaction!.price.toString();
       _titleInputController.text = widget.transaction!.title;
       _commentInputController.text = widget.transaction!.comment;
       selectedDate = widget.transaction!.timestamp;
     } else {
       // edit case
-      selectedPaymentMethod = widget.type == TransactionType.expense ? "Cash" : "Card";
-      selectedCategory = widget.type == TransactionType.expense ? categories.first.label : "Salary";
       price = "0";
       selectedDate = DateTime.now();
     }
   }
 
   void onPaymentMethodSelect(String newSelectedPaymentMethod) {
-    setState(() {
-      selectedPaymentMethod = newSelectedPaymentMethod;
-    });
+    selectedPaymentMethod = newSelectedPaymentMethod;
   }
 
   void onCategorySelect(String newSelectedCategory) {
-    setState(() {
-      selectedCategory = newSelectedCategory;
-    });
+    selectedCategory = newSelectedCategory;
   }
 
   String validatePrice(character) {
@@ -152,8 +144,8 @@ class TransactioneBottomSheetState extends State<TransactionBottomSheet> {
         }
         // handle submittion
         handleSubmit(
-          paymentMethod: selectedPaymentMethod,
-          category: selectedCategory,
+          paymentMethod: selectedPaymentMethod!,
+          category: selectedCategory!,
           title: _titleInputController.text,
           price: price,
           comment: _commentInputController.text,
@@ -305,6 +297,7 @@ class TransactioneBottomSheetState extends State<TransactionBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
+    print("build whole bottomsheet...");
     return Container(
       decoration: const BoxDecoration(
         color: AppColors.surface,
@@ -322,9 +315,8 @@ class TransactioneBottomSheetState extends State<TransactionBottomSheet> {
             child: TransactionDropDowns(
               transactionType: widget.type,
               onPaymentMethodSelect: onPaymentMethodSelect,
-              selectedPaymentMethod: selectedPaymentMethod,
               onCategorySelect: onCategorySelect,
-              selectedCategory: selectedCategory,
+              transaction: widget.transaction,
             ),
           ),
           Expanded(

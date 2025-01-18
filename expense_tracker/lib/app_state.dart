@@ -369,12 +369,6 @@ class ApplicationState extends ChangeNotifier {
         )
         .get();
 
-    // print(transactions.docs.length);
-    print({
-      "isGreaterThanOrEqualTo": startOfDateFrame,
-      "isLessThanOrEqualTo": endOfDateFrame,
-    });
-
     Map<String, int> resultsMap = {};
     // create resultsMap keys
     for (var i = 0; i < 7; i++) {
