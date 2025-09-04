@@ -13,10 +13,10 @@
 ## 📱 Screenshots
 
 <div align="center">
-  <img src="assets/images/screenshot-1.png" alt="App Screenshots" width="800">
-  <img src="assets/images/screenshot-2.png" alt="App Screenshots" width="800">
-  <img src="assets/images/screenshot-3.png" alt="App Screenshots" width="800">
-  <img src="assets/images/screenshot-4.png" alt="App Screenshots" width="800">
+  <img src="assets/images/Screenshot-1.png" alt="App Screenshot 1" width="800">
+  <img src="assets/images/Screenshot-2.png" alt="App Screenshot 2" width="800">
+  <img src="assets/images/Screenshot-3.png" alt="App Screenshot 3" width="800">
+  <img src="assets/images/Screenshot-4.png" alt="App Screenshot 4" width="800">
   
   *Screenshots showcasing the app's beautiful UI and smooth user experience*
 </div>
