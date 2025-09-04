@@ -26,8 +26,7 @@
 <div align="center">
   
   <video width="800" height="450" controls autoplay muted loop>
-    <source src="assets/videos/demo-video.mp4" type="video/mp4">
-    <source src="assets/videos/demo-video.webm" type="video/webm">
+    <source src="assets/videos/Screen-Recording.mp4" type="video/mp4">
     Your browser does not support the video tag.
   </video>
   
