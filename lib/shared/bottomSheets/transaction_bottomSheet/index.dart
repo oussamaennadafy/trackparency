@@ -75,7 +75,8 @@ class TransactioneBottomSheetState extends State<TransactionBottomSheet> {
     super.initState();
     // define vriables based on transaction type
     if (widget.type == TransactionType.expense) {
-      final applicationState = Provider.of<ApplicationState>(context, listen: false);
+      final applicationState =
+          Provider.of<ApplicationState>(context, listen: false);
       categories = applicationState.userSelectedCategories
           .map(
             (el) => DropDownItem(
@@ -235,13 +236,16 @@ class TransactioneBottomSheetState extends State<TransactionBottomSheet> {
     });
     try {
       // Get the ApplicationState instance
-      final applicationState = Provider.of<ApplicationState>(context, listen: false);
+      final applicationState =
+          Provider.of<ApplicationState>(context, listen: false);
 
       final newTransaction = Transaction(
         id: widget.transaction?.id,
         paymentMethod: paymentMethod,
         category: category,
-        title: title != "" ? title : (widget.type == TransactionType.expense ? "Expense" : "Income"),
+        title: title != ""
+            ? title
+            : (widget.type == TransactionType.expense ? "Expense" : "Income"),
         price: int.parse(price),
         comment: comment,
         timestamp: date,
@@ -264,7 +268,9 @@ class TransactioneBottomSheetState extends State<TransactionBottomSheet> {
         ScaffoldMessenger.of(context).clearSnackBars();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: widget.transaction != null ? const Text('Expense updated successfully') : const Text('Expense added successfully'),
+            content: widget.transaction != null
+                ? const Text('Expense updated successfully')
+                : const Text('Expense added successfully'),
           ),
         );
       }
@@ -273,7 +279,10 @@ class TransactioneBottomSheetState extends State<TransactionBottomSheet> {
       if (mounted) {
         ScaffoldMessenger.of(context).clearSnackBars();
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: widget.transaction != null ? Text('Error updating expense $e') : Text('Expense adding expense $e')),
+          SnackBar(
+              content: widget.transaction != null
+                  ? Text('Error updating expense $e')
+                  : Text('Expense adding expense $e')),
         );
       }
     } finally {
@@ -304,7 +313,11 @@ class TransactioneBottomSheetState extends State<TransactionBottomSheet> {
           Radius.circular(28),
         ),
       ),
-      margin: const EdgeInsets.all(6.0),
+      margin: EdgeInsets.only(
+        left: 6.0,
+        right: 6.0,
+        bottom: MediaQuery.of(context).padding.bottom,
+      ),
       child: Column(
         children: [
           const SizedBox(height: 12),
