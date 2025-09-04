@@ -25,9 +25,13 @@
 
 <div align="center">
   
-  **📹 [Watch the Demo Video](https://your-video-link-here.com)**
+  <video width="800" height="450" controls autoplay muted loop>
+    <source src="assets/videos/demo-video.mp4" type="video/mp4">
+    <source src="assets/videos/demo-video.webm" type="video/webm">
+    Your browser does not support the video tag.
+  </video>
   
-  *Experience Trackparency in action - coming soon!*
+  *Experience Trackparency in action - watch the full demo above!*
   
 </div>
 
