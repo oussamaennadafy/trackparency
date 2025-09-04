@@ -25,8 +25,7 @@
 
 <div align="center">
   
-  <video width="800" height="450" controls autoplay muted loop>
-    <source src="assets/videos/Screen-Recording.mp4" type="video/mp4">
+  <video src="assets/videos/Screen-Recording.mp4" width="800" height="450" controls autoplay muted loop>
     Your browser does not support the video tag.
   </video>
   
