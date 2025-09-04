@@ -33,9 +33,6 @@ ThemeData appTheme(BuildContext context) {
         foregroundColor: AppColors.surface,
       ),
     ),
-    cardTheme: const CardTheme(
-      color: AppColors.surface,
-    ),
     useMaterial3: true,
   );
 }

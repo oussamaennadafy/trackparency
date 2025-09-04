@@ -68,7 +68,9 @@ Widget _handleNavigation(BuildContext context, ApplicationState appState) {
           } else {
             if (!user.emailVerified) {
               user.sendEmailVerification();
-              const snackBar = SnackBar(content: Text('Please check your email to verify your email address'));
+              const snackBar = SnackBar(
+                  content: Text(
+                      'Please check your email to verify your email address'));
               ScaffoldMessenger.of(context).showSnackBar(snackBar);
             }
           }
@@ -94,7 +96,7 @@ Widget _handleNavigation(BuildContext context, ApplicationState appState) {
       );
     case OnboardingStatus.categoriesSet:
     case OnboardingStatus.completed:
-      return const SafeArea(child: NavigationMenu());
+      return const NavigationMenu();
   }
 }
 

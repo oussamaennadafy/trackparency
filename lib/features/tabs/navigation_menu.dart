@@ -38,7 +38,7 @@ class _NavigationMenuState extends State<NavigationMenu> {
         child: Header(),
       ),
       bottomNavigationBar: SizedBox(
-        height: 62,
+        height: 82,
         child: NavigationBar(
           selectedIndex: selectedIndex,
           backgroundColor: AppColors.surface,
