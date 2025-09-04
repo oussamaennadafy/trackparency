@@ -200,9 +200,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-- 📧 Email: support@trackparency.com
-- 🐛 Issues: [GitHub Issues](https://github.com/yourusername/trackparency/issues)
-- 💬 Discussions: [GitHub Discussions](https://github.com/yourusername/trackparency/discussions)
+- 📧 Email: oussama.ennadafy@gmail.com
+- 🐛 Issues: [GitHub Issues](https://github.com/oussamaennadafy/trackparency/issues)
+- 💬 Discussions: [GitHub Discussions](https://github.com/oussamaennadafy/trackparency/discussions)
 
 ---
 
