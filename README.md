@@ -13,10 +13,10 @@
 ## 📱 Screenshots
 
 <div align="center">
-  <img src="assets/images/Screenshot-1-new.png" alt="App Screenshot 1" width="400">
-  <img src="assets/images/Screenshot-2-new.png" alt="App Screenshot 2" width="400">
-  <img src="assets/images/Screenshot-3-new.png" alt="App Screenshot 3" width="400">
-  <img src="assets/images/Screenshot-4-new.png" alt="App Screenshot 4" width="400">
+  <img src="assets/images/Screenshot-1.png" alt="App Screenshot 1" width="400">
+  <img src="assets/images/Screenshot-2.png" alt="App Screenshot 2" width="400">
+  <img src="assets/images/Screenshot-3.png" alt="App Screenshot 3" width="400">
+  <img src="assets/images/Screenshot-4.png" alt="App Screenshot 4" width="400">
   
   *Screenshots showcasing the app's beautiful UI and smooth user experience*
 </div>
@@ -25,11 +25,11 @@
 
 <div align="center">
   
-  <video src="assets/videos/Screen-Recording.mp4" type="video/mp4" width="800" height="450" controls autoplay muted loop>
-    Your browser does not support the video tag.
-  </video>
+  ![Demo Video](assets/gif/Screen-Recording.gif)
   
-  *Experience Trackparency in action - watch the full demo above!*
+  **📹 [Watch Full Demo on YouTube Shorts](https://youtube.com/shorts/hyZcB00E61M?si=oYBA8X1642eMazwa)**
+  
+  *Experience Trackparency in action - watch the GIF above or click the link for the full video!*
   
 </div>
 
