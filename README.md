@@ -25,7 +25,7 @@
 
 <div align="center">
   
-  ![Demo Video](assets/gif/Screen-Recording.gif)
+  <img src="assets/gif/Screen-Recording.gif" alt="Demo Video" width="300" height="auto">
   
   **📹 [Watch Full Demo on YouTube Shorts](https://youtube.com/shorts/hyZcB00E61M?si=oYBA8X1642eMazwa)**
   
